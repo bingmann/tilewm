@@ -19,5 +19,5 @@
 
 add_executable(tilewm
   main.cpp
+  log.cpp
   )
-

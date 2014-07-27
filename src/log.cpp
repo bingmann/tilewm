@@ -1,7 +1,7 @@
 /*******************************************************************************
- * src/main.cpp
+ * src/log.cpp
  *
- * Contains main() of new tiling window manager.
+ * A set of C++ ostream-compatible logging functions.
  *
  *******************************************************************************
  * Copyright (C) 2014 Timo Bingmann <tb@panthema.net>
@@ -22,11 +22,10 @@
 
 #include "log.h"
 
-int main(int argc, char* argv[])
-{
-    INFO << "Welcome to TileWM";
+//! Currently configured maximum level written to stderr
+log_level_t Log::s_stderr_level = LOG_INFO;
 
-    return 0;
-}
+//! Whether to use ANSI terminal color on stderr
+bool Log::s_stderr_color = true;
 
 /******************************************************************************/
