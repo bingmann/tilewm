@@ -26,6 +26,8 @@
 #include "screen.h"
 
 #include <unistd.h>
+#include <xcb/xinerama.h>
+#include <xcb/randr.h>
 
 int main(int argc, char* argv[])
 {
@@ -58,6 +60,10 @@ int main(int argc, char* argv[])
         g_xcb.close_connection();
         return EXIT_FAILURE;
     }
+
+    // Let XCB prefetch all the extensions we might need
+    xcb_prefetch_extension_data(g_xcb.connection, &xcb_randr_id);
+    xcb_prefetch_extension_data(g_xcb.connection, &xcb_xinerama_id);
 
     // *** detect monitors
 
