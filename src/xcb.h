@@ -23,9 +23,11 @@
 #ifndef TILEWM_XCB_HEADER
 #define TILEWM_XCB_HEADER
 
-#include <X11/Xlib-xcb.h>
 #include <xcb/xcb.h>
 #include <iosfwd>
+
+//! forward declaration of Display, as we do not want to globally include Xlib.
+typedef struct _XDisplay Display;
 
 /*!
  * This is the XCB/Xlib connection to the X window server. The class contains

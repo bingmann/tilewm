@@ -24,6 +24,8 @@
 #include "log.h"
 #include "tools.h"
 
+#include <X11/Xlib-xcb.h>
+
 //! Xlib connection to the X window server.
 Display* XcbConnection::display = NULL;
 

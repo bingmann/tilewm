@@ -23,7 +23,7 @@
 #include "xcb.h"
 #include <ostream>
 
-std::ostream &
+std::ostream&
 operator << (std::ostream& os, const xcb_screen_t& s)
 {
     os << "[xcb_screen:"
