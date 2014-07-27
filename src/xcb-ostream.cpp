@@ -336,7 +336,7 @@ operator << (std::ostream& os, const xcb_property_notify_event_t& e)
        << " response_type=" << uint32_t(e.response_type)
        << " sequence=" << e.sequence
        << " window=" << e.window
-       << " atom=" << e.atom
+       << " atom=" << AtomFormatted(e.atom)
        << " time=" << e.time
        << " state=" << uint32_t(e.state)
        << "]";
@@ -351,7 +351,7 @@ operator << (std::ostream& os, const xcb_client_message_event_t& e)
        << " format=" << uint32_t(e.format)
        << " sequence=" << e.sequence
        << " window=" << e.window
-       << " type=" << e.type
+       << " type=" << AtomFormatted(e.type)
        << " data=" << e.data
        << "]";
     return os;

@@ -110,17 +110,23 @@ sub process {
 
             my $type = find_typeid($$field{type});
 
+            $out .= "       << \" $$field{name}=\" << ";
+
             if ($type eq "int8_t")
             {
-                $out .= "       << \" $$field{name}=\" << int32_t($shname.$$field{name})\n";
+                $out .= "int32_t($shname.$$field{name})\n";
             }
             elsif ($type eq "uint8_t" or $type eq "xcb_keycode_t")
             {
-                $out .= "       << \" $$field{name}=\" << uint32_t($shname.$$field{name})\n";
+                $out .= "uint32_t($shname.$$field{name})\n";
+            }
+            elsif ($type eq "xcb_atom_t")
+            {
+                $out .= "AtomFormatted($shname.$$field{name})\n";
             }
             else
             {
-                $out .= "       << \" $$field{name}=\" << $shname.$$field{name}\n";
+                $out .= "$shname.$$field{name}\n";
             }
         }
 

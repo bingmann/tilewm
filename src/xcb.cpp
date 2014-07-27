@@ -39,6 +39,9 @@ xcb_screen_t* XcbConnection::screen = NULL;
 //! the root window id on the default screen
 xcb_window_t XcbConnection::root = XCB_WINDOW_NONE;
 
+//! cache of xcb_atom_t -> name mapping
+XcbConnection::atom_name_cache_type XcbConnection::atom_name_cache;
+
 //! Open a new connection to X server (called early by main)
 void XcbConnection::open_connection(const char* display_name)
 {
@@ -145,12 +148,47 @@ void XcbConnection::load_atomlist()
         if (ar) {
             atomlist[ai]->atom = ar->atom;
             TRACE << "Cached atom " << atomlist[ai]->name << " = " << ar->atom;
+
+            atom_name_cache.insert(
+                std::make_pair(ar->atom, atomlist[ai]->name)
+                );
         }
         else {
             ERROR << "query_cached_atoms: could not query atom "
                   << atomlist[ai]->name;
         }
     }
+}
+
+//! Find the name of an atom (usually for unknown atoms)
+std::string XcbConnection::find_atom_name(xcb_atom_t atom)
+{
+    atom_name_cache_type::const_iterator ci = atom_name_cache.find(atom);
+    if (ci != atom_name_cache.end())
+        return ci->second;
+
+    xcb_get_atom_name_cookie_t ganc = xcb_get_atom_name(connection, atom);
+
+    autofree_ptr<xcb_get_atom_name_reply_t> ganr(
+        xcb_get_atom_name_reply(connection, ganc, NULL)
+        );
+
+    if (!ganr) {
+        return "<unknown atom>";
+    }
+
+    std::string atom_name(xcb_get_atom_name_name(ganr.get()),
+                          xcb_get_atom_name_name_length(ganr.get()));
+
+    atom_name_cache.insert(std::make_pair(atom, atom_name));
+
+    return atom_name;
+}
+
+//! Output string "name (id)" as description of an atom
+std::ostream& operator << (std::ostream& os, const AtomFormatted& a)
+{
+    return os << g_xcb.find_atom_name(a.atom) << " (" << a.atom << ')';
 }
 
 //! Output client message data as hexdump

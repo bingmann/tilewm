@@ -27,6 +27,8 @@
 #include <iosfwd>
 #include <memory>
 #include <vector>
+#include <string>
+#include <map>
 
 //! forward declaration of Display, as we do not want to globally include Xlib.
 typedef struct _XDisplay Display;
@@ -115,6 +117,17 @@ public:
 
     //! Retrieve list of all cached EWMH _NET items.
     static std::vector<xcb_atom_t> get_ewmh_atomlist();
+
+protected:
+    //! typedef cache of xcb_atom_t -> name mapping
+    typedef std::map<xcb_atom_t, std::string> atom_name_cache_type;
+
+    //! cache of xcb_atom_t -> name mapping
+    static atom_name_cache_type atom_name_cache;
+
+public:
+    //! Find the name of an atom (usually for unknown atoms)
+    static std::string find_atom_name(xcb_atom_t atom);
 };
 
 //! empty object to make calling static functions more convenient.
@@ -225,6 +238,16 @@ extern std::ostream& operator << (
 // *** END Auto-generated ostream operators for XCB structures ***
 
 // *** Manually added ostream operators for XCB structures
+
+//! Helper class to generate more descriptive output for atoms
+struct AtomFormatted
+{
+    xcb_atom_t atom;
+    AtomFormatted(const xcb_atom_t& a) : atom(a) { }
+};
+
+//! Output string "name (id)" as description of an atom
+extern std::ostream& operator << (std::ostream& os, const AtomFormatted& atom);
 
 //! Output client message data as hexdump
 extern std::ostream& operator << (
