@@ -17,7 +17,12 @@
 # this program.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
+include_directories(${XCB_INCLUDE_DIRS})
+
 add_executable(tilewm
   main.cpp
   log.cpp
+  xcb.cpp
   )
+
+target_link_libraries(tilewm ${XCB_LIBRARIES})

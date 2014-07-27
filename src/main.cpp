@@ -21,6 +21,7 @@
  ******************************************************************************/
 
 #include "log.h"
+#include "xcb.h"
 
 #include <unistd.h>
 
@@ -46,6 +47,14 @@ int main(int argc, char* argv[])
     }
 
     INFO << "Welcome to TileWM";
+
+    // *** open XCB/Xlib connection
+
+    g_xcb.open_connection();
+
+    // do something!
+
+    g_xcb.close_connection();
 
     return 0;
 }

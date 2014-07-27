@@ -56,6 +56,13 @@ if(CXX_HAS_FLAGS_WEXTRA)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
 endif()
 
+# use pkg-config to find xcb and fellows
+
+include(FindPkgConfig)
+pkg_check_modules(XCB REQUIRED
+  x11-xcb
+  xcb)
+
 # descend into source
 
 add_subdirectory(src)
