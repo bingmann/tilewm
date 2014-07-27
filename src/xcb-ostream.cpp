@@ -22,8 +22,9 @@
 
 #include "xcb.h"
 #include <ostream>
+#include <xcb/xinerama.h>
 
-std::ostream&
+std::ostream &
 operator << (std::ostream& os, const xcb_screen_t& s)
 {
     os << "[xcb_screen:"
@@ -364,6 +365,42 @@ operator << (std::ostream& os, const xcb_mapping_notify_event_t& e)
        << " request=" << uint32_t(e.request)
        << " first_keycode=" << uint32_t(e.first_keycode)
        << " count=" << uint32_t(e.count)
+       << "]";
+    return os;
+}
+
+std::ostream&
+operator << (std::ostream& os, const xcb_xinerama_is_active_reply_t& x)
+{
+    os << "[xcb_xinerama_is_active_reply:"
+       << " response_type=" << uint32_t(x.response_type)
+       << " sequence=" << x.sequence
+       << " length=" << x.length
+       << " state=" << x.state
+       << "]";
+    return os;
+}
+
+std::ostream&
+operator << (std::ostream& os, const xcb_xinerama_query_screens_reply_t& x)
+{
+    os << "[xcb_xinerama_query_screens_reply:"
+       << " response_type=" << uint32_t(x.response_type)
+       << " sequence=" << x.sequence
+       << " length=" << x.length
+       << " number=" << x.number
+       << "]";
+    return os;
+}
+
+std::ostream&
+operator << (std::ostream& os, const xcb_xinerama_screen_info_t& x)
+{
+    os << "[xcb_xinerama_screen_info:"
+       << " x_org=" << x.x_org
+       << " y_org=" << x.y_org
+       << " width=" << x.width
+       << " height=" << x.height
        << "]";
     return os;
 }

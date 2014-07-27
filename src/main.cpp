@@ -23,6 +23,7 @@
 #include "log.h"
 #include "xcb.h"
 #include "event.h"
+#include "screen.h"
 
 #include <unistd.h>
 
@@ -57,6 +58,10 @@ int main(int argc, char* argv[])
         g_xcb.close_connection();
         return EXIT_FAILURE;
     }
+
+    // *** detect monitors
+
+    ScreenList::detect();
 
     // *** set up global event table and run loop!
 

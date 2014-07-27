@@ -25,6 +25,7 @@ add_executable(tilewm
   xcb.cpp
   xcb-ostream.cpp
   event.cpp
+  screen.cpp
   )
 
 if(PERL_FOUND)
@@ -33,8 +34,10 @@ if(PERL_FOUND)
     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/xcb-ostream.cpp
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMAND perl xcb-ostream-gen.pl > xcb-ostream.cpp
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/xcb-ostream-gen.pl
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/xcb.h
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/xcb-ostream-gen.pl)
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/screen.cpp
+    )
 endif()
 
 target_link_libraries(tilewm ${XCB_LIBRARIES})

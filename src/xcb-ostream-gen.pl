@@ -159,19 +159,22 @@ print <<EOF;
 
 #include "xcb.h"
 #include <ostream>
+#include <xcb/xinerama.h>
 
 EOF
 
-open(F, "xcb.h") or die("Could not open xcb.h: $!");
-my $source = join("", <F>);
-close(F);
-
-$source =~ s!^.*BEGIN Auto(.+?)END Auto.*$!$1!s
-    or die("Cannot find auto-generated block");
-
-while ($source =~ m!operator << \(\s*std::ostream& os,\s*const (\S+?)& (\S+?)\)!g)
+foreach my $header (glob("*.{h,cpp}"))
 {
-    process($1, $2);
+    open(F, $header) or die("Could not open $header: $!");
+    my $source = join("", <F>);
+    close(F);
+
+    $source =~ s!^.*BEGIN Auto(.+?)END Auto.*$!$1!s or next;
+
+    while ($source =~ m!operator << \(\s*std::ostream& os,\s*const (\S+?)& (\S+?)\)!g)
+    {
+        process($1, $2);
+    }
 }
 
 print <<EOF;

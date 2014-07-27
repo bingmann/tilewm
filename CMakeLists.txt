@@ -66,7 +66,8 @@ include(FindPkgConfig)
 pkg_check_modules(XCB REQUIRED
   x11-xcb
   xcb
-  xcb-event)
+  xcb-event
+  xcb-xinerama)
 
 # descend into source
 
