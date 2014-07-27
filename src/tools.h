@@ -23,6 +23,33 @@
 #ifndef TILEWM_TOOLS_HEADER
 #define TILEWM_TOOLS_HEADER
 
+#include <sstream>
+#include <string>
+
+/**
+ * Template transformation function which uses std::ostringstream to serialize
+ * any ostreamable type into a std::string.
+ */
+template <typename Type>
+static inline std::string to_str(const Type& val)
+{
+    std::ostringstream os;
+    os << val;
+    return os.str();
+}
+
+/**
+ * Template transformation function which uses std::istringstream to parse any
+ * istreamable type from a std::string.
+ */
+template <typename Type>
+static inline bool from_str(const std::string& str, Type& outval)
+{
+    std::istringstream is(str);
+    is >> outval;
+    return is.eof();
+}
+
 /**
  * Dump a (binary) memory area as a sequence of hexadecimal pairs.
  *
