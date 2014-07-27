@@ -25,8 +25,10 @@
 
 #include "xcb.h"
 #include "log.h"
+#include "screen.h"
 #include <array>
 #include <xcb/xcb_event.h>
+#include <xcb/randr.h>
 
 //! All event handlers called by the EventLoop class have this type
 typedef void (* event_handler_type)(xcb_generic_event_t* event);
@@ -48,12 +50,18 @@ protected:
     //! global (graceful) termination flag
     static bool s_terminate;
 
+    //! first id of a RandR event
+    static uint8_t s_randr_first_event;
+
 public:
     //! Set global graceful termination flag
     static void terminate()
     {
         s_terminate = true;
     }
+
+    //! Set first RandR event id
+    static void set_randr_first_event(uint8_t evid);
 
     //! Populate global event handler table
     static void setup_global_eventtable();
@@ -67,6 +75,9 @@ public:
 
         if (evtype < s_eventtable.size() && s_eventtable[evtype])
             s_eventtable[evtype](event);
+        else if (s_randr_first_event != 0xFF &&
+                 evtype == s_randr_first_event + XCB_RANDR_SCREEN_CHANGE_NOTIFY)
+            ScreenList::randr_screen_change_notify(event);
         else
             ERROR << "Unknown event type " << uint32_t(evtype);
     }

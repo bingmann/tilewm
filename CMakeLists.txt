@@ -67,7 +67,8 @@ pkg_check_modules(XCB REQUIRED
   x11-xcb
   xcb
   xcb-event
-  xcb-xinerama)
+  xcb-xinerama
+  xcb-randr)
 
 # descend into source
 

@@ -160,6 +160,7 @@ print <<EOF;
 #include "xcb.h"
 #include <ostream>
 #include <xcb/xinerama.h>
+#include <xcb/randr.h>
 
 EOF
 

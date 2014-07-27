@@ -183,6 +183,10 @@ extern std::ostream& operator << (
     std::ostream& os,
     const xcb_mapping_notify_event_t& e);
 
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_query_extension_reply_t& e);
+
 // *** END Auto-generated ostream operators for XCB structures ***
 
 // *** Manually added ostream operators for XCB structures

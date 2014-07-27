@@ -27,6 +27,7 @@
 #include <string>
 #include <memory>
 #include <sstream>
+#include <xcb/xcb.h>
 
 /*!
  * A class for a Rectangle, with hopefully many helper functions in the future.
@@ -107,6 +108,16 @@ protected:
     //! The main screen list of detected screens.
     static std::vector<ScreenPtr> m_list;
 
+    //! Detected RandR version
+    static unsigned int m_randr_version;
+
+protected:
+    //! Detect new screens (and deactivate old) via RandR 1.2.
+    static bool detect_randr12();
+
+    //! Detect new screens (and deactivate old) via RandR 1.1.
+    static bool detect_randr11();
+
 public:
     //! Detect new screens via Xinerama.
     static bool detect_xinerama();
@@ -119,6 +130,9 @@ public:
 
     //! Run initial screen detection: RandR, Xinerama and then default.
     static void detect();
+
+    //! Receive XCB_RANDR_SCREEN_CHANGE_NOTIFY events
+    static void randr_screen_change_notify(xcb_generic_event_t* event);
 
 public:
     //! Find screen with origin at point (px,py).

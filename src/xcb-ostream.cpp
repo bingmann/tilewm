@@ -23,8 +23,9 @@
 #include "xcb.h"
 #include <ostream>
 #include <xcb/xinerama.h>
+#include <xcb/randr.h>
 
-std::ostream &
+std::ostream&
 operator << (std::ostream& os, const xcb_screen_t& s)
 {
     os << "[xcb_screen:"
@@ -370,6 +371,21 @@ operator << (std::ostream& os, const xcb_mapping_notify_event_t& e)
 }
 
 std::ostream&
+operator << (std::ostream& os, const xcb_query_extension_reply_t& e)
+{
+    os << "[xcb_query_extension_reply:"
+       << " response_type=" << uint32_t(e.response_type)
+       << " sequence=" << e.sequence
+       << " length=" << e.length
+       << " present=" << uint32_t(e.present)
+       << " major_opcode=" << uint32_t(e.major_opcode)
+       << " first_event=" << uint32_t(e.first_event)
+       << " first_error=" << uint32_t(e.first_error)
+       << "]";
+    return os;
+}
+
+std::ostream&
 operator << (std::ostream& os, const xcb_xinerama_is_active_reply_t& x)
 {
     os << "[xcb_xinerama_is_active_reply:"
@@ -401,6 +417,114 @@ operator << (std::ostream& os, const xcb_xinerama_screen_info_t& x)
        << " y_org=" << x.y_org
        << " width=" << x.width
        << " height=" << x.height
+       << "]";
+    return os;
+}
+
+std::ostream&
+operator << (std::ostream& os, const xcb_randr_query_version_reply_t& r)
+{
+    os << "[xcb_randr_query_version_reply:"
+       << " response_type=" << uint32_t(r.response_type)
+       << " sequence=" << r.sequence
+       << " length=" << r.length
+       << " major_version=" << r.major_version
+       << " minor_version=" << r.minor_version
+       << "]";
+    return os;
+}
+
+std::ostream&
+operator << (std::ostream& os, const xcb_randr_get_crtc_info_reply_t& r)
+{
+    os << "[xcb_randr_get_crtc_info_reply:"
+       << " response_type=" << uint32_t(r.response_type)
+       << " status=" << uint32_t(r.status)
+       << " sequence=" << r.sequence
+       << " length=" << r.length
+       << " timestamp=" << r.timestamp
+       << " x=" << r.x
+       << " y=" << r.y
+       << " width=" << r.width
+       << " height=" << r.height
+       << " mode=" << r.mode
+       << " rotation=" << r.rotation
+       << " rotations=" << r.rotations
+       << " num_outputs=" << r.num_outputs
+       << " num_possible_outputs=" << r.num_possible_outputs
+       << "]";
+    return os;
+}
+
+std::ostream&
+operator << (std::ostream& os, const xcb_randr_get_output_primary_reply_t& r)
+{
+    os << "[xcb_randr_get_output_primary_reply:"
+       << " response_type=" << uint32_t(r.response_type)
+       << " sequence=" << r.sequence
+       << " length=" << r.length
+       << " output=" << r.output
+       << "]";
+    return os;
+}
+
+std::ostream&
+operator << (std::ostream& os, const xcb_randr_get_screen_resources_current_reply_t& r)
+{
+    os << "[xcb_randr_get_screen_resources_current_reply:"
+       << " response_type=" << uint32_t(r.response_type)
+       << " sequence=" << r.sequence
+       << " length=" << r.length
+       << " timestamp=" << r.timestamp
+       << " config_timestamp=" << r.config_timestamp
+       << " num_crtcs=" << r.num_crtcs
+       << " num_outputs=" << r.num_outputs
+       << " num_modes=" << r.num_modes
+       << " names_len=" << r.names_len
+       << "]";
+    return os;
+}
+
+std::ostream&
+operator << (std::ostream& os, const xcb_randr_get_output_info_reply_t& r)
+{
+    os << "[xcb_randr_get_output_info_reply:"
+       << " response_type=" << uint32_t(r.response_type)
+       << " status=" << uint32_t(r.status)
+       << " sequence=" << r.sequence
+       << " length=" << r.length
+       << " timestamp=" << r.timestamp
+       << " crtc=" << r.crtc
+       << " mm_width=" << r.mm_width
+       << " mm_height=" << r.mm_height
+       << " connection=" << uint32_t(r.connection)
+       << " subpixel_order=" << uint32_t(r.subpixel_order)
+       << " num_crtcs=" << r.num_crtcs
+       << " num_modes=" << r.num_modes
+       << " num_preferred=" << r.num_preferred
+       << " num_clones=" << r.num_clones
+       << " name_len=" << r.name_len
+       << "]";
+    return os;
+}
+
+std::ostream&
+operator << (std::ostream& os, const xcb_randr_screen_change_notify_event_t& e)
+{
+    os << "[xcb_randr_screen_change_notify_event:"
+       << " response_type=" << uint32_t(e.response_type)
+       << " rotation=" << uint32_t(e.rotation)
+       << " sequence=" << e.sequence
+       << " timestamp=" << e.timestamp
+       << " config_timestamp=" << e.config_timestamp
+       << " root=" << e.root
+       << " request_window=" << e.request_window
+       << " sizeID=" << e.sizeID
+       << " subpixel_order=" << e.subpixel_order
+       << " width=" << e.width
+       << " height=" << e.height
+       << " mwidth=" << e.mwidth
+       << " mheight=" << e.mheight
        << "]";
     return os;
 }

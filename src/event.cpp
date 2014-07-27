@@ -28,6 +28,15 @@ EventLoop::eventtable_type EventLoop::s_eventtable;
 //! global (graceful) termination flag
 bool EventLoop::s_terminate = false;
 
+//! first id of a RandR event
+uint8_t EventLoop::s_randr_first_event = 0xFF;
+
+//! Set first RandR event id
+void EventLoop::set_randr_first_event(uint8_t evid)
+{
+    s_randr_first_event = evid;
+}
+
 //! Event handler for error messages
 static void handle_event_error(xcb_generic_event_t* event)
 {
