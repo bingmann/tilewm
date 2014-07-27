@@ -22,6 +22,7 @@
 
 #include "xcb.h"
 #include "log.h"
+#include "tools.h"
 
 //! Xlib connection to the X window server.
 Display* XcbConnection::display = NULL;
@@ -114,6 +115,12 @@ bool XcbConnection::setup_wm()
     }
 
     return true;
+}
+
+//! Output client message data as hexdump
+std::ostream& operator << (std::ostream& os, const xcb_client_message_data_t& d)
+{
+    return os << '[' << string_hexdump(d.data8, sizeof(d.data8)) << ']';
 }
 
 /******************************************************************************/

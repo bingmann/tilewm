@@ -88,7 +88,93 @@ extern std::ostream& operator << (
     std::ostream& os,
     const xcb_screen_t& s);
 
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_key_press_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_button_press_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_motion_notify_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_enter_notify_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_focus_in_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_expose_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_graphics_exposure_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_no_exposure_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_visibility_notify_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_create_notify_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_destroy_notify_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_unmap_notify_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_map_notify_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_map_request_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_reparent_notify_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_configure_notify_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_configure_request_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_property_notify_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_client_message_event_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_mapping_notify_event_t& e);
+
 // *** END Auto-generated ostream operators for many XCB structures ***
+
+// *** Manually added ostream operators for XCB structures
+
+//! Output client message data as hexdump
+extern std::ostream& operator << (
+    std::ostream& os, const xcb_client_message_data_t& d);
 
 #endif // !TILEWM_XCB_HEADER
 

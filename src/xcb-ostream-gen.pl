@@ -94,7 +94,7 @@ sub process {
         my $pname = $$str{name};
         $pname =~ s/_t$//;
 
-        $out .= "std::ostream &\n";
+        $out .= "std::ostream&\n";
         $out .= "operator << (std::ostream& os, const $$str{name}& $shname)\n";
         $out .= "{\n";
         $out .= "    os << \"[$pname:\"\n";
