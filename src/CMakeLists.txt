@@ -23,6 +23,17 @@ add_executable(tilewm
   main.cpp
   log.cpp
   xcb.cpp
+  xcb-ostream.cpp
   )
+
+if(PERL_FOUND)
+  # auto generate source files using perl scripts
+  add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/xcb-ostream.cpp
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND perl xcb-ostream-gen.pl > xcb-ostream.cpp
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/xcb.h
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/xcb-ostream-gen.pl)
+endif()
 
 target_link_libraries(tilewm ${XCB_LIBRARIES})

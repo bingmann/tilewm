@@ -25,6 +25,7 @@
 
 #include <X11/Xlib-xcb.h>
 #include <xcb/xcb.h>
+#include <iosfwd>
 
 /*!
  * This is the XCB/Xlib connection to the X window server. The class contains
@@ -77,6 +78,14 @@ public:
 
 //! empty object making calling static functions more convenient.
 extern XcbConnection g_xcb;
+
+// *** BEGIN Auto-generated ostream operators for many XCB structures ***
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_screen_t& s);
+
+// *** END Auto-generated ostream operators for many XCB structures ***
 
 #endif // !TILEWM_XCB_HEADER
 

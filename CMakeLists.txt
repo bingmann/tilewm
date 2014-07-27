@@ -56,6 +56,10 @@ if(CXX_HAS_FLAGS_WEXTRA)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
 endif()
 
+# check whether perl is available for auto generating code
+
+find_package(Perl)
+
 # use pkg-config to find xcb and fellows
 
 include(FindPkgConfig)

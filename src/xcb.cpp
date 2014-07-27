@@ -66,6 +66,8 @@ void XcbConnection::open_connection(const char* display_name)
     INFO << "Virtual screen " << default_screen << " size "
          << screen->width_in_pixels << " x " << screen->height_in_pixels
          << " depth " << uint32_t(screen->root_depth);
+
+    TRACE << *screen;
 }
 
 //! Release connection to X server
