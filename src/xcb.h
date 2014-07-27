@@ -26,6 +26,7 @@
 #include <xcb/xcb.h>
 #include <iosfwd>
 #include <memory>
+#include <vector>
 
 //! forward declaration of Display, as we do not want to globally include Xlib.
 typedef struct _XDisplay Display;
@@ -80,6 +81,40 @@ public:
 
     //! Set us up as window manager on the X server
     static bool setup_wm();
+
+public:
+    //! Struct to keep information about cached named atoms
+    struct XcbAtom
+    {
+        const char* name;
+        xcb_atom_t atom;
+    };
+
+    // *** List of cached named atoms
+
+    static XcbAtom WM_STATE;
+    static XcbAtom WM_CHANGE_STATE;
+    static XcbAtom WM_PROTOCOLS;
+    static XcbAtom WM_DELETE_WINDOW;
+    static XcbAtom WM_TAKE_FOCUS;
+
+    static XcbAtom UTF8_STRING;
+
+    static XcbAtom _NET_SUPPORTED;
+    static XcbAtom _NET_SUPPORTING_WM_CHECK;
+    static XcbAtom _NET_WM_NAME;
+
+    //! List of named atoms for caching.
+    static struct XcbAtom* atomlist[];
+
+    //! Number of named atoms for caching.
+    static const unsigned int atomlist_size;
+
+    //! Query X server for cached named atoms.
+    static void load_atomlist();
+
+    //! Retrieve list of all cached EWMH _NET items.
+    static std::vector<xcb_atom_t> get_ewmh_atomlist();
 };
 
 //! empty object to make calling static functions more convenient.

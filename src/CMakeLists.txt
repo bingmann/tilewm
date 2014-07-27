@@ -24,6 +24,7 @@ add_executable(tilewm
   log.cpp
   xcb.cpp
   xcb-ostream.cpp
+  xcb-atom.cpp
   event.cpp
   screen.cpp
   )
@@ -37,6 +38,14 @@ if(PERL_FOUND)
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/xcb-ostream-gen.pl
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/xcb.h
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/screen.cpp
+    )
+
+  add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/xcb-atom.cpp
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND perl xcb-atom-gen.pl > xcb-atom.cpp
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/xcb-atom-gen.pl
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/xcb.h
     )
 endif()
 

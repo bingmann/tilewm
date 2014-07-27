@@ -25,6 +25,7 @@
 #include "tools.h"
 
 #include <X11/Xlib-xcb.h>
+#include <cstring>
 
 //! Xlib connection to the X window server.
 Display* XcbConnection::display = NULL;
@@ -118,6 +119,38 @@ bool XcbConnection::setup_wm()
     }
 
     return true;
+}
+
+//! Query X server for cached named atoms.
+void XcbConnection::load_atomlist()
+{
+    // *** issue all atom requests at once
+
+    std::vector<xcb_intern_atom_cookie_t> atomreq(atomlist_size);
+    for (unsigned int ai = 0; ai < atomlist_size; ++ai)
+    {
+        atomreq[ai] =
+            xcb_intern_atom(connection, 0,
+                            strlen(atomlist[ai]->name), atomlist[ai]->name);
+    }
+
+    // *** collect all responses
+
+    for (unsigned int ai = 0; ai < atomlist_size; ++ai)
+    {
+        autofree_ptr<xcb_intern_atom_reply_t> ar(
+            xcb_intern_atom_reply(connection, atomreq[ai], NULL)
+            );
+
+        if (ar) {
+            atomlist[ai]->atom = ar->atom;
+            TRACE << "Cached atom " << atomlist[ai]->name << " = " << ar->atom;
+        }
+        else {
+            ERROR << "query_cached_atoms: could not query atom "
+                  << atomlist[ai]->name;
+        }
+    }
 }
 
 //! Output client message data as hexdump

@@ -61,6 +61,9 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
+    // Fetch named cached atoms
+    g_xcb.load_atomlist();
+
     // Let XCB prefetch all the extensions we might need
     xcb_prefetch_extension_data(g_xcb.connection, &xcb_randr_id);
     xcb_prefetch_extension_data(g_xcb.connection, &xcb_xinerama_id);
