@@ -23,52 +23,12 @@
 #ifndef TILEWM_SCREEN_HEADER
 #define TILEWM_SCREEN_HEADER
 
+#include "geometry.h"
 #include <vector>
 #include <string>
 #include <memory>
 #include <sstream>
 #include <xcb/xcb.h>
-
-/*!
- * A class for a Rectangle, with hopefully many helper functions in the future.
- */
-struct Rectangle
-{
-    //! top left position
-    int16_t x, y;
-
-    //! width and height
-    uint16_t w, h;
-
-    //! Default constructor leaves members uninitialized!
-    Rectangle()
-    { }
-
-    //! Construct a rectangle from plain integers.
-    Rectangle(int16_t _x, int16_t _y, uint16_t _w, uint16_t _h)
-        : x(_x), y(_y), w(_w), h(_h)
-    { }
-
-    //! Test if a point (px,py) is the origin of this rectangle.
-    bool is_origin(int16_t px, int16_t py) const
-    {
-        return (x == px) && (y == py);
-    }
-
-    //! Test if a point (px,py) is contained in the rectangle.
-    bool contains(int16_t px, int16_t py) const
-    {
-        return (x <= px && px < x + w) && (y <= py && py < y + h);
-    }
-
-    //! Return as string "pos X x Y size W x H"
-    std::string str_pos_size() const
-    {
-        std::ostringstream oss;
-        oss << "pos " << x << " x " << y << " size " << w << " x " << h;
-        return oss.str();
-    }
-};
 
 //! Save Screen detection mechanism
 enum screen_type_t {
