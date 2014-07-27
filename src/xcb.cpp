@@ -112,7 +112,8 @@ bool XcbConnection::setup_wm()
 
     xcb_generic_error_t* e = xcb_request_check(connection, cwac);
     if (e) {
-        ERROR << "Another window manger is already running.";
+        FATAL << "Another window manger is already running.";
+        free(e);
         return false;
     }
 
