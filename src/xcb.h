@@ -25,6 +25,7 @@
 
 #include <xcb/xcb.h>
 #include <iosfwd>
+#include <memory>
 
 //! forward declaration of Display, as we do not want to globally include Xlib.
 typedef struct _XDisplay Display;
@@ -81,10 +82,22 @@ public:
     static bool setup_wm();
 };
 
-//! empty object making calling static functions more convenient.
+//! empty object to make calling static functions more convenient.
 extern XcbConnection g_xcb;
 
-// *** BEGIN Auto-generated ostream operators for many XCB structures ***
+//! Helper template class for correctly calling free() with std::unique_ptr.
+template <typename Type>
+struct autofree_ptr_freer
+{
+    //! free the Type using free()
+    void operator () (Type* ptr) { if (ptr) free(ptr); }
+};
+
+//! Template alias for using std::unique_ptr with objects requiring free().
+template <typename Type>
+using autofree_ptr = std::unique_ptr<Type, autofree_ptr_freer<Type> >;
+
+// *** BEGIN Auto-generated ostream operators for XCB structures ***
 
 extern std::ostream& operator << (
     std::ostream& os,
@@ -170,7 +183,7 @@ extern std::ostream& operator << (
     std::ostream& os,
     const xcb_mapping_notify_event_t& e);
 
-// *** END Auto-generated ostream operators for many XCB structures ***
+// *** END Auto-generated ostream operators for XCB structures ***
 
 // *** Manually added ostream operators for XCB structures
 
