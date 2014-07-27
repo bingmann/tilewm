@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 
     g_xcb.close_connection();
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 /******************************************************************************/

@@ -41,14 +41,18 @@ void XcbConnection::open_connection(const char* display_name)
     // create connection to X display server
     display = XOpenDisplay(display_name);
 
-    if (display == NULL)
+    if (display == NULL) {
         FATAL << "Could not open display.";
+        exit(EXIT_FAILURE);
+    }
 
     // get XCB connection from X display
     connection = XGetXCBConnection(display);
 
-    if (connection_has_error())
+    if (connection_has_error()) {
         FATAL << "Could not get XCB connection to display";
+        exit(EXIT_FAILURE);
+    }
 
     // we will be using xcb to handle the event queue
     XSetEventQueueOwner(display, XCBOwnsEventQueue);
@@ -57,8 +61,10 @@ void XcbConnection::open_connection(const char* display_name)
     int default_screen = DefaultScreen(display);
     screen = get_screen(default_screen);
 
-    if (!screen)
+    if (!screen) {
         FATAL << "Cannot find default screen";
+        exit(EXIT_FAILURE);
+    }
 
     // copy root id
     root = screen->root;

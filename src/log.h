@@ -91,10 +91,6 @@ public:
         }
 
         // TODO: make circular log buffer
-
-        // terminate program when logging to FATAL
-        if (m_level == LOG_FATAL)
-            exit(EXIT_FAILURE);
     }
 
     //! Get the current logging level written to stderr.
