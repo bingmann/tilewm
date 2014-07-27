@@ -151,14 +151,12 @@ public:
 // *** An always-on ASSERT
 
 //! Fully verbose always-on ASSERT.
-#define ASSERT(expr)                                             \
-    do {                                                         \
-        if (!(expr)) {                                           \
-            std::cerr << __func__ << ':' << __LINE__ << ' '      \
-                      << ": Assertion '" << #expr << "' failed!" \
-                      << std::endl;                              \
-            abort();                                             \
-        }                                                        \
+#define ASSERT(expr)                                        \
+    do {                                                    \
+        if (!(expr)) {                                      \
+            FATAL << "Assertion '" << #expr << "' failed!"; \
+            abort();                                        \
+        }                                                   \
     } while (0)
 
 #endif // !TILEWM_LOG_HEADER
