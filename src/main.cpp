@@ -22,6 +22,7 @@
 
 #include "log.h"
 #include "xcb.h"
+#include "event.h"
 
 #include <unistd.h>
 
@@ -57,7 +58,12 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    // do something!
+    // *** set up global event table and run loop!
+
+    EventLoop::setup_global_eventtable();
+    EventLoop::loop_global();
+
+    // *** graceful termination requested
 
     g_xcb.close_connection();
 

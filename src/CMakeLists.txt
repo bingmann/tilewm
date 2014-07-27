@@ -24,6 +24,7 @@ add_executable(tilewm
   log.cpp
   xcb.cpp
   xcb-ostream.cpp
+  event.cpp
   )
 
 if(PERL_FOUND)
