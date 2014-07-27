@@ -45,6 +45,17 @@ else()
   endif()
 endif()
 
+# enable compiler warnings
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -pedantic -Wno-long-long")
+
+# detect -Wextra
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag(-Wextra CXX_HAS_FLAGS_WEXTRA)
+if(CXX_HAS_FLAGS_WEXTRA)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
+endif()
+
 # descend into source
 
 add_subdirectory(src)
