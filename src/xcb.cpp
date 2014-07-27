@@ -94,4 +94,26 @@ xcb_screen_t* XcbConnection::get_screen(unsigned int screen)
     return NULL;
 }
 
+//! Set us up as window manager on the X server
+bool XcbConnection::setup_wm()
+{
+    const uint32_t eventmask =
+        XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT |
+        XCB_EVENT_MASK_STRUCTURE_NOTIFY |
+        XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY |
+        XCB_EVENT_MASK_PROPERTY_CHANGE;
+
+    xcb_void_cookie_t cwac =
+        xcb_change_window_attributes_checked(connection, root,
+                                             XCB_CW_EVENT_MASK, &eventmask);
+
+    xcb_generic_error_t* e = xcb_request_check(connection, cwac);
+    if (e) {
+        ERROR << "Another window manger is already running.";
+        return false;
+    }
+
+    return true;
+}
+
 /******************************************************************************/

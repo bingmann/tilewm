@@ -74,6 +74,9 @@ public:
 
     //! Return the corresponding screen data structure
     static xcb_screen_t * get_screen(unsigned int screen);
+
+    //! Set us up as window manager on the X server
+    static bool setup_wm();
 };
 
 //! empty object making calling static functions more convenient.

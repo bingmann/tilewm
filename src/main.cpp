@@ -48,9 +48,14 @@ int main(int argc, char* argv[])
 
     INFO << "Welcome to TileWM";
 
-    // *** open XCB/Xlib connection
+    // *** open XCB/Xlib connection and register as window manager
 
     g_xcb.open_connection();
+
+    if (!g_xcb.setup_wm()) {
+        g_xcb.close_connection();
+        return EXIT_FAILURE;
+    }
 
     // do something!
 
