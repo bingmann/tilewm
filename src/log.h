@@ -33,7 +33,7 @@
 enum log_level_t {
     LOG_FATAL, LOG_ERROR, LOG_WARN, LOG_INFO, LOG_DEBUG,
     LOG_TRACE, LOG_TRACE1, LOG_TRACE2, LOG_TRACE3,
-    LOG_ALL
+    LOG_MAX
 };
 
 /*!
@@ -97,16 +97,25 @@ public:
             exit(EXIT_FAILURE);
     }
 
-    //! Change the current logging level written to stdcerr.
+    //! Get the current logging level written to stderr.
+    static log_level_t get_stderr_level()
+    {
+        return s_stderr_level;
+    }
+
+    //! Change the current logging level written to stderr.
     static void set_stderr_level(log_level_t level)
     {
         s_stderr_level = level;
     }
 
+    //! Change the current logging level written to stderr.
+    static bool set_stderr_level(const char* str);
+
     //! Return the log level as a string.
     static const char * level_string(log_level_t level)
     {
-        static const char* const label[LOG_ALL] = {
+        static const char* const label[LOG_MAX] = {
             "FATAL", "ERROR", "WARN", "INFO", "DEBUG",
             "TRACE", "TRACE1", "TRACE2", "TRACE3"
         };
@@ -116,7 +125,7 @@ public:
     //! Return ANSI color escape sequence for log level.
     static const char * ansi_color(log_level_t level)
     {
-        static const char* const color[LOG_ALL] = {
+        static const char* const color[LOG_MAX] = {
             // FATAL ERROR WARN
             "\x1B[1;31m", "\x1B[1;31m", "\x1B[1;33m",
             // INFO DEBUG

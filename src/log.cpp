@@ -22,10 +22,29 @@
 
 #include "log.h"
 
+#include <strings.h>
+
 //! Currently configured maximum level written to stderr
 log_level_t Log::s_stderr_level = LOG_INFO;
 
 //! Whether to use ANSI terminal color on stderr
 bool Log::s_stderr_color = true;
+
+//! Change the current logging level written to stderr.
+bool Log::set_stderr_level(const char* str)
+{
+    for (unsigned int i = 0; i < LOG_MAX; ++i)
+    {
+        log_level_t l = (log_level_t)i;
+
+        if (strcasecmp(str, level_string(l)) == 0)
+        {
+            set_stderr_level(l);
+            return true;
+        }
+    }
+
+    return false;
+}
 
 /******************************************************************************/

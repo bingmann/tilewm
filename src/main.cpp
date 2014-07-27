@@ -22,8 +22,29 @@
 
 #include "log.h"
 
+#include <unistd.h>
+
 int main(int argc, char* argv[])
 {
+    // *** first parse command line
+
+    int opt;
+    while ((opt = getopt(argc, argv, "hl:")) != -1)
+    {
+        switch (opt) {
+        case 'l':
+            if (!Log::set_stderr_level(optarg)) {
+                ERROR << "Invalid log level \"" << optarg << "\"";
+                exit(EXIT_FAILURE);
+            }
+            break;
+        case 'h':
+        default:
+            INFO << "Usage: " << argv[0] << " [-h]";
+            exit(EXIT_FAILURE);
+        }
+    }
+
     INFO << "Welcome to TileWM";
 
     return 0;
