@@ -21,6 +21,7 @@
  ******************************************************************************/
 
 #include "event.h"
+#include "xcb-window.h"
 
 //! the global event handler table (called after override event table)
 EventLoop::eventtable_type EventLoop::s_eventtable;
