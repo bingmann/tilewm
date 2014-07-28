@@ -92,14 +92,14 @@ protected:
     typedef std::map<xcb_window_t, ClientPtr> windowmap_type;
 
     //! map window id -> Client for all known clients
-    static windowmap_type m_windowmap;
+    static windowmap_type s_windowmap;
 
 public:
     //! Locate Client for a window by its id.
     static Client * find_window(xcb_window_t win)
     {
-        windowmap_type::const_iterator i = m_windowmap.find(win);
-        return (i != m_windowmap.end() ? i->second.get() : NULL);
+        windowmap_type::const_iterator i = s_windowmap.find(win);
+        return (i != s_windowmap.end() ? i->second.get() : NULL);
     }
 
     //! Manage a window by creating a new Client structure for it.

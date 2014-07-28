@@ -70,10 +70,10 @@ extern std::ostream& operator << (
 // *** END Auto-generated ostream operators for XCB structures ***
 
 //! The main screen list of detected screens.
-std::vector<ScreenPtr> ScreenList::m_list;
+std::vector<ScreenPtr> ScreenList::s_list;
 
 //! Detected RandR version
-unsigned int ScreenList::m_randr_version = 0;
+unsigned int ScreenList::s_randr_version = 0;
 
 //! Detect new screens via Xinerama.
 bool ScreenList::detect_xinerama()
@@ -155,11 +155,11 @@ bool ScreenList::detect_xinerama()
             INFO << "Found new Xinerama screen " << s
                  << " : " << ns->geometry.str_pos_size();
 
-            m_list.push_back(std::move(ns));
+            s_list.push_back(std::move(ns));
         }
     }
 
-    if (m_list.size() == 0) {
+    if (s_list.size() == 0) {
         ERROR << "No Xinerama screens found.";
         return false;
     }
@@ -260,7 +260,7 @@ bool ScreenList::detect_randr11()
             INFO << "Found new RandR screen " << output_name
                  << " : " << ns->geometry.str_pos_size();
 
-            m_list.push_back(std::move(ns));
+            s_list.push_back(std::move(ns));
         }
     }
 
@@ -393,7 +393,7 @@ bool ScreenList::detect_randr12()
             INFO << "Found new RandR screen " << output_name
                  << " : " << ns->geometry.str_pos_size();
 
-            m_list.push_back(std::move(ns));
+            s_list.push_back(std::move(ns));
         }
     }
 
@@ -431,7 +431,7 @@ bool ScreenList::detect_randr()
 
         if (!detect_randr12()) return false;
 
-        m_randr_version = 0x0102;
+        s_randr_version = 0x0102;
 
         // save first event for received RandR updates
         EventLoop::set_randr_first_event(qer->first_event);
@@ -457,7 +457,7 @@ bool ScreenList::detect_randr()
 
         if (!detect_randr11()) return false;
 
-        m_randr_version = 0x0101;
+        s_randr_version = 0x0101;
 
         // save first event for received RandR updates
         EventLoop::set_randr_first_event(qer->first_event);
@@ -481,9 +481,9 @@ void ScreenList::randr_screen_change_notify(xcb_generic_event_t* event)
 
     TRACE << "Event handler " << *e;
 
-    if (m_randr_version == 0x0102)
+    if (s_randr_version == 0x0102)
         detect_randr12();
-    else if (m_randr_version == 0x0101)
+    else if (s_randr_version == 0x0101)
         detect_randr11();
     else
         ERROR << "RandR screen_change_notify without RandR support?";
@@ -492,7 +492,7 @@ void ScreenList::randr_screen_change_notify(xcb_generic_event_t* event)
 //! Set up a detect screen spanning the whole virtual screen.
 void ScreenList::detect_default()
 {
-    ASSERT(m_list.size() == 0);
+    ASSERT(s_list.size() == 0);
 
     // no Xinerama or RandR screens detected, create a virtual screen
 
@@ -507,7 +507,7 @@ void ScreenList::detect_default()
 
     INFO << "Creating default screen : " << ns->geometry.str_pos_size();
 
-    m_list.push_back(std::move(ns));
+    s_list.push_back(std::move(ns));
 }
 
 //! Run initial screen detection: RandR, Xinerama and then default.

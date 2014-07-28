@@ -66,10 +66,10 @@ class ScreenList
 {
 protected:
     //! The main screen list of detected screens.
-    static std::vector<ScreenPtr> m_list;
+    static std::vector<ScreenPtr> s_list;
 
     //! Detected RandR version
-    static unsigned int m_randr_version;
+    static unsigned int s_randr_version;
 
 protected:
     //! Detect new screens (and deactivate old) via RandR 1.2.
@@ -98,7 +98,7 @@ public:
     //! Find screen with origin at point (px,py).
     static Screen * find_screen_at(int16_t px, int16_t py)
     {
-        for (ScreenPtr& s : m_list)
+        for (ScreenPtr& s : s_list)
         {
             if (s->geometry.is_origin(px, py)) return s.get();
         }

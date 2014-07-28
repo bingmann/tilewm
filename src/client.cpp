@@ -180,7 +180,7 @@ void Client::configure_request(const xcb_configure_request_event_t& e)
 ////////////////////////////////////////////////////////////////////////////////
 
 //! map window id -> Client for all known clients
-ClientList::windowmap_type ClientList::m_windowmap;
+ClientList::windowmap_type ClientList::s_windowmap;
 
 //! Manage a window by creating a new Client structure for it.
 Client* ClientList::manage_window(xcb_window_t win)
@@ -217,7 +217,7 @@ Client* ClientList::manage_window(xcb_window_t win)
     // *** put Client into ClientList's windowmap
 
     Client* ret = c.get();
-    m_windowmap.insert(std::make_pair(win, std::move(c)));
+    s_windowmap.insert(std::make_pair(win, std::move(c)));
     return ret;
 }
 
@@ -225,14 +225,14 @@ bool ClientList::unmanage_window(Client* c)
 {
     ASSERT(c);
 
-    windowmap_type::iterator i = m_windowmap.find(c->window());
-    if (i == m_windowmap.end())
+    windowmap_type::iterator i = s_windowmap.find(c->window());
+    if (i == s_windowmap.end())
         return false;
 
     INFO << "Unmanaging client window " << c->window() << " client " << c;
 
     ASSERT(i->second.get() == c);
-    m_windowmap.erase(i);
+    s_windowmap.erase(i);
     return true;
 }
 
