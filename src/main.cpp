@@ -24,6 +24,7 @@
 #include "xcb.h"
 #include "event.h"
 #include "screen.h"
+#include "binding.h"
 
 #include <unistd.h>
 #include <xcb/xinerama.h>
@@ -64,6 +65,9 @@ int main(int argc, char* argv[])
     // Fetch named cached atoms
     g_xcb.load_atomlist();
 
+    // Initialize keyboard and mouse binding list
+    BindingList::initialize();
+
     // Let XCB prefetch all the extensions we might need
     xcb_prefetch_extension_data(g_xcb.connection, &xcb_randr_id);
     xcb_prefetch_extension_data(g_xcb.connection, &xcb_xinerama_id);
@@ -72,6 +76,10 @@ int main(int argc, char* argv[])
 
     ScreenList::detect();
 
+    // *** grab root key bindings
+
+    BindingList::regrab_root();
+
     // *** set up global event table and run loop!
 
     EventLoop::setup_global_eventtable();
@@ -79,6 +87,7 @@ int main(int argc, char* argv[])
 
     // *** graceful termination requested
 
+    BindingList::deinitialize();
     g_xcb.close_connection();
 
     return EXIT_SUCCESS;

@@ -252,6 +252,10 @@ extern std::ostream& operator << (
     std::ostream& os,
     const xcb_icccm_get_wm_class_reply_t& i);
 
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_get_modifier_mapping_reply_t& m);
+
 // *** END Auto-generated ostream operators for XCB structures ***
 
 // *** Manually added ostream operators for XCB structures

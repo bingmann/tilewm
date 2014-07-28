@@ -23,6 +23,7 @@
 #include "event.h"
 #include "xcb-window.h"
 #include "client.h"
+#include "binding.h"
 
 //! the global event handler table (called after override event table)
 EventLoop::eventtable_type EventLoop::s_eventtable;
@@ -60,34 +61,6 @@ static void handle_event_error(xcb_generic_event_t* event)
               << " resource_id: " << e->resource_id;
         free(e);
     }
-}
-
-//! Event handler stub for XCB_KEY_PRESS
-static void handle_event_key_press(xcb_generic_event_t* event)
-{
-    xcb_key_press_event_t* ev = (xcb_key_press_event_t*)event;
-    TRACE << "Stub event handler: " << *ev;
-}
-
-//! Event handler stub for XCB_KEY_RELEASE
-static void handle_event_key_release(xcb_generic_event_t* event)
-{
-    xcb_key_release_event_t* ev = (xcb_key_release_event_t*)event;
-    TRACE << "Stub event handler: " << *ev;
-}
-
-//! Event handler stub for XCB_BUTTON_PRESS
-static void handle_event_button_press(xcb_generic_event_t* event)
-{
-    xcb_button_press_event_t* ev = (xcb_button_press_event_t*)event;
-    TRACE << "Stub event handler: " << *ev;
-}
-
-//! Event handler stub for XCB_BUTTON_RELEASE
-static void handle_event_button_release(xcb_generic_event_t* event)
-{
-    xcb_button_release_event_t* ev = (xcb_button_release_event_t*)event;
-    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_MOTION_NOTIFY
@@ -351,10 +324,16 @@ void EventLoop::setup_global_eventtable()
     for (event_handler_type& h : s_eventtable) h = NULL;
 
     s_eventtable[0] = handle_event_error;
-    s_eventtable[XCB_KEY_PRESS] = handle_event_key_press;                 // 2
-    s_eventtable[XCB_KEY_RELEASE] = handle_event_key_release;             // 3
-    s_eventtable[XCB_BUTTON_PRESS] = handle_event_button_press;           // 4
-    s_eventtable[XCB_BUTTON_RELEASE] = handle_event_button_release;       // 5
+
+    s_eventtable[XCB_KEY_PRESS]                                           // 2
+        = BindingList::handle_event_key_press;
+    s_eventtable[XCB_KEY_RELEASE]                                         // 3
+        = BindingList::handle_event_key_release;
+    s_eventtable[XCB_BUTTON_PRESS]                                        // 4
+        = BindingList::handle_event_button_press;
+    s_eventtable[XCB_BUTTON_RELEASE]                                      // 5
+        = BindingList::handle_event_button_release;
+
     s_eventtable[XCB_MOTION_NOTIFY] = handle_event_motion_notify;         // 6
     s_eventtable[XCB_ENTER_NOTIFY] = handle_event_enter_notify;           // 7
     s_eventtable[XCB_LEAVE_NOTIFY] = handle_event_leave_notify;           // 8

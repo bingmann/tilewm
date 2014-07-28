@@ -457,6 +457,18 @@ operator << (std::ostream& os, const xcb_icccm_get_wm_class_reply_t& i)
 }
 
 std::ostream&
+operator << (std::ostream& os, const xcb_get_modifier_mapping_reply_t& m)
+{
+    os << "[xcb_get_modifier_mapping_reply:"
+       << " response_type=" << uint32_t(m.response_type)
+       << " keycodes_per_modifier=" << uint32_t(m.keycodes_per_modifier)
+       << " sequence=" << m.sequence
+       << " length=" << m.length
+       << "]";
+    return os;
+}
+
+std::ostream&
 operator << (std::ostream& os, const xcb_xinerama_is_active_reply_t& x)
 {
     os << "[xcb_xinerama_is_active_reply:"

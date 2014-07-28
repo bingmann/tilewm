@@ -28,6 +28,7 @@ add_executable(tilewm
   event.cpp
   screen.cpp
   client.cpp
+  binding.cpp
   )
 
 if(PERL_FOUND)
