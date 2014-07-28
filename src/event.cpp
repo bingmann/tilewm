@@ -63,169 +63,169 @@ static void handle_event_error(xcb_generic_event_t* event)
 //! Event handler stub for XCB_KEY_PRESS
 static void handle_event_key_press(xcb_generic_event_t* event)
 {
-    xcb_key_press_event_t* e = (xcb_key_press_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_key_press_event_t* ev = (xcb_key_press_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_KEY_RELEASE
 static void handle_event_key_release(xcb_generic_event_t* event)
 {
-    xcb_key_release_event_t* e = (xcb_key_release_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_key_release_event_t* ev = (xcb_key_release_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_BUTTON_PRESS
 static void handle_event_button_press(xcb_generic_event_t* event)
 {
-    xcb_button_press_event_t* e = (xcb_button_press_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_button_press_event_t* ev = (xcb_button_press_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_BUTTON_RELEASE
 static void handle_event_button_release(xcb_generic_event_t* event)
 {
-    xcb_button_release_event_t* e = (xcb_button_release_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_button_release_event_t* ev = (xcb_button_release_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_MOTION_NOTIFY
 static void handle_event_motion_notify(xcb_generic_event_t* event)
 {
-    xcb_motion_notify_event_t* e = (xcb_motion_notify_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_motion_notify_event_t* ev = (xcb_motion_notify_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_ENTER_NOTIFY
 static void handle_event_enter_notify(xcb_generic_event_t* event)
 {
-    xcb_enter_notify_event_t* e = (xcb_enter_notify_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_enter_notify_event_t* ev = (xcb_enter_notify_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_LEAVE_NOTIFY
 static void handle_event_leave_notify(xcb_generic_event_t* event)
 {
-    xcb_leave_notify_event_t* e = (xcb_leave_notify_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_leave_notify_event_t* ev = (xcb_leave_notify_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_FOCUS_IN
 static void handle_event_focus_in(xcb_generic_event_t* event)
 {
-    xcb_focus_in_event_t* e = (xcb_focus_in_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_focus_in_event_t* ev = (xcb_focus_in_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_FOCUS_OUT
 static void handle_event_focus_out(xcb_generic_event_t* event)
 {
-    xcb_focus_out_event_t* e = (xcb_focus_out_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_focus_out_event_t* ev = (xcb_focus_out_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_EXPOSE
 static void handle_event_expose(xcb_generic_event_t* event)
 {
-    xcb_expose_event_t* e = (xcb_expose_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_expose_event_t* ev = (xcb_expose_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_GRAPHICS_EXPOSURE
 static void handle_event_graphics_exposure(xcb_generic_event_t* event)
 {
-    xcb_graphics_exposure_event_t* e = (xcb_graphics_exposure_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_graphics_exposure_event_t* ev = (xcb_graphics_exposure_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_NO_EXPOSURE
 static void handle_event_no_exposure(xcb_generic_event_t* event)
 {
-    xcb_no_exposure_event_t* e = (xcb_no_exposure_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_no_exposure_event_t* ev = (xcb_no_exposure_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_VISIBILITY_NOTIFY
 static void handle_event_visibility_notify(xcb_generic_event_t* event)
 {
-    xcb_visibility_notify_event_t* e = (xcb_visibility_notify_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_visibility_notify_event_t* ev = (xcb_visibility_notify_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_CREATE_NOTIFY
 static void handle_event_create_notify(xcb_generic_event_t* event)
 {
-    xcb_create_notify_event_t* e = (xcb_create_notify_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_create_notify_event_t* ev = (xcb_create_notify_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_DESTROY_NOTIFY
 static void handle_event_destroy_notify(xcb_generic_event_t* event)
 {
-    xcb_destroy_notify_event_t* e = (xcb_destroy_notify_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_destroy_notify_event_t* ev = (xcb_destroy_notify_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_UNMAP_NOTIFY
 static void handle_event_unmap_notify(xcb_generic_event_t* event)
 {
-    xcb_unmap_notify_event_t* e = (xcb_unmap_notify_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_unmap_notify_event_t* ev = (xcb_unmap_notify_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_MAP_NOTIFY
 static void handle_event_map_notify(xcb_generic_event_t* event)
 {
-    xcb_map_notify_event_t* e = (xcb_map_notify_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_map_notify_event_t* ev = (xcb_map_notify_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_MAP_REQUEST
 static void handle_event_map_request(xcb_generic_event_t* event)
 {
-    xcb_map_request_event_t* e = (xcb_map_request_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_map_request_event_t* ev = (xcb_map_request_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_REPARENT_NOTIFY
 static void handle_event_reparent_notify(xcb_generic_event_t* event)
 {
-    xcb_reparent_notify_event_t* e = (xcb_reparent_notify_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_reparent_notify_event_t* ev = (xcb_reparent_notify_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_CONFIGURE_NOTIFY
 static void handle_event_configure_notify(xcb_generic_event_t* event)
 {
-    xcb_configure_notify_event_t* e = (xcb_configure_notify_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_configure_notify_event_t* ev = (xcb_configure_notify_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_CONFIGURE_REQUEST
 static void handle_event_configure_request(xcb_generic_event_t* event)
 {
-    xcb_configure_request_event_t* e = (xcb_configure_request_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_configure_request_event_t* ev = (xcb_configure_request_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_PROPERTY_NOTIFY
 static void handle_event_property_notify(xcb_generic_event_t* event)
 {
-    xcb_property_notify_event_t* e = (xcb_property_notify_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_property_notify_event_t* ev = (xcb_property_notify_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_CLIENT_MESSAGE
 static void handle_event_client_message(xcb_generic_event_t* event)
 {
-    xcb_client_message_event_t* e = (xcb_client_message_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_client_message_event_t* ev = (xcb_client_message_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Event handler stub for XCB_CLIENT_MESSAGE
 static void handle_event_mapping_notify(xcb_generic_event_t* event)
 {
-    xcb_mapping_notify_event_t* e = (xcb_mapping_notify_event_t*)event;
-    TRACE << "Stub event handler: " << *e;
+    xcb_mapping_notify_event_t* ev = (xcb_mapping_notify_event_t*)event;
+    TRACE << "Stub event handler: " << *ev;
 }
 
 //! Populate global event handler table
