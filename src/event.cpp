@@ -22,6 +22,7 @@
 
 #include "event.h"
 #include "xcb-window.h"
+#include "client.h"
 
 //! the global event handler table (called after override event table)
 EventLoop::eventtable_type EventLoop::s_eventtable;
@@ -163,28 +164,95 @@ static void handle_event_create_notify(xcb_generic_event_t* event)
 static void handle_event_destroy_notify(xcb_generic_event_t* event)
 {
     xcb_destroy_notify_event_t* ev = (xcb_destroy_notify_event_t*)event;
-    TRACE << "Stub event handler: " << *ev;
+    TRACE << "Event handler: " << *ev;
+
+    Client* c = ClientList::find_window(ev->window);
+    if (c)
+    {
+        // unmanage window
+        if (ev->window != g_xcb.root)
+            ClientList::unmanage_window(c);
+    }
+    else
+    {
+        DEBUG << "destroy_notify for unmanaged window " << ev->window;
+    }
 }
 
 //! Event handler stub for XCB_UNMAP_NOTIFY
 static void handle_event_unmap_notify(xcb_generic_event_t* event)
 {
     xcb_unmap_notify_event_t* ev = (xcb_unmap_notify_event_t*)event;
-    TRACE << "Stub event handler: " << *ev;
+    TRACE << "Event handler: " << *ev;
+
+    Client* c = ClientList::find_window(ev->window);
+    if (c)
+    {
+        // set mapped state
+        c->m_is_mapped = false;
+
+        // unmanage window
+        if (ev->window != g_xcb.root)
+            ClientList::unmanage_window(c);
+    }
+    else
+    {
+        DEBUG << "unmap_notify for unmanaged window " << ev->window;
+    }
 }
 
 //! Event handler stub for XCB_MAP_NOTIFY
 static void handle_event_map_notify(xcb_generic_event_t* event)
 {
     xcb_map_notify_event_t* ev = (xcb_map_notify_event_t*)event;
-    TRACE << "Stub event handler: " << *ev;
+    TRACE << "Event handler: " << *ev;
+
+    Client* c = ClientList::find_window(ev->window);
+    if (!c)
+    {
+        c = ClientList::manage_window(ev->window);
+        if (!c) return;
+    }
+    else if (c->m_is_mapped)
+    {
+        TRACE << "map_notify for managed window that is already mapped?";
+    }
+    else
+    {
+        // set window to mapped state
+        c->m_is_mapped = true;
+        c->set_wm_state(XCB_ICCCM_WM_STATE_NORMAL);
+    }
+
+    // TODO: probably relayout desktop? and focus the mapped window?
 }
 
 //! Event handler stub for XCB_MAP_REQUEST
 static void handle_event_map_request(xcb_generic_event_t* event)
 {
     xcb_map_request_event_t* ev = (xcb_map_request_event_t*)event;
-    TRACE << "Stub event handler: " << *ev;
+    TRACE << "Event handler: " << *ev;
+
+    Client* c = ClientList::find_window(ev->window);
+    if (!c)
+    {
+        c = ClientList::manage_window(ev->window);
+        if (!c) return;
+    }
+    else if (c->m_is_mapped)
+    {
+        ERROR << "map_request for managed window that is already mapped";
+    }
+
+    // set window to mapped state
+    c->m_is_mapped = true;
+    c->set_wm_state(XCB_ICCCM_WM_STATE_NORMAL);
+
+    // TODO: probably relayout desktop? and focus the new window?
+
+    c->move_resize(0, 0, 512, 512); // just resize for now.
+
+    c->map();
 }
 
 //! Event handler stub for XCB_REPARENT_NOTIFY
@@ -201,11 +269,59 @@ static void handle_event_configure_notify(xcb_generic_event_t* event)
     TRACE << "Stub event handler: " << *ev;
 }
 
-//! Event handler stub for XCB_CONFIGURE_REQUEST
+//! Event handler for XCB_CONFIGURE_REQUEST. A configure request means a window
+//! want to change its geometry. For unmanaged windows, we allow any
+//! change. For managed windows, we probably want to relayout TODO ?
 static void handle_event_configure_request(xcb_generic_event_t* event)
 {
     xcb_configure_request_event_t* ev = (xcb_configure_request_event_t*)event;
-    TRACE << "Stub event handler: " << *ev;
+    TRACE << "Event handler: " << *ev;
+
+    Client* c = ClientList::find_window(ev->window);
+    if (c)
+    {
+        // known window -> probably send fake notify of unchanged position
+        c->configure_request(*ev);
+    }
+    else
+    {
+        // unknown window -> allow configure request
+
+        uint16_t i = 0, mask = 0;
+        uint32_t values[7];
+
+        if (ev->value_mask & XCB_CONFIG_WINDOW_X) {
+            mask |= XCB_CONFIG_WINDOW_X;
+            values[i++] = ev->x;
+        }
+        if (ev->value_mask & XCB_CONFIG_WINDOW_Y) {
+            mask |= XCB_CONFIG_WINDOW_Y;
+            values[i++] = ev->y;
+        }
+        if (ev->value_mask & XCB_CONFIG_WINDOW_WIDTH) {
+            mask |= XCB_CONFIG_WINDOW_WIDTH;
+            values[i++] = ev->width;
+        }
+        if (ev->value_mask & XCB_CONFIG_WINDOW_HEIGHT) {
+            mask |= XCB_CONFIG_WINDOW_HEIGHT;
+            values[i++] = ev->height;
+        }
+        if (ev->value_mask & XCB_CONFIG_WINDOW_BORDER_WIDTH) {
+            mask |= XCB_CONFIG_WINDOW_BORDER_WIDTH;
+            values[i++] = ev->border_width;
+        }
+        if (ev->value_mask & XCB_CONFIG_WINDOW_SIBLING) {
+            mask |= XCB_CONFIG_WINDOW_SIBLING;
+            values[i++] = ev->sibling;
+        }
+        if (ev->value_mask & XCB_CONFIG_WINDOW_STACK_MODE) {
+            mask |= XCB_CONFIG_WINDOW_STACK_MODE;
+            values[i++] = ev->stack_mode;
+        }
+
+        if (mask != 0)
+            xcb_configure_window(g_xcb.connection, ev->window, mask, values);
+    }
 }
 
 //! Event handler stub for XCB_PROPERTY_NOTIFY

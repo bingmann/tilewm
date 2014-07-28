@@ -27,6 +27,7 @@ add_executable(tilewm
   xcb-atom.cpp
   event.cpp
   screen.cpp
+  client.cpp
   )
 
 if(PERL_FOUND)
