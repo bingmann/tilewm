@@ -29,6 +29,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <xcb/xcb_icccm.h>
 
 //! forward declaration of Display, as we do not want to globally include Xlib.
 typedef struct _XDisplay Display;
@@ -234,6 +235,22 @@ extern std::ostream& operator << (
 extern std::ostream& operator << (
     std::ostream& os,
     const xcb_query_extension_reply_t& e);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_get_property_reply_t& p);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_get_window_attributes_reply_t& a);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_get_geometry_reply_t& g);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_icccm_get_wm_class_reply_t& i);
 
 // *** END Auto-generated ostream operators for XCB structures ***
 

@@ -24,6 +24,7 @@
 #include <ostream>
 #include <xcb/xinerama.h>
 #include <xcb/randr.h>
+#include <xcb/xcb_icccm.h>
 
 std::ostream&
 operator << (std::ostream& os, const xcb_screen_t& s)
@@ -381,6 +382,76 @@ operator << (std::ostream& os, const xcb_query_extension_reply_t& e)
        << " major_opcode=" << uint32_t(e.major_opcode)
        << " first_event=" << uint32_t(e.first_event)
        << " first_error=" << uint32_t(e.first_error)
+       << "]";
+    return os;
+}
+
+std::ostream&
+operator << (std::ostream& os, const xcb_get_property_reply_t& p)
+{
+    os << "[xcb_get_property_reply:"
+       << " response_type=" << uint32_t(p.response_type)
+       << " format=" << uint32_t(p.format)
+       << " sequence=" << p.sequence
+       << " length=" << p.length
+       << " type=" << AtomFormatted(p.type)
+       << " bytes_after=" << p.bytes_after
+       << " value_len=" << p.value_len
+       << "]";
+    return os;
+}
+
+std::ostream&
+operator << (std::ostream& os, const xcb_get_window_attributes_reply_t& a)
+{
+    os << "[xcb_get_window_attributes_reply:"
+       << " response_type=" << uint32_t(a.response_type)
+       << " backing_store=" << uint32_t(a.backing_store)
+       << " sequence=" << a.sequence
+       << " length=" << a.length
+       << " visual=" << a.visual
+       << " _class=" << a._class
+       << " bit_gravity=" << uint32_t(a.bit_gravity)
+       << " win_gravity=" << uint32_t(a.win_gravity)
+       << " backing_planes=" << a.backing_planes
+       << " backing_pixel=" << a.backing_pixel
+       << " save_under=" << uint32_t(a.save_under)
+       << " map_is_installed=" << uint32_t(a.map_is_installed)
+       << " map_state=" << uint32_t(a.map_state)
+       << " override_redirect=" << uint32_t(a.override_redirect)
+       << " colormap=" << a.colormap
+       << " all_event_masks=" << a.all_event_masks
+       << " your_event_mask=" << a.your_event_mask
+       << " do_not_propagate_mask=" << a.do_not_propagate_mask
+       << "]";
+    return os;
+}
+
+std::ostream&
+operator << (std::ostream& os, const xcb_get_geometry_reply_t& g)
+{
+    os << "[xcb_get_geometry_reply:"
+       << " response_type=" << uint32_t(g.response_type)
+       << " depth=" << uint32_t(g.depth)
+       << " sequence=" << g.sequence
+       << " length=" << g.length
+       << " root=" << g.root
+       << " x=" << g.x
+       << " y=" << g.y
+       << " width=" << g.width
+       << " height=" << g.height
+       << " border_width=" << g.border_width
+       << "]";
+    return os;
+}
+
+std::ostream&
+operator << (std::ostream& os, const xcb_icccm_get_wm_class_reply_t& i)
+{
+    os << "[xcb_icccm_get_wm_class_reply:"
+       << " instance_name=" << i.instance_name
+       << " class_name=" << i.class_name
+       << " _reply=" << i._reply
        << "]";
     return os;
 }

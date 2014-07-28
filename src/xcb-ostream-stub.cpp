@@ -25,6 +25,7 @@
 #include <xcb/xcb.h>
 #include <xcb/xinerama.h>
 #include <xcb/randr.h>
+#include <xcb/xcb_icccm.h>
 
 int main(int argc, char* argv[])
 {
