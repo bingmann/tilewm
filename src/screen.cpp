@@ -70,7 +70,7 @@ extern std::ostream& operator << (
 // *** END Auto-generated ostream operators for XCB structures ***
 
 //! The main screen list of detected screens.
-std::vector<ScreenPtr> ScreenList::s_list;
+std::vector<Screen> ScreenList::s_list;
 
 //! Detected RandR version
 unsigned int ScreenList::s_randr_version = 0;
@@ -144,18 +144,18 @@ bool ScreenList::detect_xinerama()
         {
             // construct new Screen object
 
-            ScreenPtr ns(new Screen);
+            Screen ns;
 
-            ns->geometry = Rectangle(screens[s].x_org, screens[s].y_org,
-                                     screens[s].width, screens[s].height);
-            ns->active = true;
-            ns->type = SCREEN_XINERAMA;
-            ns->name = "Xinerama-" + to_str(s);
+            ns.geometry = Rectangle(screens[s].x_org, screens[s].y_org,
+                                    screens[s].width, screens[s].height);
+            ns.active = true;
+            ns.type = SCREEN_XINERAMA;
+            ns.name = "Xinerama-" + to_str(s);
 
             INFO << "Found new Xinerama screen " << s
-                 << " : " << ns->geometry.str_pos_size();
+                 << " : " << ns.geometry.str_pos_size();
 
-            s_list.push_back(std::move(ns));
+            s_list.push_back(ns);
         }
     }
 
@@ -249,18 +249,18 @@ bool ScreenList::detect_randr11()
         {
             // construct new Screen object
 
-            ScreenPtr ns(new Screen);
+            Screen ns;
 
-            ns->geometry = Rectangle(rcir->x, rcir->y,
-                                     rcir->width, rcir->height);
-            ns->active = true;
-            ns->type = SCREEN_RANDR;
-            ns->name = "RandR-" + output_name;
+            ns.geometry = Rectangle(rcir->x, rcir->y,
+                                    rcir->width, rcir->height);
+            ns.active = true;
+            ns.type = SCREEN_RANDR;
+            ns.name = "RandR-" + output_name;
 
             INFO << "Found new RandR screen " << output_name
-                 << " : " << ns->geometry.str_pos_size();
+                 << " : " << ns.geometry.str_pos_size();
 
-            s_list.push_back(std::move(ns));
+            s_list.push_back(ns);
         }
     }
 
@@ -382,18 +382,18 @@ bool ScreenList::detect_randr12()
         {
             // construct new Screen object
 
-            ScreenPtr ns(new Screen);
+            Screen ns;
 
-            ns->geometry = Rectangle(rcir->x, rcir->y,
-                                     rcir->width, rcir->height);
-            ns->active = true;
-            ns->type = SCREEN_RANDR;
-            ns->name = "RandR-" + output_name;
+            ns.geometry = Rectangle(rcir->x, rcir->y,
+                                    rcir->width, rcir->height);
+            ns.active = true;
+            ns.type = SCREEN_RANDR;
+            ns.name = "RandR-" + output_name;
 
             INFO << "Found new RandR screen " << output_name
-                 << " : " << ns->geometry.str_pos_size();
+                 << " : " << ns.geometry.str_pos_size();
 
-            s_list.push_back(std::move(ns));
+            s_list.push_back(ns);
         }
     }
 
@@ -496,18 +496,18 @@ void ScreenList::detect_default()
 
     // no Xinerama or RandR screens detected, create a virtual screen
 
-    ScreenPtr ns(new Screen);
+    Screen ns;
 
-    ns->geometry = Rectangle(0, 0,
-                             g_xcb.screen->width_in_pixels,
-                             g_xcb.screen->height_in_pixels);
-    ns->active = true;
-    ns->type = SCREEN_DEFAULT;
-    ns->name = "XScreen";
+    ns.geometry = Rectangle(0, 0,
+                            g_xcb.screen->width_in_pixels,
+                            g_xcb.screen->height_in_pixels);
+    ns.active = true;
+    ns.type = SCREEN_DEFAULT;
+    ns.name = "XScreen";
 
-    INFO << "Creating default screen : " << ns->geometry.str_pos_size();
+    INFO << "Creating default screen : " << ns.geometry.str_pos_size();
 
-    s_list.push_back(std::move(ns));
+    s_list.push_back(ns);
 }
 
 //! Run initial screen detection: RandR, Xinerama and then default.

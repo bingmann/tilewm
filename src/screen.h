@@ -56,9 +56,6 @@ public:
     std::string name;
 };
 
-//! Unique pointer to enable explicit memory ownership management.
-typedef std::unique_ptr<Screen> ScreenPtr;
-
 /*!
  * The ScreenList contains all active (and some detached) Screen objects.
  */
@@ -66,7 +63,7 @@ class ScreenList
 {
 protected:
     //! The main screen list of detected screens.
-    static std::vector<ScreenPtr> s_list;
+    static std::vector<Screen> s_list;
 
     //! Detected RandR version
     static unsigned int s_randr_version;
@@ -98,9 +95,9 @@ public:
     //! Find screen with origin at point (px,py).
     static Screen * find_screen_at(int16_t px, int16_t py)
     {
-        for (ScreenPtr& s : s_list)
+        for (Screen& s : s_list)
         {
-            if (s->geometry.is_origin(px, py)) return s.get();
+            if (s.geometry.is_origin(px, py)) return &s;
         }
         return NULL;
     }

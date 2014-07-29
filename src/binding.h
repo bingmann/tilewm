@@ -23,7 +23,7 @@
 #ifndef TILEWM_BINDING_HEADER
 #define TILEWM_BINDING_HEADER
 
-#include <memory>
+#include <array>
 #include <vector>
 #include <xcb/xcb.h>
 #include <xcb/xcb_keysyms.h>
@@ -58,9 +58,6 @@ struct KeyBinding
     key_handler_type handler;
 };
 
-//! Unique pointer to enable explicit memory ownership management.
-typedef std::unique_ptr<KeyBinding> KeyBindingPtr;
-
 /*!
  * Information about a mouse button binding.
  */
@@ -78,9 +75,6 @@ struct MouseBinding
     //! handler function to call
     mouse_handler_type func;
 };
-
-//! Unique pointer to enable explicit memory ownership management.
-typedef std::unique_ptr<MouseBinding> MouseBindingPtr;
 
 /*!
  * List of keyboard and mouse bindings of both the root window, any interaction
@@ -109,13 +103,13 @@ protected:
     }
 
     //! typedef of list of all keyboard bindings
-    typedef std::vector<KeyBindingPtr> kblist_type;
+    typedef std::vector<KeyBinding> kblist_type;
 
     //! list of all keyboard bindings
     static kblist_type s_kblist;
 
     //! typedef of list of all mouse bindings
-    typedef std::vector<MouseBindingPtr> mblist_type;
+    typedef std::vector<MouseBinding> mblist_type;
 
     //! list of all mouse bindings
     static mblist_type s_mblist;

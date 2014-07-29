@@ -78,9 +78,6 @@ public:
     void configure_request(const xcb_configure_request_event_t& e);
 };
 
-//! Unique pointer to enable explicit memory ownership management.
-typedef std::unique_ptr<Client> ClientPtr;
-
 /*!
  * The ClientList contains a map from window id to Client for all managed
  * windows.
@@ -89,7 +86,7 @@ class ClientList
 {
 protected:
     //! typedef of map window id -> Client for all known clients
-    typedef std::map<xcb_window_t, ClientPtr> windowmap_type;
+    typedef std::map<xcb_window_t, Client> windowmap_type;
 
     //! map window id -> Client for all known clients
     static windowmap_type s_windowmap;
@@ -98,8 +95,8 @@ public:
     //! Locate Client for a window by its id.
     static Client * find_window(xcb_window_t win)
     {
-        windowmap_type::const_iterator i = s_windowmap.find(win);
-        return (i != s_windowmap.end() ? i->second.get() : NULL);
+        windowmap_type::iterator i = s_windowmap.find(win);
+        return (i != s_windowmap.end() ? &i->second : NULL);
     }
 
     //! Manage a window by creating a new Client structure for it.

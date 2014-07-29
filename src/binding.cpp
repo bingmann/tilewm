@@ -103,23 +103,19 @@ void BindingList::initialize()
 
     // add a test key binding
 
-    KeyBindingPtr kb1(new KeyBinding {
-                          BIND_ROOT, 0, XK_a, [] {
-                              DEBUG << "Test KeyBinding";
-                          }
-                      });
-
-    s_kblist.push_back(std::move(kb1));
+    s_kblist.emplace_back(KeyBinding {
+                              BIND_ROOT, 0, XK_a, [] {
+                                  DEBUG << "Test KeyBinding";
+                              }
+                          });
 
     // add a test mouse binding
 
-    MouseBindingPtr mb1(new MouseBinding {
-                            BIND_ROOT, 0, XCB_BUTTON_INDEX_1, [] {
-                                DEBUG << "Test Mousebinding";
-                            }
-                        });
-
-    s_mblist.push_back(std::move(mb1));
+    s_mblist.emplace_back(MouseBinding {
+                              BIND_ROOT, 0, XCB_BUTTON_INDEX_1, [] {
+                                  DEBUG << "Test Mousebinding";
+                              }
+                          });
 }
 
 //! Free binding list (free key_symbols table and mappings).
@@ -147,12 +143,12 @@ void BindingList::regrab_root()
 
     // iterate over list of key bindings and request grabs
 
-    for (KeyBindingPtr& kb : s_kblist)
+    for (KeyBinding& kb : s_kblist)
     {
-        if (kb->target != BIND_ROOT) continue;
+        if (kb.target != BIND_ROOT) continue;
 
         autofree_ptr<xcb_keycode_t> code(
-            xcb_key_symbols_get_keycode(s_key_symbols, kb->keysym)
+            xcb_key_symbols_get_keycode(s_key_symbols, kb.keysym)
             );
 
         if (!code) continue;
@@ -162,7 +158,7 @@ void BindingList::regrab_root()
             for (unsigned int mods : s_modifiers)
             {
                 xcb_grab_key(g_xcb.connection, 0, g_xcb.root,
-                             kb->modifiers | mods, *code,
+                             kb.modifiers | mods, *code,
                              XCB_GRAB_MODE_SYNC, XCB_GRAB_MODE_SYNC);
             }
         }
@@ -170,9 +166,9 @@ void BindingList::regrab_root()
 
     // iterate over list of mouse bindings and request grabs
 
-    for (MouseBindingPtr& mb : s_mblist)
+    for (MouseBinding& mb : s_mblist)
     {
-        if (mb->target != BIND_ROOT) continue;
+        if (mb.target != BIND_ROOT) continue;
 
         for (unsigned int mods : s_modifiers)
         {
@@ -180,8 +176,8 @@ void BindingList::regrab_root()
                             XCB_EVENT_MASK_BUTTON_PRESS | XCB_EVENT_MASK_BUTTON_RELEASE,
                             XCB_GRAB_MODE_SYNC, XCB_GRAB_MODE_SYNC,
                             XCB_WINDOW_NONE, XCB_CURSOR_NONE,
-                            mb->button,
-                            mb->modifiers | mods);
+                            mb.button,
+                            mb.modifiers | mods);
         }
     }
 }

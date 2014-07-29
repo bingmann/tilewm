@@ -210,15 +210,14 @@ Client* ClientList::manage_window(xcb_window_t win)
 
     // *** manage this window, creating a new Client object
 
-    ClientPtr c(new Client(win));
+    std::pair<windowmap_type::iterator, bool> it =
+        s_windowmap.emplace(win, win);
 
-    c->initial_update();
+    Client& c = it.first->second;
 
-    // *** put Client into ClientList's windowmap
+    c.initial_update();
 
-    Client* ret = c.get();
-    s_windowmap.insert(std::make_pair(win, std::move(c)));
-    return ret;
+    return &c;
 }
 
 bool ClientList::unmanage_window(Client* c)
@@ -231,7 +230,7 @@ bool ClientList::unmanage_window(Client* c)
 
     INFO << "Unmanaging client window " << c->window() << " client " << c;
 
-    ASSERT(i->second.get() == c);
+    ASSERT(&i->second == c);
     s_windowmap.erase(i);
     return true;
 }
