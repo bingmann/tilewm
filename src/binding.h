@@ -25,10 +25,12 @@
 
 #include <array>
 #include <vector>
+#include <functional>
 #include <xcb/xcb.h>
 #include <xcb/xcb_keysyms.h>
+#include "geometry.h"
 
-//! Target of the key or mouse bindings: the root window, a specific
+//! Target of the key or mouse button bindings: the root window, a specific
 //! interaction window class or all managed clients.
 enum binding_target_t {
     BIND_ROOT, BIND_CLIENTS
@@ -37,8 +39,43 @@ enum binding_target_t {
 //! All keyboard binding handlers must have this type
 typedef void (* key_handler_type)();
 
-//! All mouse binding handlers must have this type
-typedef void (* mouse_handler_type)();
+//! Struct to abstract all parameters passed to  mouse button handlers.
+struct ButtonEvent
+{
+protected:
+    //! Pointer to client on which the button was pressed.
+    class Client* m_client;
+
+    //! Reference to currently active press event.
+    xcb_button_press_event_t& m_event;
+
+public:
+    //! Initializing constructor
+    ButtonEvent(class Client* client, xcb_button_press_event_t& event)
+        : m_client(client), m_event(event)
+    { }
+
+    //! Return pointer to client of event (or NULL).
+    class Client * client()
+    {
+        return m_client;
+    }
+
+    //! Return mouse point the event occurred, relative to window geometry.
+    Point pos()
+    {
+        return Point(m_event.event_x, m_event.event_y);
+    }
+
+    //! Return mouse point the event occurred, relative to the root window.
+    Point root_pos()
+    {
+        return Point(m_event.root_x, m_event.root_y);
+    }
+};
+
+//! All mouse button binding handlers must have this type.
+typedef std::function<void (ButtonEvent&)> button_handler_type;
 
 /*!
  * Information about a keyboard binding.
@@ -61,9 +98,9 @@ struct KeyBinding
 /*!
  * Information about a mouse button binding.
  */
-struct MouseBinding
+struct ButtonBinding
 {
-    //! target of the mouse binding
+    //! target of the mouse button binding
     binding_target_t target;
 
     //! keyboard modifier keys like SHIFT, ALT, etc.
@@ -73,12 +110,12 @@ struct MouseBinding
     xcb_button_index_t button;
 
     //! handler function to call
-    mouse_handler_type func;
+    button_handler_type func;
 };
 
 /*!
- * List of keyboard and mouse bindings of both the root window, any interaction
- * windows and the managed clients.
+ * List of keyboard and mouse button bindings of both the root window, any
+ * interaction windows and the managed clients.
  */
 class BindingList
 {
@@ -108,11 +145,11 @@ protected:
     //! list of all keyboard bindings
     static kblist_type s_kblist;
 
-    //! typedef of list of all mouse bindings
-    typedef std::vector<MouseBinding> mblist_type;
+    //! typedef of list of all mouse button bindings
+    typedef std::vector<ButtonBinding> bblist_type;
 
-    //! list of all mouse bindings
-    static mblist_type s_mblist;
+    //! list of all mouse button bindings
+    static bblist_type s_bblist;
 
 public:
     //! Initialize binding list.
@@ -123,6 +160,9 @@ public:
 
     //! Regrab all bindings of the root window
     static void regrab_root();
+
+    //! Regrab all bindings of a client window
+    static void regrab_client(class Client& c);
 
     //! Event handler for XCB_KEY_PRESS
     static void handle_event_key_press(xcb_generic_event_t* event);

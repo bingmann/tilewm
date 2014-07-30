@@ -152,6 +152,9 @@ void Client::initial_update()
     xcb_change_window_attributes(g_xcb.connection, m_window,
                                  XCB_CW_EVENT_MASK, &values);
 
+    // *** subscribe to mouse and keyboard events
+
+    BindingList::regrab_client(*this);
 }
 
 //! Handle a XCB_CONFIGURE_REQUEST event, usually by ignoring it.

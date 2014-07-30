@@ -24,6 +24,7 @@
 #include "xcb.h"
 #include "log.h"
 #include "event.h"
+#include "client.h"
 #include <X11/keysym.h>
 
 //! Key symbol table
@@ -38,8 +39,8 @@ std::array<int, 4> BindingList::s_modifiers = { 0, 0, 0, 0 };
 //! list of all keyboard bindings
 BindingList::kblist_type BindingList::s_kblist;
 
-//! list of all mouse bindings
-BindingList::mblist_type BindingList::s_mblist;
+//! list of all mouse button bindings
+BindingList::bblist_type BindingList::s_bblist;
 
 //! Determine the mask for the NumLock modifier.
 void BindingList::find_numlock_mask()
@@ -111,8 +112,9 @@ void BindingList::initialize()
 
     // add a test mouse binding
 
-    s_mblist.emplace_back(MouseBinding {
-                              BIND_ROOT, 0, XCB_BUTTON_INDEX_1, [] {
+    s_bblist.emplace_back(ButtonBinding {
+                              BIND_ROOT, 0, XCB_BUTTON_INDEX_1,
+                              [](ButtonEvent& be) {
                                   DEBUG << "Test Mousebinding";
                               }
                           });
@@ -139,7 +141,7 @@ void BindingList::regrab_root()
                    XCB_GRAB_ANY, g_xcb.root, XCB_MOD_MASK_ANY);
 
     xcb_ungrab_button(g_xcb.connection,
-                      XCB_GRAB_ANY, g_xcb.root, XCB_MOD_MASK_ANY);
+                      XCB_BUTTON_INDEX_ANY, g_xcb.root, XCB_MOD_MASK_ANY);
 
     // iterate over list of key bindings and request grabs
 
@@ -166,18 +168,48 @@ void BindingList::regrab_root()
 
     // iterate over list of mouse bindings and request grabs
 
-    for (MouseBinding& mb : s_mblist)
+    for (ButtonBinding& bb : s_bblist)
     {
-        if (mb.target != BIND_ROOT) continue;
+        if (bb.target != BIND_ROOT) continue;
 
         for (unsigned int mods : s_modifiers)
         {
             xcb_grab_button(g_xcb.connection, 0, g_xcb.root,
-                            XCB_EVENT_MASK_BUTTON_PRESS | XCB_EVENT_MASK_BUTTON_RELEASE,
+                            XCB_EVENT_MASK_BUTTON_PRESS,
                             XCB_GRAB_MODE_SYNC, XCB_GRAB_MODE_SYNC,
                             XCB_WINDOW_NONE, XCB_CURSOR_NONE,
-                            mb.button,
-                            mb.modifiers | mods);
+                            bb.button,
+                            bb.modifiers | mods);
+        }
+    }
+}
+
+//! Regrab all bindings of a client window
+void BindingList::regrab_client(Client& c)
+{
+    INFO << "regrab_client(" << c.window() << ")";
+
+    xcb_window_t win = c.window();
+
+    // release all our key and button grab on the root
+
+    xcb_ungrab_button(g_xcb.connection,
+                      XCB_BUTTON_INDEX_ANY, win, XCB_MOD_MASK_ANY);
+
+    // iterate over list of mouse bindings and request grabs
+
+    for (ButtonBinding& bb : s_bblist)
+    {
+        if (bb.target != BIND_CLIENTS) continue;
+
+        for (unsigned int mods : s_modifiers)
+        {
+            xcb_grab_button(g_xcb.connection, 1, win,
+                            XCB_EVENT_MASK_BUTTON_PRESS,
+                            XCB_GRAB_MODE_SYNC, XCB_GRAB_MODE_SYNC,
+                            XCB_WINDOW_NONE, XCB_CURSOR_NONE,
+                            bb.button,
+                            bb.modifiers | mods);
         }
     }
 }
@@ -214,7 +246,28 @@ void BindingList::handle_event_button_press(xcb_generic_event_t* event)
     xcb_button_press_event_t* ev = (xcb_button_press_event_t*)event;
     TRACE << "Event handler: " << *ev;
 
-    EventLoop::terminate();
+    if (ev->event == g_xcb.root)
+        EventLoop::terminate();
+    else
+    {
+        Client* c = ClientList::find_window(ev->event);
+        if (!c)
+            ERROR << "button_press for unmanaged window";
+        else
+        {
+            for (ButtonBinding& bb : s_bblist)
+            {
+                if (bb.target == BIND_CLIENTS &&
+                    modifier_clean(ev->state) == modifier_clean(bb.modifiers) &&
+                    ev->detail == bb.button &&
+                    bb.func)
+                {
+                    ButtonEvent be(c, *ev);
+                    bb.func(be);
+                }
+            }
+        }
+    }
 
     // Unfreeze grab events
     xcb_allow_events(g_xcb.connection, XCB_ALLOW_ASYNC_POINTER, ev->time);
