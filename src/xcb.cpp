@@ -185,6 +185,28 @@ std::string XcbConnection::find_atom_name(xcb_atom_t atom)
     return atom_name;
 }
 
+//! Allocate a color in the default color map.
+uint32_t XcbConnection::allocate_color(uint16_t r, uint16_t g, uint16_t b)
+{
+    xcb_colormap_t map = screen->default_colormap;
+
+    xcb_alloc_color_cookie_t acc =
+        xcb_alloc_color(connection, map, r, g, b);
+
+    autofree_ptr<xcb_alloc_color_reply_t> acr(
+        xcb_alloc_color_reply(connection, acc, NULL)
+        );
+
+    if (!acr) {
+        WARN << "cannot allocate color (" << r << ',' << g << ',' << b << ")";
+        return screen->white_pixel;
+    }
+
+    TRACE << *acr;
+
+    return acr->pixel;
+}
+
 //! Output string "name (id)" as description of an atom
 std::ostream& operator << (std::ostream& os, const AtomFormatted& a)
 {

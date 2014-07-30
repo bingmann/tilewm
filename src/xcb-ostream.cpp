@@ -469,6 +469,20 @@ operator << (std::ostream& os, const xcb_get_modifier_mapping_reply_t& m)
 }
 
 std::ostream&
+operator << (std::ostream& os, const xcb_alloc_color_reply_t& c)
+{
+    os << "[xcb_alloc_color_reply:"
+       << " response_type=" << uint32_t(c.response_type)
+       << " sequence=" << c.sequence
+       << " length=" << c.length
+       << " red=" << c.red
+       << " green=" << c.green
+       << " blue=" << c.blue
+       << " pixel=" << c.pixel
+       << "]";
+    return os;
+}
+
 operator << (std::ostream& os, const xcb_xinerama_is_active_reply_t& x)
 {
     os << "[xcb_xinerama_is_active_reply:"

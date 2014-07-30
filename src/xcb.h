@@ -129,6 +129,10 @@ protected:
 public:
     //! Find the name of an atom (usually for unknown atoms)
     static std::string find_atom_name(xcb_atom_t atom);
+
+public:
+    //! Allocate a color in the default color map.
+    static uint32_t allocate_color(uint16_t r, uint16_t g, uint16_t b);
 };
 
 //! empty object to make calling static functions more convenient.
@@ -255,6 +259,10 @@ extern std::ostream& operator << (
 extern std::ostream& operator << (
     std::ostream& os,
     const xcb_get_modifier_mapping_reply_t& m);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_alloc_color_reply_t& c);
 
 // *** END Auto-generated ostream operators for XCB structures ***
 
