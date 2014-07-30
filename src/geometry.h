@@ -26,6 +26,42 @@
 #include <sstream>
 
 /*!
+ * A class for a Point, with hopefully many helper functions in the future.
+ */
+struct Point
+{
+    //! The Point's coordinates.
+    int16_t x, y;
+
+    //! Default constructor leaves members uninitialized!
+    Point()
+    { }
+
+    //! Construct a point from plain integers.
+    Point(int16_t _x, int16_t _y)
+        : x(_x), y(_y)
+    { }
+
+    //! Return addition of two point vectors
+    Point operator + (const Point& p) const
+    {
+        return Point(x + p.x, y + p.y);
+    }
+
+    //! Return subtraction of two point vectors
+    Point operator - (const Point& p) const
+    {
+        return Point(x - p.x, y - p.y);
+    }
+
+    //! Return as string "(x,y)"
+    friend std::ostream& operator << (std::ostream& os, const Point& p)
+    {
+        return os << '(' << p.x << ',' << p.y << ')';
+    }
+};
+
+/*!
  * A class for a Rectangle, with hopefully many helper functions in the future.
  */
 struct Rectangle
@@ -45,16 +81,40 @@ struct Rectangle
         : x(_x), y(_y), w(_w), h(_h)
     { }
 
+    //! Return the rectangle's origin point
+    Point origin() const
+    {
+        return Point(x, y);
+    }
+
+    //! Change the rectangle's origin point
+    void set_origin(const Point& p)
+    {
+        x = p.x, y = p.y;
+    }
+
     //! Test if a point (px,py) is the origin of this rectangle.
     bool is_origin(int16_t px, int16_t py) const
     {
         return (x == px) && (y == py);
     }
 
+    //! Test if a point p is the origin of this rectangle.
+    bool is_origin(const Point& p) const
+    {
+        return is_origin(p.x, p.y);
+    }
+
     //! Test if a point (px,py) is contained in the rectangle.
     bool contains(int16_t px, int16_t py) const
     {
         return (x <= px && px < x + w) && (y <= py && py < y + h);
+    }
+
+    //! Test if a point p is contained in the rectangle.
+    bool contains(const Point& p) const
+    {
+        return contains(p.x, p.y);
     }
 
     //! Return as string "pos X x Y size W x H"

@@ -59,6 +59,12 @@ public:
                              values);
     }
 
+    //! Move a window to point p.
+    void move(const Point& p)
+    {
+        return move(p.x, p.y);
+    }
+
     //! Resize a window to to (w,h).
     void resize(uint16_t w, uint16_t h)
     {
