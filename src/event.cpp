@@ -330,8 +330,6 @@ static void handle_event_mapping_notify(xcb_generic_event_t* event)
 //! Populate global event handler table
 void EventLoop::setup_global_eventtable()
 {
-    for (event_handler_type& h : s_eventtable) h = NULL;
-
     s_eventtable[0] = handle_event_error;
 
     s_eventtable[XCB_KEY_PRESS]                                           // 2
@@ -363,6 +361,17 @@ void EventLoop::setup_global_eventtable()
     s_eventtable[XCB_PROPERTY_NOTIFY] = handle_event_property_notify;     // 28
     s_eventtable[XCB_CLIENT_MESSAGE] = handle_event_client_message;       // 33
     s_eventtable[XCB_MAPPING_NOTIFY] = handle_event_mapping_notify;       // 34
+}
+
+//! Process all events until terminate() is called.
+void EventLoop::loop_global()
+{
+    autofree_ptr<xcb_generic_event_t> event;
+
+    while (!s_terminate && (event = wait()))
+    {
+        process_global(event.get());
+    }
 }
 
 /******************************************************************************/

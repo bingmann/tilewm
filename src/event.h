@@ -34,8 +34,8 @@
 typedef void (* event_handler_type)(xcb_generic_event_t* event);
 
 /*!
- * EventLoop is a wrapper for xcb_wait_for_event() calls and contains an event
- * handler table to call the configured handlers.
+ * EventLoop is a wrapper for xcb_wait_for_event() calls and contains an global
+ * event handler table to call the configured handlers.
  */
 class EventLoop
 {
@@ -44,10 +44,10 @@ public:
     typedef std::array<event_handler_type, XCB_NO_OPERATION> eventtable_type;
 
 protected:
-    //! the global event handler table (called after override event table)
+    //! the global event handler table.
     static eventtable_type s_eventtable;
 
-    //! global (graceful) termination flag
+    //! global (graceful) termination flag.
     static bool s_terminate;
 
     //! first id of a RandR event
@@ -82,27 +82,27 @@ public:
             ERROR << "Unknown event type " << uint32_t(evtype);
     }
 
-    //! Process all event until terminate() is called.
-    static void loop_global()
+    //! Poll for an event that will be processed outside the global event loop.
+    static autofree_ptr<xcb_generic_event_t> wait()
     {
-        while (!s_terminate)
-        {
-            g_xcb.flush();
+        if (s_terminate)
+            return autofree_ptr<xcb_generic_event_t>();
 
-            if (g_xcb.connection_has_error()) {
-                FATAL << "X11 connection got interrupted";
-                exit(EXIT_FAILURE);
-            }
+        g_xcb.flush();
 
-            TRACE << "xcb_wait_for_event()";
-            xcb_generic_event_t* event = xcb_wait_for_event(g_xcb.connection);
-
-            if (event) {
-                process_global(event);
-                free(event);
-            }
+        if (g_xcb.connection_has_error()) {
+            FATAL << "X11 connection got interrupted";
+            exit(EXIT_FAILURE);
         }
+
+        TRACE << "xcb_wait_for_event()";
+        xcb_generic_event_t* event = xcb_wait_for_event(g_xcb.connection);
+
+        return autofree_ptr<xcb_generic_event_t>(event);
     }
+
+    //! Process all events until terminate() is called.
+    static void loop_global();
 };
 
 #endif // !TILEWM_EVENT_HEADER
