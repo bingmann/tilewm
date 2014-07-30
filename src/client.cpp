@@ -182,6 +182,114 @@ void Client::configure_request(const xcb_configure_request_event_t& e)
 //! map window id -> Client for all known clients
 ClientList::windowmap_type ClientList::s_windowmap;
 
+//! Query and manage all children of the root window.
+void ClientList::remanage_all_windows()
+{
+    TRACE << "Entering remanage_all_windows()";
+
+    // *** unmark all clients in window list
+
+    for (windowmap_type::value_type wmi : s_windowmap)
+    {
+        wmi.second.m_seen = false;
+    }
+
+    // *** get all children of root on screen
+
+    xcb_query_tree_cookie_t qtc =
+        xcb_query_tree(g_xcb.connection, g_xcb.root);
+
+    autofree_ptr<xcb_query_tree_reply_t> qtr(
+        xcb_query_tree_reply(g_xcb.connection, qtc, NULL)
+        );
+
+    if (!qtr) {
+        ERROR << "remanage_all_windows(): could not query window list.";
+        return;
+    }
+
+    TRACE << *qtr;
+
+    xcb_window_t* child = xcb_query_tree_children(qtr.get());
+    int len = xcb_query_tree_children_length(qtr.get());
+
+    // *** try to sort windows according to _NET_CLIENT_LIST
+
+    xcb_get_property_cookie_t gpc =
+        xcb_get_property(g_xcb.connection, 0, g_xcb.root,
+                         g_xcb._NET_CLIENT_LIST.atom,
+                         XCB_ATOM_WINDOW, 0, UINT32_MAX);
+
+    autofree_ptr<xcb_get_property_reply_t> gpr(
+        xcb_get_property_reply(g_xcb.connection, gpc, NULL)
+        );
+
+    std::vector<xcb_window_t> winlist;
+    winlist.reserve(len);
+
+    if (gpr)
+    {
+        xcb_window_t* cwin =
+            (xcb_window_t*)xcb_get_property_value(gpr.get());
+
+        int cwinlen =
+            xcb_get_property_value_length(gpr.get()) / sizeof(xcb_atom_t);
+
+        // check whether each child in CLIENT_LIST still exists
+        for (int i = 0, j; i < cwinlen; ++i)
+        {
+            for (j = 0; j < len; ++j)
+            {
+                if (cwin[i] == child[j]) break;
+            }
+
+            if (j == cwinlen) continue;
+
+            child[j] = XCB_WINDOW_NONE;
+            winlist.push_back(cwin[i]);
+        }
+
+        // add remaining new windows at the end
+        for (int i = 0; i < len; ++i)
+        {
+            if (child[i] == XCB_WINDOW_NONE) continue;
+            winlist.push_back(child[i]);
+        }
+
+        ASSERT(winlist.size() == (size_t)len);
+    }
+    else
+    {
+        // copy over window list
+        std::copy(child, child + len, std::back_inserter(winlist));
+    }
+
+    // *** iterate over list of windows, manage unmanaged ones.
+
+    for (xcb_window_t& w : winlist)
+    {
+        Client* c = find_window(w);
+
+        if (!c)
+            c = manage_window(w);
+
+        if (c)
+            c->m_seen = true;
+    }
+
+    // *** report lost managed windows
+
+    for (windowmap_type::value_type wmi : s_windowmap)
+    {
+        Client& c = wmi.second;
+
+        if (!c.m_seen) {
+            INFO << "Lost managed client: " << c.window();
+            s_windowmap.erase(c.window());
+        }
+    }
+}
+
 //! Manage a window by creating a new Client structure for it.
 Client* ClientList::manage_window(xcb_window_t win)
 {

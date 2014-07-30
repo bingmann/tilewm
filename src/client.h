@@ -59,6 +59,8 @@ public:
 
     //! flag whether window is currently mapped
     bool m_is_mapped;
+    //! flag to mark clients unseen/seen during remanage_all_windows()
+    bool m_seen;
 
     //! Constructor from window
     Client(xcb_window_t w)
@@ -98,6 +100,9 @@ public:
         windowmap_type::iterator i = s_windowmap.find(win);
         return (i != s_windowmap.end() ? &i->second : NULL);
     }
+
+    //! Query and manage all children of the root window.
+    static void remanage_all_windows();
 
     //! Manage a window by creating a new Client structure for it.
     static Client * manage_window(xcb_window_t win);

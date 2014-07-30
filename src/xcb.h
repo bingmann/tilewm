@@ -106,6 +106,8 @@ public:
     static XcbAtom _NET_SUPPORTED;
     static XcbAtom _NET_SUPPORTING_WM_CHECK;
     static XcbAtom _NET_WM_NAME;
+    static XcbAtom _NET_ACTIVE_WINDOW;
+    static XcbAtom _NET_CLIENT_LIST;
 
     //! List of named atoms for caching.
     static struct XcbAtom* atomlist[];
@@ -263,6 +265,10 @@ extern std::ostream& operator << (
 extern std::ostream& operator << (
     std::ostream& os,
     const xcb_alloc_color_reply_t& c);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const xcb_query_tree_reply_t& q);
 
 // *** END Auto-generated ostream operators for XCB structures ***
 

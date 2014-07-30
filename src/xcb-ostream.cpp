@@ -483,6 +483,21 @@ operator << (std::ostream& os, const xcb_alloc_color_reply_t& c)
     return os;
 }
 
+std::ostream&
+operator << (std::ostream& os, const xcb_query_tree_reply_t& q)
+{
+    os << "[xcb_query_tree_reply:"
+       << " response_type=" << uint32_t(q.response_type)
+       << " sequence=" << q.sequence
+       << " length=" << q.length
+       << " root=" << q.root
+       << " parent=" << q.parent
+       << " children_len=" << q.children_len
+       << "]";
+    return os;
+}
+
+std::ostream&
 operator << (std::ostream& os, const xcb_xinerama_is_active_reply_t& x)
 {
     os << "[xcb_xinerama_is_active_reply:"

@@ -25,6 +25,7 @@
 #include "event.h"
 #include "screen.h"
 #include "binding.h"
+#include "client.h"
 
 #include <unistd.h>
 #include <xcb/xinerama.h>
@@ -79,6 +80,8 @@ int main(int argc, char* argv[])
     // *** grab root key bindings
 
     BindingList::regrab_root();
+
+    ClientList::remanage_all_windows();
 
     // *** set up global event table and run loop!
 
