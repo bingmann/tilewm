@@ -141,6 +141,13 @@ public:
         xcb_unmap_window(g_xcb.connection, m_window);
     }
 
+    // *** other window functions
+
+    void kill_client()
+    {
+        xcb_kill_client(g_xcb.connection, m_window);
+    }
+
     // *** ICCCM properties
 
     //! Change ICCCM WM_STATE property.
@@ -200,6 +207,7 @@ public:
         ev.type = g_xcb.WM_PROTOCOLS.atom;
         ev.data.data32[0] = g_xcb.WM_DELETE_WINDOW.atom;
         ev.data.data32[1] = XCB_CURRENT_TIME;
+        ev.data.data32[2] = ev.data.data32[3] = ev.data.data32[4] = 0;
 
         TRACE << "Sending " << ev;
 

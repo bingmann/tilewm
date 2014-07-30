@@ -36,10 +36,63 @@ enum binding_target_t {
     BIND_ROOT, BIND_CLIENTS
 };
 
-//! All keyboard binding handlers must have this type
-typedef void (* key_handler_type)();
+//! Struct to abstract all parameters passed to keyboard handlers.
+struct KeyEvent
+{
+protected:
+    //! Pointer to client on which the key was pressed.
+    class Client* m_client;
 
-//! Struct to abstract all parameters passed to  mouse button handlers.
+    //! Reference to currently active key press event.
+    xcb_key_press_event_t& m_event;
+
+public:
+    //! Initializing constructor
+    KeyEvent(class Client* client, xcb_key_press_event_t& event)
+        : m_client(client), m_event(event)
+    { }
+
+    //! Return pointer to client of event (or NULL).
+    class Client * client()
+    {
+        return m_client;
+    }
+
+    //! Return mouse point the event occurred, relative to window geometry.
+    Point pos()
+    {
+        return Point(m_event.event_x, m_event.event_y);
+    }
+
+    //! Return mouse point the event occurred, relative to the root window.
+    Point root_pos()
+    {
+        return Point(m_event.root_x, m_event.root_y);
+    }
+};
+
+//! All keyboard binding handlers must have this type
+typedef std::function<void (KeyEvent&)> key_handler_type;
+
+/*!
+ * Information about a keyboard binding.
+ */
+struct KeyBinding
+{
+    //! target of the key binding
+    binding_target_t target;
+
+    //! keyboard modifier keys like SHIFT, ALT, etc.
+    unsigned int modifiers;
+
+    //! keyboard symbol of binding
+    xcb_keysym_t keysym;
+
+    //! handler function to call
+    key_handler_type handler;
+};
+
+//! Struct to abstract all parameters passed to mouse button handlers.
 struct ButtonEvent
 {
 protected:
@@ -78,24 +131,6 @@ public:
 typedef std::function<void (ButtonEvent&)> button_handler_type;
 
 /*!
- * Information about a keyboard binding.
- */
-struct KeyBinding
-{
-    //! target of the key binding
-    binding_target_t target;
-
-    //! keyboard modifier keys like SHIFT, ALT, etc.
-    unsigned int modifiers;
-
-    //! keyboard symbol of binding
-    xcb_keysym_t keysym;
-
-    //! handler function to call
-    key_handler_type handler;
-};
-
-/*!
  * Information about a mouse button binding.
  */
 struct ButtonBinding
@@ -110,7 +145,7 @@ struct ButtonBinding
     xcb_button_index_t button;
 
     //! handler function to call
-    button_handler_type func;
+    button_handler_type handler;
 };
 
 /*!

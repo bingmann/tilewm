@@ -164,7 +164,7 @@ static void mouse_move_handler(ButtonEvent& be)
             // ignore key press events during mouse operation.
             xcb_key_press_event_t* ev = (xcb_key_press_event_t*)event.get();
             TRACE << "key_press event handler: " << *ev;
-            xcb_allow_events(g_xcb.connection, XCB_ALLOW_ASYNC_KEYBOARD,
+            xcb_allow_events(g_xcb.connection, XCB_ALLOW_SYNC_KEYBOARD,
                              ev->time);
             break;
         }
@@ -179,6 +179,24 @@ static void mouse_move_handler(ButtonEvent& be)
     INFO << "end mouse_move_handler()";
 }
 
+static void action_key_quit_window(KeyEvent& ke)
+{
+    TRACE << "action_key_quit_window()";
+
+    if (!ke.client()) {
+        ERROR << "Called quit_window without client";
+        return;
+    }
+
+    Client& c = *ke.client();
+
+    if (c.m_can_delete_window)
+        c.wm_delete_window();
+    else {
+        INFO << "Window " << c.window() << " does not have WM_DELETE_WINDOW.";
+    }
+}
+
 //! Initialize binding list.
 void BindingList::initialize()
 {
@@ -191,11 +209,16 @@ void BindingList::initialize()
 
     // add a test key binding
 
-    s_kblist.emplace_back(KeyBinding {
-                              BIND_ROOT, 0, XK_a, [] {
-                                  DEBUG << "Test KeyBinding";
-                              }
-                          });
+    s_kblist.emplace_back(
+        KeyBinding {
+            BIND_ROOT, 0, XK_a,
+            [](KeyEvent&) { DEBUG << "Test KeyBinding"; }
+        });
+
+    s_kblist.emplace_back(
+        KeyBinding {
+            BIND_CLIENTS, XCB_MOD_MASK_CONTROL, XK_q, action_key_quit_window
+        });
 
     // add a test mouse binding
 
@@ -276,10 +299,36 @@ void BindingList::regrab_client(Client& c)
 
     xcb_window_t win = c.window();
 
-    // release all our key and button grab on the root
+    // release all our key and button grabs on the window
+
+    xcb_ungrab_key(g_xcb.connection,
+                   XCB_GRAB_ANY, win, XCB_MOD_MASK_ANY);
 
     xcb_ungrab_button(g_xcb.connection,
                       XCB_BUTTON_INDEX_ANY, win, XCB_MOD_MASK_ANY);
+
+    // iterate over list of key bindings and request grabs
+
+    for (KeyBinding& kb : s_kblist)
+    {
+        if (kb.target != BIND_CLIENTS) continue;
+
+        autofree_ptr<xcb_keycode_t> code(
+            xcb_key_symbols_get_keycode(s_key_symbols, kb.keysym)
+            );
+
+        if (!code) continue;
+
+        for (unsigned int k = 0; code.get()[k] != XCB_NO_SYMBOL; ++k)
+        {
+            for (unsigned int mods : s_modifiers)
+            {
+                xcb_grab_key(g_xcb.connection, 0, win,
+                             kb.modifiers | mods, *code,
+                             XCB_GRAB_MODE_SYNC, XCB_GRAB_MODE_SYNC);
+            }
+        }
+    }
 
     // iterate over list of mouse bindings and request grabs
 
@@ -289,7 +338,7 @@ void BindingList::regrab_client(Client& c)
 
         for (unsigned int mods : s_modifiers)
         {
-            xcb_grab_button(g_xcb.connection, 1, win,
+            xcb_grab_button(g_xcb.connection, 0, win,
                             XCB_EVENT_MASK_BUTTON_PRESS,
                             XCB_GRAB_MODE_SYNC, XCB_GRAB_MODE_SYNC,
                             XCB_WINDOW_NONE, XCB_CURSOR_NONE,
@@ -310,10 +359,31 @@ void BindingList::handle_event_key_press(xcb_generic_event_t* event)
 
     INFO << "keysym " << keysym << " pressed";
 
-    EventLoop::terminate();
+    if (ev->event == g_xcb.root)
+        EventLoop::terminate();
+    else
+    {
+        Client* c = ClientList::find_window(ev->event);
+        if (!c)
+            ERROR << "key_press for unmanaged window";
+        else
+        {
+            for (KeyBinding& kb : s_kblist)
+            {
+                if (kb.target == BIND_CLIENTS &&
+                    modifier_clean(ev->state) == modifier_clean(kb.modifiers) &&
+                    keysym == kb.keysym)
+                {
+                    ASSERT(kb.handler);
+                    KeyEvent ke(c, *ev);
+                    kb.handler(ke);
+                }
+            }
+        }
+    }
 
     // Unfreeze grab events
-    xcb_allow_events(g_xcb.connection, XCB_ALLOW_ASYNC_KEYBOARD, ev->time);
+    xcb_allow_events(g_xcb.connection, XCB_ALLOW_SYNC_KEYBOARD, ev->time);
 
     INFO << "key_press event done.";
 }
@@ -344,18 +414,18 @@ void BindingList::handle_event_button_press(xcb_generic_event_t* event)
             {
                 if (bb.target == BIND_CLIENTS &&
                     modifier_clean(ev->state) == modifier_clean(bb.modifiers) &&
-                    ev->detail == bb.button &&
-                    bb.func)
+                    ev->detail == bb.button)
                 {
+                    ASSERT(bb.handler);
                     ButtonEvent be(c, *ev);
-                    bb.func(be);
+                    bb.handler(be);
                 }
             }
         }
     }
 
     // Unfreeze grab events
-    xcb_allow_events(g_xcb.connection, XCB_ALLOW_ASYNC_POINTER, ev->time);
+    xcb_allow_events(g_xcb.connection, XCB_ALLOW_SYNC_POINTER, ev->time);
 
     INFO << "button_press event done.";
 }
