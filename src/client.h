@@ -59,6 +59,9 @@ public:
 
     //! flag whether window is currently mapped
     bool m_is_mapped;
+    //! flag whether the window has focus
+    bool m_has_focus;
+
     //! flag to mark clients unseen/seen during remanage_all_windows()
     bool m_seen;
 
@@ -94,6 +97,13 @@ protected:
     static windowmap_type s_windowmap;
 
 public:
+    //! color of focused window
+    static uint32_t s_pixel_focused;
+
+    //! color of non-focused window
+    static uint32_t s_pixel_blurred;
+
+public:
     //! Locate Client for a window by its id.
     static Client * find_window(xcb_window_t win)
     {
@@ -109,6 +119,9 @@ public:
 
     //! Unmanage a window by destroying the Client structure for it.
     static bool unmanage_window(Client* c);
+
+    //! Configure client to have focus.
+    static void focus_window(Client* active);
 };
 
 #endif // !TILEWM_CLIENT_HEADER

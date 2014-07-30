@@ -92,6 +92,14 @@ public:
                              &b);
     }
 
+    //! Set the windows border pixel.
+    void set_border_pixel(uint32_t p)
+    {
+        xcb_change_window_attributes(g_xcb.connection, m_window,
+                                     XCB_CW_BORDER_PIXEL,
+                                     &p);
+    }
+
     //! Change window stacking order.
     void stack(xcb_stack_mode_t stack)
     {

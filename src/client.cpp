@@ -21,6 +21,7 @@
  ******************************************************************************/
 
 #include "client.h"
+#include "binding.h"
 
 #include <cstring>
 #include <xcb/xcb_icccm.h>
@@ -140,6 +141,17 @@ void Client::initial_update()
     // *** set remainder of fields
 
     m_is_mapped = false;
+    m_has_focus = false;
+
+    // *** subscribe to property change and mouse enter events
+
+    unsigned int values =
+        XCB_EVENT_MASK_PROPERTY_CHANGE |
+        XCB_EVENT_MASK_ENTER_WINDOW;
+
+    xcb_change_window_attributes(g_xcb.connection, m_window,
+                                 XCB_CW_EVENT_MASK, &values);
+
 }
 
 //! Handle a XCB_CONFIGURE_REQUEST event, usually by ignoring it.
@@ -181,6 +193,12 @@ void Client::configure_request(const xcb_configure_request_event_t& e)
 
 //! map window id -> Client for all known clients
 ClientList::windowmap_type ClientList::s_windowmap;
+
+//! color of focused window
+uint32_t ClientList::s_pixel_focused;
+
+//! color of non-focused window
+uint32_t ClientList::s_pixel_blurred;
 
 //! Query and manage all children of the root window.
 void ClientList::remanage_all_windows()
@@ -341,6 +359,44 @@ bool ClientList::unmanage_window(Client* c)
     ASSERT(&i->second == c);
     s_windowmap.erase(i);
     return true;
+}
+
+//! Configure client to have focus.
+void ClientList::focus_window(Client* active)
+{
+    INFO << "focus_window client " << active << " win " << active->window();
+
+    for (windowmap_type::value_type& wmi : s_windowmap)
+    {
+        Client& c = wmi.second;
+
+        if (active == &c)
+        {
+            c.m_has_focus = true;
+
+            // TODO: combine requests into one
+            c.set_border_pixel(s_pixel_focused);
+            c.stack_above();
+            c.set_border_width(6);
+        }
+        else if (c.m_has_focus)
+        {
+            c.m_has_focus = false;
+
+            // TODO: combine requests into one
+            c.set_border_pixel(s_pixel_blurred);
+            c.set_border_width(6);
+        }
+    }
+
+    xcb_window_t win = active->window();
+
+    xcb_change_property(g_xcb.connection, XCB_PROP_MODE_REPLACE,
+                        g_xcb.root, g_xcb._NET_ACTIVE_WINDOW.atom,
+                        XCB_ATOM_WINDOW, 32, 1, &win);
+
+    xcb_set_input_focus(g_xcb.connection, XCB_INPUT_FOCUS_POINTER_ROOT,
+                        win, XCB_CURRENT_TIME);
 }
 
 /******************************************************************************/

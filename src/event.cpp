@@ -74,7 +74,16 @@ static void handle_event_motion_notify(xcb_generic_event_t* event)
 static void handle_event_enter_notify(xcb_generic_event_t* event)
 {
     xcb_enter_notify_event_t* ev = (xcb_enter_notify_event_t*)event;
-    TRACE << "Stub event handler: " << *ev;
+    TRACE << "event_notify event handler: " << *ev;
+
+    Client* c = ClientList::find_window(ev->event);
+    if (!c) {
+        ERROR << "enter_notify event for unmanaged window";
+        return;
+    }
+
+    // focus window on mouse enter
+    ClientList::focus_window(c);
 }
 
 //! Event handler stub for XCB_LEAVE_NOTIFY

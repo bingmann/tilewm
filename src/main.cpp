@@ -81,6 +81,11 @@ int main(int argc, char* argv[])
 
     BindingList::regrab_root();
 
+    // *** set up client list
+
+    ClientList::s_pixel_focused = g_xcb.allocate_color(65535, 0, 0);
+    ClientList::s_pixel_blurred = g_xcb.allocate_color(0, 0, 65535);
+
     ClientList::remanage_all_windows();
 
     // *** set up global event table and run loop!
