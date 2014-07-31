@@ -310,14 +310,69 @@ static void handle_event_configure_request(xcb_generic_event_t* event)
 static void handle_event_property_notify(xcb_generic_event_t* event)
 {
     xcb_property_notify_event_t* ev = (xcb_property_notify_event_t*)event;
-    TRACE << "Stub event handler: " << *ev;
+    TRACE << "Event handler: " << *ev;
+
+    Client* c = ClientList::find_window(ev->window);
+    if (c)
+    {
+        // known window -> possibly handle property change
+        TRACE << "property_notify for window " << c;
+
+        if (ev->atom == XCB_ATOM_WM_CLASS)
+        {
+            ERROR << "window requested a change of WM_CLASS. TODO";
+        }
+        else if (ev->atom == XCB_ATOM_WM_NAME)
+        {
+            ERROR << "window requested a change of WM_NAME. TODO";
+        }
+        else if (ev->atom == g_xcb.WM_STATE.atom)
+        {
+            ERROR << "window requested a change of WM_STATE. TODO";
+        }
+        else if (ev->atom == g_xcb.WM_PROTOCOLS.atom)
+        {
+            c->update_wm_protocols();
+        }
+        else
+        {
+            INFO << "unknown atom: "
+                 << ev->atom << " - " << g_xcb.find_atom_name(ev->atom);
+        }
+    }
+    else
+    {
+        // unknown window
+        TRACE << "property_notify for unmanaged window?";
+
+        INFO << "unknown atom: "
+             << ev->atom << " - " << g_xcb.find_atom_name(ev->atom);
+    }
 }
 
 //! Event handler stub for XCB_CLIENT_MESSAGE
 static void handle_event_client_message(xcb_generic_event_t* event)
 {
     xcb_client_message_event_t* ev = (xcb_client_message_event_t*)event;
-    TRACE << "Stub event handler: " << *ev;
+    TRACE << "Event handler: " << *ev;
+
+    Client* c = ClientList::find_window(ev->window);
+    if (c)
+    {
+        // known window -> possibly handle client message
+        TRACE << "client_message for window " << c;
+
+        INFO << "unknown atom: "
+             << ev->type << " - " << g_xcb.find_atom_name(ev->type);
+    }
+    else
+    {
+        // unknown window
+        TRACE << "client_message for unmanaged window?";
+
+        INFO << "unknown atom: "
+             << ev->type << " - " << g_xcb.find_atom_name(ev->type);
+    }
 }
 
 //! Event handler stub for XCB_CLIENT_MESSAGE
