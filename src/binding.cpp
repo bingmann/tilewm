@@ -92,111 +92,6 @@ void BindingList::find_numlock_mask()
     s_modifiers[3] = s_numlock_mask | XCB_MOD_MASK_LOCK;
 }
 
-static void mouse_move_handler(ButtonEvent& be)
-{
-    TRACE << "mouse_move_handler()";
-
-    if (!be.client()) {
-        ERROR << "Called mouse move handler without client";
-        return;
-    }
-
-    Client& c = *be.client();
-
-    Point click_pos = be.root_pos();
-    Point win_pos = c.m_geometry.origin();
-
-    xcb_grab_pointer_cookie_t gpc =
-        xcb_grab_pointer(g_xcb.connection, 0, c.window(),
-                         XCB_EVENT_MASK_BUTTON_PRESS |
-                         XCB_EVENT_MASK_BUTTON_RELEASE |
-                         XCB_EVENT_MASK_BUTTON_MOTION |
-                         XCB_EVENT_MASK_POINTER_MOTION,
-                         XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC,
-                         XCB_WINDOW_NONE, g_xcb.CR_fleur.cursor,
-                         XCB_CURRENT_TIME);
-
-    autofree_ptr<xcb_grab_pointer_reply_t> gpr(
-        xcb_grab_pointer_reply(g_xcb.connection, gpc, NULL)
-        );
-
-    if (!gpr || gpr->status != XCB_GRAB_STATUS_SUCCESS) {
-        ERROR << "Could not grab pointer for receiving mouse movement events";
-        return;
-    }
-
-    bool moving = true;
-    autofree_ptr<xcb_generic_event_t> event;
-    xcb_timestamp_t timestamp = 0;
-
-    while (moving && (event = EventLoop::wait()))
-    {
-        switch (XCB_EVENT_RESPONSE_TYPE(event.get()))
-        {
-        case XCB_MOTION_NOTIFY: {
-            xcb_motion_notify_event_t* ev
-                = (xcb_motion_notify_event_t*)event.get();
-
-            TRACE << "motion_event handler: " << *ev;
-
-            // calculate new window origin
-            c.m_geometry.set_origin(
-                win_pos + Point(ev->root_x, ev->root_y) - click_pos
-                );
-
-            // only do actual movement every 10 milliseconds
-            if ((ev->time - timestamp) * 100 >= 1000) {
-                timestamp = ev->time;
-                be.client()->move(c.m_geometry.origin());
-            }
-
-            break;
-        }
-        case XCB_BUTTON_RELEASE: {
-            xcb_button_release_event_t* ev
-                = (xcb_button_release_event_t*)event.get();
-
-            TRACE << "button_release event handler: " << *ev;
-            moving = false;
-            break;
-        }
-        case XCB_KEY_PRESS: {
-            // ignore key press events during mouse operation.
-            xcb_key_press_event_t* ev = (xcb_key_press_event_t*)event.get();
-            TRACE << "key_press event handler: " << *ev;
-            xcb_allow_events(g_xcb.connection, XCB_ALLOW_SYNC_KEYBOARD,
-                             ev->time);
-            break;
-        }
-        default:
-            // TODO: which other events should be ignored?
-            EventLoop::process_global(event.get());
-        }
-    }
-
-    xcb_ungrab_pointer(g_xcb.connection, XCB_CURRENT_TIME);
-
-    INFO << "end mouse_move_handler()";
-}
-
-static void action_key_quit_window(KeyEvent& ke)
-{
-    TRACE << "action_key_quit_window()";
-
-    if (!ke.client()) {
-        ERROR << "Called quit_window without client";
-        return;
-    }
-
-    Client& c = *ke.client();
-
-    if (c.m_can_delete_window)
-        c.wm_delete_window();
-    else {
-        INFO << "Window " << c.window() << " does not have WM_DELETE_WINDOW.";
-    }
-}
-
 //! Initialize binding list.
 void BindingList::initialize()
 {
@@ -206,26 +101,6 @@ void BindingList::initialize()
 
     if (!s_key_symbols)
         FATAL << "Cannot allocate keyboard symbol table";
-
-    // add a test key binding
-
-    s_kblist.emplace_back(
-        KeyBinding {
-            BIND_ROOT, 0, XK_a,
-            [](KeyEvent&) { DEBUG << "Test KeyBinding"; }
-        });
-
-    s_kblist.emplace_back(
-        KeyBinding {
-            BIND_CLIENTS, XCB_MOD_MASK_CONTROL, XK_q, action_key_quit_window
-        });
-
-    // add a test mouse binding
-
-    s_bblist.emplace_back(
-        ButtonBinding { BIND_CLIENTS, 0, XCB_BUTTON_INDEX_1,
-                        mouse_move_handler }
-        );
 }
 
 //! Free binding list (free key_symbols table and mappings).
@@ -360,7 +235,18 @@ void BindingList::handle_event_key_press(xcb_generic_event_t* event)
     INFO << "keysym " << keysym << " pressed";
 
     if (ev->event == g_xcb.root)
-        EventLoop::terminate();
+    {
+        for (KeyBinding& kb : s_kblist)
+        {
+            if (kb.target == BIND_ROOT &&
+                modifier_clean(ev->state) == modifier_clean(kb.modifiers) &&
+                keysym == kb.keysym)
+            {
+                KeyEvent ke(NULL, *ev);
+                kb.call(ke);
+            }
+        }
+    }
     else
     {
         Client* c = ClientList::find_window(ev->event);
@@ -374,9 +260,8 @@ void BindingList::handle_event_key_press(xcb_generic_event_t* event)
                     modifier_clean(ev->state) == modifier_clean(kb.modifiers) &&
                     keysym == kb.keysym)
                 {
-                    ASSERT(kb.handler);
                     KeyEvent ke(c, *ev);
-                    kb.handler(ke);
+                    kb.call(ke);
                 }
             }
         }
@@ -393,6 +278,9 @@ void BindingList::handle_event_key_release(xcb_generic_event_t* event)
 {
     xcb_key_release_event_t* ev = (xcb_key_release_event_t*)event;
     TRACE << "Stub key_release event handler: " << *ev;
+
+    // Unfreeze grab events
+    xcb_allow_events(g_xcb.connection, XCB_ALLOW_SYNC_KEYBOARD, ev->time);
 }
 
 //! Event handler for XCB_BUTTON_PRESS
@@ -402,7 +290,19 @@ void BindingList::handle_event_button_press(xcb_generic_event_t* event)
     TRACE << "Event handler: " << *ev;
 
     if (ev->event == g_xcb.root)
-        EventLoop::terminate();
+    {
+        for (ButtonBinding& bb : s_bblist)
+        {
+            if (bb.target == BIND_ROOT &&
+                modifier_clean(ev->state) == modifier_clean(bb.modifiers) &&
+                ev->detail == bb.button)
+            {
+                ASSERT(bb.handler);
+                ButtonEvent be(NULL, *ev);
+                bb.handler(be);
+            }
+        }
+    }
     else
     {
         Client* c = ClientList::find_window(ev->event);

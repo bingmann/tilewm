@@ -80,6 +80,12 @@ public:
         return xcb_generate_id(connection);
     }
 
+    //! Return the file descriptor of the X11 connection
+    static int get_file_descriptor()
+    {
+        return xcb_get_file_descriptor(connection);
+    }
+
     //! Return the corresponding screen data structure
     static xcb_screen_t * get_screen(unsigned int screen);
 

@@ -71,6 +71,7 @@ int main(int argc, char* argv[])
 
     // Initialize keyboard and mouse binding list
     BindingList::initialize();
+    BindingList::add_test_bindings();
 
     // Let XCB prefetch all the extensions we might need
     xcb_prefetch_extension_data(g_xcb.connection, &xcb_randr_id);

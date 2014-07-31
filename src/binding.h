@@ -25,10 +25,9 @@
 
 #include <array>
 #include <vector>
-#include <functional>
 #include <xcb/xcb.h>
 #include <xcb/xcb_keysyms.h>
-#include "geometry.h"
+#include "action.h"
 
 //! Target of the key or mouse button bindings: the root window, a specific
 //! interaction window class or all managed clients.
@@ -36,43 +35,6 @@ enum binding_target_t {
     BIND_ROOT, BIND_CLIENTS
 };
 
-//! Struct to abstract all parameters passed to keyboard handlers.
-struct KeyEvent
-{
-protected:
-    //! Pointer to client on which the key was pressed.
-    class Client* m_client;
-
-    //! Reference to currently active key press event.
-    xcb_key_press_event_t& m_event;
-
-public:
-    //! Initializing constructor
-    KeyEvent(class Client* client, xcb_key_press_event_t& event)
-        : m_client(client), m_event(event)
-    { }
-
-    //! Return pointer to client of event (or NULL).
-    class Client * client()
-    {
-        return m_client;
-    }
-
-    //! Return mouse point the event occurred, relative to window geometry.
-    Point pos()
-    {
-        return Point(m_event.event_x, m_event.event_y);
-    }
-
-    //! Return mouse point the event occurred, relative to the root window.
-    Point root_pos()
-    {
-        return Point(m_event.root_x, m_event.root_y);
-    }
-};
-
-//! All keyboard binding handlers must have this type
-typedef std::function<void (KeyEvent&)> key_handler_type;
 
 /*!
  * Information about a keyboard binding.
@@ -90,45 +52,34 @@ struct KeyBinding
 
     //! handler function to call
     key_handler_type handler;
-};
 
-//! Struct to abstract all parameters passed to mouse button handlers.
-struct ButtonEvent
-{
-protected:
-    //! Pointer to client on which the button was pressed.
-    class Client* m_client;
+    //! action handler object to call
+    ActionPtr action;
 
-    //! Reference to currently active press event.
-    xcb_button_press_event_t& m_event;
-
-public:
-    //! Initializing constructor
-    ButtonEvent(class Client* client, xcb_button_press_event_t& event)
-        : m_client(client), m_event(event)
+    //! Constructor with a plain handler functions (without class)
+    KeyBinding(const binding_target_t& _target, unsigned int _modifiers,
+               xcb_keysym_t _keysym, void(* _handler)(KeyEvent&))
+        : target(_target), modifiers(_modifiers),
+          keysym(_keysym), handler(_handler)
     { }
 
-    //! Return pointer to client of event (or NULL).
-    class Client * client()
-    {
-        return m_client;
-    }
+    //! Constructor with an Action handler object
+    KeyBinding(const binding_target_t& _target, unsigned int _modifiers,
+               xcb_keysym_t _keysym, Action* _action)
+        : target(_target), modifiers(_modifiers),
+          keysym(_keysym), action(_action)
 
-    //! Return mouse point the event occurred, relative to window geometry.
-    Point pos()
-    {
-        return Point(m_event.event_x, m_event.event_y);
-    }
+    { }
 
-    //! Return mouse point the event occurred, relative to the root window.
-    Point root_pos()
+    //! Call the handler function or action handler.
+    void call(KeyEvent& ke)
     {
-        return Point(m_event.root_x, m_event.root_y);
+        if (action)
+            return action.get()->operator () (ke);
+        else
+            return handler(ke);
     }
 };
-
-//! All mouse button binding handlers must have this type.
-typedef std::function<void (ButtonEvent&)> button_handler_type;
 
 /*!
  * Information about a mouse button binding.
@@ -146,6 +97,33 @@ struct ButtonBinding
 
     //! handler function to call
     button_handler_type handler;
+
+    //! action handler object to call
+    ActionPtr action;
+
+    //! Constructor with a plain handler functions (without class)
+    ButtonBinding(const binding_target_t& _target, unsigned int _modifiers,
+                  xcb_button_index_t _button, void(* _handler)(ButtonEvent&))
+        : target(_target), modifiers(_modifiers),
+          button(_button), handler(_handler)
+    { }
+
+    //! Constructor with an Action handler object
+    ButtonBinding(const binding_target_t& _target, unsigned int _modifiers,
+                  xcb_button_index_t _button, Action* _action)
+        : target(_target), modifiers(_modifiers),
+          button(_button), action(_action)
+
+    { }
+
+    //! Call the handler function or action handler.
+    void call(ButtonEvent& be)
+    {
+        if (action)
+            return action.get()->operator () (be);
+        else
+            return handler(be);
+    }
 };
 
 /*!
@@ -210,6 +188,9 @@ public:
 
     //! Event handler for XCB_BUTTON_RELEASE
     static void handle_event_button_release(xcb_generic_event_t* event);
+
+    //! test
+    static void add_test_bindings();
 };
 
 #endif // !TILEWM_BINDING_HEADER
