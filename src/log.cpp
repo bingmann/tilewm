@@ -25,7 +25,7 @@
 #include <strings.h>
 
 //! Currently configured maximum level written to stderr
-log_level_t Log::s_stderr_level = LOG_INFO;
+log_level_t Log::s_stderr_level = LOG_TRACE;
 
 //! Whether to use ANSI terminal color on stderr
 bool Log::s_stderr_color = true;
