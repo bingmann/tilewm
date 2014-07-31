@@ -1,7 +1,7 @@
 /*******************************************************************************
  * src/xcb-atom.cpp
  *
- * Auto-generated functions to manage named cached atoms.
+ * Auto-generated functions to manage named cached atoms and cursors.
  *
  *******************************************************************************
  * Copyright (C) 2014 Timo Bingmann <tb@panthema.net>
@@ -74,5 +74,18 @@ struct XcbConnection::XcbAtom* XcbConnection::atomlist[] = {
 
 const unsigned int XcbConnection::atomlist_size
     = sizeof(atomlist) / sizeof(*atomlist);
+
+XcbConnection::XcbCursor XcbConnection::CR_fleur =
+{ "fleur", XCB_CURSOR_NONE };
+XcbConnection::XcbCursor XcbConnection::CR_crosshair =
+{ "crosshair", XCB_CURSOR_NONE };
+
+struct XcbConnection::XcbCursor* XcbConnection::cursorlist[] = {
+    &CR_fleur,
+    &CR_crosshair,
+};
+
+const unsigned int XcbConnection::cursorlist_size
+    = sizeof(cursorlist) / sizeof(*cursorlist);
 
 /******************************************************************************/

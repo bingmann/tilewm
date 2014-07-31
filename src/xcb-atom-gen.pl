@@ -24,18 +24,23 @@ use warnings;
 open(F, "xcb.h") or die("Cannot read xcb.h: $!");
 
 my @atomlist = ();
+my @cursorlist = ();
 
 while (my $ln = <F>)
 {
-    next unless $ln =~ /static XcbAtom (\S+);/;
-    push(@atomlist, $1);
+    if ($ln =~ /static XcbAtom (\S+);/) {
+        push(@atomlist, $1);
+    }
+    if ($ln =~ /static XcbCursor CR_(\S+);/) {
+        push(@cursorlist, $1);
+    }
 }
 
 print <<EOF;
 /*******************************************************************************
  * src/xcb-atom.cpp
  *
- * Auto-generated functions to manage named cached atoms.
+ * Auto-generated functions to manage named cached atoms and cursors.
  *
  *******************************************************************************
  * Copyright (C) 2014 Timo Bingmann <tb\@panthema.net>
@@ -89,17 +94,34 @@ print <<EOF;
 struct XcbConnection::XcbAtom* XcbConnection::atomlist[] = {
 EOF
 
-foreach my $atom (@atomlist)
-{
-    print "    &$atom,\n";
-}
-
-print "};\n";
+print "    &$_,\n" foreach (@atomlist);
 
 print <<EOF;
+};
 
 const unsigned int XcbConnection::atomlist_size
     = sizeof(atomlist) / sizeof(*atomlist);
+
+EOF
+
+foreach my $cursor (@cursorlist)
+{
+    print "XcbConnection::XcbCursor XcbConnection::CR_$cursor =\n";
+    print "{ \"$cursor\", XCB_CURSOR_NONE \};\n";
+}
+
+print <<EOF;
+
+struct XcbConnection::XcbCursor* XcbConnection::cursorlist[] = {
+EOF
+
+print "    &CR_$_,\n" foreach (@cursorlist);
+
+print <<EOF;
+};
+
+const unsigned int XcbConnection::cursorlist_size
+    = sizeof(cursorlist) / sizeof(*cursorlist);
 
 /******************************************************************************/
 EOF

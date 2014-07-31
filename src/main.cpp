@@ -66,6 +66,9 @@ int main(int argc, char* argv[])
     // Fetch named cached atoms
     g_xcb.load_atomlist();
 
+    // Fetch cached cursors
+    g_xcb.load_cursorlist();
+
     // Initialize keyboard and mouse binding list
     BindingList::initialize();
 
@@ -96,6 +99,7 @@ int main(int argc, char* argv[])
     // *** graceful termination requested
 
     BindingList::deinitialize();
+    g_xcb.unload_cursorlist();
     g_xcb.close_connection();
 
     return EXIT_SUCCESS;

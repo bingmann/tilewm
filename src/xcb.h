@@ -30,6 +30,7 @@
 #include <string>
 #include <map>
 #include <xcb/xcb_icccm.h>
+#include <xcb/xcb_cursor.h>
 
 //! forward declaration of Display, as we do not want to globally include Xlib.
 typedef struct _XDisplay Display;
@@ -135,6 +136,34 @@ public:
 public:
     //! Allocate a color in the default color map.
     static uint32_t allocate_color(uint16_t r, uint16_t g, uint16_t b);
+
+public:
+    //! Struct to keep information about cached cursors
+    struct XcbCursor
+    {
+        const char* name;
+        xcb_cursor_t cursor;
+    };
+
+    //! XCB cursor loading context
+    static xcb_cursor_context_t* cursor_context;
+
+    // *** List of cached cursors
+
+    static XcbCursor CR_fleur;
+    static XcbCursor CR_crosshair;
+
+    //! List of cursors for caching.
+    static struct XcbCursor* cursorlist[];
+
+    //! Number of cursors for caching.
+    static const unsigned int cursorlist_size;
+
+    //! Query X server for cached cursors.
+    static void load_cursorlist();
+
+    //! Free cached cursor resources.
+    static void unload_cursorlist();
 };
 
 //! empty object to make calling static functions more convenient.

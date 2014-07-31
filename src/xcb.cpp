@@ -207,6 +207,46 @@ uint32_t XcbConnection::allocate_color(uint16_t r, uint16_t g, uint16_t b)
     return acr->pixel;
 }
 
+//! XCB cursor loading context
+xcb_cursor_context_t* XcbConnection::cursor_context = NULL;
+
+//! Query X server for cached cursors.
+void XcbConnection::load_cursorlist()
+{
+    ASSERT(cursor_context == NULL);
+
+    if (xcb_cursor_context_new(connection, screen, &cursor_context) != 0) {
+        ERROR << "Could not allocate xcb_cursor_context.";
+        return;
+    }
+
+    for (unsigned int ci = 0; ci < cursorlist_size; ++ci)
+    {
+        XcbCursor& c = *cursorlist[ci];
+
+        c.cursor = xcb_cursor_load_cursor(cursor_context, c.name);
+        INFO << "load_cursor: " << c.name << " -> " << c.cursor;
+    }
+}
+
+//! Free cached cursor resources.
+void XcbConnection::unload_cursorlist()
+{
+    ASSERT(cursor_context != NULL);
+
+    for (unsigned int ci = 0; ci < cursorlist_size; ++ci)
+    {
+        XcbCursor& c = *cursorlist[ci];
+
+        xcb_free_cursor(g_xcb.connection, c.cursor);
+        INFO << "cursor: " << c.cursor;
+    }
+
+    xcb_cursor_context_free(cursor_context);
+
+    cursor_context = NULL;
+}
+
 //! Output string "name (id)" as description of an atom
 std::ostream& operator << (std::ostream& os, const AtomFormatted& a)
 {

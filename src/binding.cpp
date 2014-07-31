@@ -113,7 +113,7 @@ static void mouse_move_handler(ButtonEvent& be)
                          XCB_EVENT_MASK_BUTTON_MOTION |
                          XCB_EVENT_MASK_POINTER_MOTION,
                          XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC,
-                         XCB_WINDOW_NONE, XCB_CURSOR_NONE,
+                         XCB_WINDOW_NONE, g_xcb.CR_fleur.cursor,
                          XCB_CURRENT_TIME);
 
     autofree_ptr<xcb_grab_pointer_reply_t> gpr(
