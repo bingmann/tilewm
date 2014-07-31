@@ -140,6 +140,122 @@ static void mouse_move_handler(ButtonEvent& be)
     INFO << "end mouse_move_handler()";
 }
 
+static void mouse_resize_handler(ButtonEvent& be)
+{
+    TRACE << "mouse_resize_handler()";
+
+    if (!be.client()) {
+        ERROR << "Called mouse resize handler without client";
+        return;
+    }
+
+    Client& c = *be.client();
+
+    Point click_pos = be.root_pos();
+    Rectangle win_geo = c.m_geometry;
+
+    // cursor in left/right or top/bottom halves
+    bool left = (be.pos().x < win_geo.w / 2);
+    bool top = (be.pos().y < win_geo.h / 2);
+
+    xcb_cursor_t cursor =
+        (left && top ? g_xcb.CR_top_left_corner.cursor :
+         !left && top ? g_xcb.CR_top_right_corner.cursor :
+         left && !top ? g_xcb.CR_bottom_left_corner.cursor :
+         !left && !top ? g_xcb.CR_bottom_right_corner.cursor :
+         g_xcb.CR_top_left_corner.cursor);
+
+    xcb_grab_pointer_cookie_t gpc =
+        xcb_grab_pointer(g_xcb.connection, 0, c.window(),
+                         XCB_EVENT_MASK_BUTTON_PRESS |
+                         XCB_EVENT_MASK_BUTTON_RELEASE |
+                         XCB_EVENT_MASK_BUTTON_MOTION |
+                         XCB_EVENT_MASK_POINTER_MOTION,
+                         XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC,
+                         XCB_WINDOW_NONE, cursor,
+                         XCB_CURRENT_TIME);
+
+    autofree_ptr<xcb_grab_pointer_reply_t> gpr(
+        xcb_grab_pointer_reply(g_xcb.connection, gpc, NULL)
+        );
+
+    if (!gpr || gpr->status != XCB_GRAB_STATUS_SUCCESS) {
+        ERROR << "Could not grab pointer for receiving mouse movement events";
+        return;
+    }
+
+    bool moving = true;
+    autofree_ptr<xcb_generic_event_t> event;
+    xcb_timestamp_t timestamp = 0;
+
+    while (moving && (event = EventLoop::wait()))
+    {
+        switch (XCB_EVENT_RESPONSE_TYPE(event.get()))
+        {
+        case XCB_MOTION_NOTIFY: {
+            xcb_motion_notify_event_t* ev
+                = (xcb_motion_notify_event_t*)event.get();
+
+            TRACE << "motion_event handler: " << *ev;
+
+            // calculate relative cursor movement
+            Point delta = click_pos - Point(ev->root_x, ev->root_y);
+
+            // calculate new window rectangle
+            Rectangle& new_geo = c.m_geometry;
+            new_geo = win_geo;
+
+            if (left) {
+                new_geo.x += -delta.x;
+                new_geo.w += delta.x;
+            }
+            else {
+                new_geo.w += -delta.x;
+            }
+
+            if (top) {
+                new_geo.y += -delta.y;
+                new_geo.h += delta.y;
+            }
+            else {
+                new_geo.h += -delta.y;
+            }
+
+            // only do actual movement every 10 milliseconds
+            if ((ev->time - timestamp) * 100 >= 1000) {
+                timestamp = ev->time;
+                be.client()->move_resize(new_geo);
+            }
+
+            break;
+        }
+        case XCB_BUTTON_RELEASE: {
+            xcb_button_release_event_t* ev
+                = (xcb_button_release_event_t*)event.get();
+
+            TRACE << "button_release event handler: " << *ev;
+            moving = false;
+            break;
+        }
+        case XCB_KEY_PRESS: {
+            // ignore key press events during mouse operation.
+            xcb_key_press_event_t* ev = (xcb_key_press_event_t*)event.get();
+            TRACE << "key_press event handler: " << *ev;
+            xcb_allow_events(g_xcb.connection, XCB_ALLOW_SYNC_KEYBOARD,
+                             ev->time);
+            break;
+        }
+        default:
+            // TODO: which other events should be ignored?
+            EventLoop::process_global(event.get());
+        }
+    }
+
+    xcb_ungrab_pointer(g_xcb.connection, XCB_CURRENT_TIME);
+
+    INFO << "end mouse_resize_handler()";
+}
+
 static void action_key_quit_window(KeyEvent& ke)
 {
     TRACE << "action_key_quit_window()";
@@ -236,6 +352,10 @@ void BindingList::add_test_bindings()
 
     s_bblist.emplace_back(
         BIND_CLIENTS, 0, XCB_BUTTON_INDEX_1, mouse_move_handler
+        );
+
+    s_bblist.emplace_back(
+        BIND_CLIENTS, 0, XCB_BUTTON_INDEX_3, mouse_resize_handler
         );
 }
 

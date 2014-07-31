@@ -157,7 +157,10 @@ public:
     // *** List of cached cursors
 
     static XcbCursor CR_fleur;
-    static XcbCursor CR_crosshair;
+    static XcbCursor CR_top_left_corner;
+    static XcbCursor CR_top_right_corner;
+    static XcbCursor CR_bottom_right_corner;
+    static XcbCursor CR_bottom_left_corner;
 
     //! List of cursors for caching.
     static struct XcbCursor* cursorlist[];

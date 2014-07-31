@@ -77,12 +77,21 @@ const unsigned int XcbConnection::atomlist_size
 
 XcbConnection::XcbCursor XcbConnection::CR_fleur =
 { "fleur", XCB_CURSOR_NONE };
-XcbConnection::XcbCursor XcbConnection::CR_crosshair =
-{ "crosshair", XCB_CURSOR_NONE };
+XcbConnection::XcbCursor XcbConnection::CR_top_left_corner =
+{ "top_left_corner", XCB_CURSOR_NONE };
+XcbConnection::XcbCursor XcbConnection::CR_top_right_corner =
+{ "top_right_corner", XCB_CURSOR_NONE };
+XcbConnection::XcbCursor XcbConnection::CR_bottom_right_corner =
+{ "bottom_right_corner", XCB_CURSOR_NONE };
+XcbConnection::XcbCursor XcbConnection::CR_bottom_left_corner =
+{ "bottom_left_corner", XCB_CURSOR_NONE };
 
 struct XcbConnection::XcbCursor* XcbConnection::cursorlist[] = {
     &CR_fleur,
-    &CR_crosshair,
+    &CR_top_left_corner,
+    &CR_top_right_corner,
+    &CR_bottom_right_corner,
+    &CR_bottom_left_corner,
 };
 
 const unsigned int XcbConnection::cursorlist_size
