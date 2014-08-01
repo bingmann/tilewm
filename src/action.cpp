@@ -98,7 +98,7 @@ static void mouse_move_handler(ButtonEvent& be)
             xcb_motion_notify_event_t* ev
                 = (xcb_motion_notify_event_t*)event.get();
 
-            TRACE << "motion_event handler: " << *ev;
+            TRACE2 << "motion_event handler: " << *ev;
 
             // calculate new window origin
             c.m_geometry.set_origin(
@@ -117,14 +117,14 @@ static void mouse_move_handler(ButtonEvent& be)
             xcb_button_release_event_t* ev
                 = (xcb_button_release_event_t*)event.get();
 
-            TRACE << "button_release event handler: " << *ev;
+            TRACE2 << "button_release event handler: " << *ev;
             moving = false;
             break;
         }
         case XCB_KEY_PRESS: {
             // ignore key press events during mouse operation.
             xcb_key_press_event_t* ev = (xcb_key_press_event_t*)event.get();
-            TRACE << "key_press event handler: " << *ev;
+            TRACE2 << "key_press event handler: " << *ev;
             xcb_allow_events(g_xcb.connection, XCB_ALLOW_SYNC_KEYBOARD,
                              ev->time);
             break;
@@ -196,7 +196,7 @@ static void mouse_resize_handler(ButtonEvent& be)
             xcb_motion_notify_event_t* ev
                 = (xcb_motion_notify_event_t*)event.get();
 
-            TRACE << "motion_event handler: " << *ev;
+            TRACE2 << "motion_event handler: " << *ev;
 
             // calculate relative cursor movement
             Point delta = click_pos - Point(ev->root_x, ev->root_y);
@@ -233,7 +233,7 @@ static void mouse_resize_handler(ButtonEvent& be)
             xcb_button_release_event_t* ev
                 = (xcb_button_release_event_t*)event.get();
 
-            TRACE << "button_release event handler: " << *ev;
+            TRACE2 << "button_release event handler: " << *ev;
             moving = false;
             break;
         }
@@ -351,11 +351,13 @@ void BindingList::add_test_bindings()
     // add a test mouse binding
 
     s_bblist.emplace_back(
-        BIND_CLIENTS, 0, XCB_BUTTON_INDEX_1, mouse_move_handler
+        BIND_CLIENTS, XCB_MOD_MASK_CONTROL, XCB_BUTTON_INDEX_1,
+        mouse_move_handler
         );
 
     s_bblist.emplace_back(
-        BIND_CLIENTS, 0, XCB_BUTTON_INDEX_3, mouse_resize_handler
+        BIND_CLIENTS, XCB_MOD_MASK_CONTROL, XCB_BUTTON_INDEX_3,
+        mouse_resize_handler
         );
 }
 

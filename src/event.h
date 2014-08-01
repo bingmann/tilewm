@@ -95,7 +95,6 @@ public:
             exit(EXIT_FAILURE);
         }
 
-        TRACE << "xcb_wait_for_event()";
         xcb_generic_event_t* event = xcb_wait_for_event(g_xcb.connection);
 
         return autofree_ptr<xcb_generic_event_t>(event);
