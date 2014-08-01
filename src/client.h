@@ -57,6 +57,13 @@ public:
     //! whether WM_PROTOCOLS contains WM_DELETE_WINDOW
     bool m_can_delete_window;
 
+    //! ICCCM WM_HINTS structure
+    xcb_icccm_wm_hints_t m_wm_hints;
+    //! ICCCM WM_NORMAL_HINTS / WM_SIZE_HINTS structure
+    xcb_size_hints_t m_wm_size_hints;
+    //! ICCCM WM_TRANSIENT_FOR window id
+    xcb_window_t m_wm_transient_for;
+
     //! flag whether window is currently mapped
     bool m_is_mapped;
     //! flag whether the window has focus
@@ -75,6 +82,15 @@ public:
 
     //! Retrieve WM_PROTOCOLS property and update fields
     void update_wm_protocols();
+
+    //! Retrieve WM_HINTS property and update fields
+    void update_wm_hints();
+
+    //! Retrieve WM_NORMAL_HINTS property and size hints fields
+    void update_wm_normal_hints();
+
+    //! Retrieve ICCCM WM_TRANSIENT_FOR window id
+    void update_wm_transient_for();
 
     //! Perform initial query/update of all fields of the Client structure
     void initial_update();

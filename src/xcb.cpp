@@ -259,4 +259,74 @@ std::ostream& operator << (std::ostream& os, const xcb_client_message_data_t& d)
     return os << '[' << string_hexdump(d.data8, sizeof(d.data8)) << ']';
 }
 
+//! Output only valid fields of WM_HINTS data structure.
+std::ostream& operator << (std::ostream& os, const xcb_icccm_wm_hints_t& h)
+{
+    os << "[wmhints:"
+       << " flags=" << h.flags;
+
+    if (h.flags & XCB_ICCCM_WM_HINT_INPUT)
+        os << " input=" << h.input;
+
+    if (h.flags & XCB_ICCCM_WM_HINT_STATE)
+        os << " state=" << h.initial_state;
+
+    if (h.flags & XCB_ICCCM_WM_HINT_ICON_PIXMAP)
+        os << " icon_pixmap=" << h.icon_pixmap;
+
+    if (h.flags & XCB_ICCCM_WM_HINT_ICON_WINDOW)
+        os << " icon_window=" << h.icon_window;
+
+    if (h.flags & XCB_ICCCM_WM_HINT_ICON_POSITION)
+        os << " icon_x=" << h.icon_x << " icon_y=" << h.icon_y;
+
+    if (h.flags & XCB_ICCCM_WM_HINT_ICON_MASK)
+        os << " icon_mask=" << h.icon_mask;
+
+    if (h.flags & XCB_ICCCM_WM_HINT_WINDOW_GROUP)
+        os << " window_group=" << h.window_group;
+
+    if (h.flags & XCB_ICCCM_WM_HINT_X_URGENCY)
+        os << " urgency";
+
+    return os << "]";
+}
+
+//! Output only valid fields of WM_SIZE_HINTS data structure.
+std::ostream& operator << (std::ostream& os, const xcb_size_hints_t& h)
+{
+    os << "[sizehints:"
+       << " flags=" << h.flags;
+
+    if (h.flags & XCB_ICCCM_SIZE_HINT_P_POSITION)
+        os << " x=" << h.x << " y=" << h.y;
+
+    if (h.flags & XCB_ICCCM_SIZE_HINT_P_SIZE)
+        os << " width=" << h.width << " height=" << h.height;
+
+    if (h.flags & XCB_ICCCM_SIZE_HINT_P_MIN_SIZE)
+        os << " min_width=" << h.min_width << " min_height=" << h.min_height;
+
+    if (h.flags & XCB_ICCCM_SIZE_HINT_P_MAX_SIZE)
+        os << " max_width=" << h.max_width << " max_height=" << h.max_height;
+
+    if (h.flags & XCB_ICCCM_SIZE_HINT_P_RESIZE_INC)
+        os << " width_inc=" << h.width_inc << " height_inc=" << h.height_inc;
+
+    if (h.flags & XCB_ICCCM_SIZE_HINT_P_ASPECT)
+        os << " min_aspect_num=" << h.min_aspect_num
+           << " min_aspect_den=" << h.min_aspect_den
+           << " max_aspect_num=" << h.max_aspect_num
+           << " max_aspect_den=" << h.max_aspect_den;
+
+    if (h.flags & XCB_ICCCM_SIZE_HINT_BASE_SIZE)
+        os << " base_width=" << h.base_width
+           << " base_height=" << h.base_height;
+
+    if (h.flags & XCB_ICCCM_SIZE_HINT_P_WIN_GRAVITY)
+        os << " win_gravity=" << h.win_gravity;
+
+    return os << "]";
+}
+
 /******************************************************************************/

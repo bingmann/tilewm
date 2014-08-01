@@ -97,6 +97,57 @@ void Client::update_wm_protocols()
     }
 }
 
+//! Retrieve WM_HINTS property and update fields
+void Client::update_wm_hints()
+{
+    xcb_get_property_cookie_t igwhc =
+        xcb_icccm_get_wm_hints(g_xcb.connection, m_window);
+
+    if (xcb_icccm_get_wm_hints_reply(g_xcb.connection, igwhc,
+                                     &m_wm_hints, NULL))
+    {
+        INFO << "ICCCM: " << m_wm_hints;
+    }
+    else
+    {
+        WARN << "ICCCM WM_HINTS could not be retrieved.";
+    }
+}
+
+//! Retrieve WM_NORMAL_HINTS property and size hints fields
+void Client::update_wm_normal_hints()
+{
+    xcb_get_property_cookie_t igwnhc =
+        xcb_icccm_get_wm_normal_hints(g_xcb.connection, m_window);
+
+    if (xcb_icccm_get_wm_normal_hints_reply(g_xcb.connection,
+                                            igwnhc, &m_wm_size_hints, NULL))
+    {
+        INFO << "ICCCM: " << m_wm_size_hints;
+    }
+    else
+    {
+        WARN << "ICCCM WM_NORMAL_HINTS / WM_SIZE_HINTS could not be retrieved.";
+    }
+}
+
+//! Retrieve ICCCM WM_TRANSIENT_FOR window id
+void Client::update_wm_transient_for()
+{
+    xcb_get_property_cookie_t igwtfc =
+        xcb_icccm_get_wm_transient_for(g_xcb.connection, m_window);
+
+    if (xcb_icccm_get_wm_transient_for_reply(g_xcb.connection,
+                                             igwtfc, &m_wm_transient_for, NULL))
+    {
+        INFO << "ICCCM: transient for " << m_wm_transient_for;
+    }
+    else
+    {
+        WARN << "ICCCM WM_TRANSIENT_FOR could not be retrieved.";
+    }
+}
+
 //! Perform initial query/update of all fields of the Client structure
 void Client::initial_update()
 {
@@ -133,10 +184,13 @@ void Client::initial_update()
     m_geometry = m_initial_geometry;
     m_border_width = m_initial_border_width;
 
-    // *** get WM_CLASS and WM_PROTOCOLS
+    // *** get WM_CLASS and WM_PROTOCOLS, and more ICCCM properties.
 
     update_wm_class();
     update_wm_protocols();
+    update_wm_hints();
+    update_wm_normal_hints();
+    update_wm_transient_for();
 
     // *** set remainder of fields
 

@@ -327,6 +327,14 @@ extern std::ostream& operator << (std::ostream& os, const AtomFormatted& atom);
 extern std::ostream& operator << (
     std::ostream& os, const xcb_client_message_data_t& d);
 
+//! Output only valid fields of WM_HINTS data structure.
+extern std::ostream& operator << (
+    std::ostream& os, const xcb_icccm_wm_hints_t& h);
+
+//! Output only valid fields of WM_SIZE_HINTS data structure.
+extern std::ostream& operator << (
+    std::ostream& os, const xcb_size_hints_t& h);
+
 #endif // !TILEWM_XCB_HEADER
 
 /******************************************************************************/
