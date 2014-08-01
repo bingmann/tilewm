@@ -314,14 +314,24 @@ extern std::ostream& operator << (
 // *** Manually added ostream operators for XCB structures
 
 //! Helper class to generate more descriptive output for atoms
-struct AtomFormatted
+struct AtomFormatter
 {
     xcb_atom_t atom;
-    AtomFormatted(const xcb_atom_t& a) : atom(a) { }
+    AtomFormatter(const xcb_atom_t& a) : atom(a) { }
 };
 
 //! Output string "name (id)" as description of an atom
-extern std::ostream& operator << (std::ostream& os, const AtomFormatted& atom);
+extern std::ostream& operator << (std::ostream& os, const AtomFormatter& atom);
+
+//! Helper class to generate more descriptive output for xcb_gravity_t type.
+struct GravityFormatter
+{
+    xcb_gravity_t gravity;
+    GravityFormatter(const xcb_gravity_t& g) : gravity(g) { }
+};
+
+//! Output description string of an window gravity value.
+extern std::ostream& operator << (std::ostream& os, const GravityFormatter& g);
 
 //! Output client message data as hexdump
 extern std::ostream& operator << (

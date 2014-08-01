@@ -122,7 +122,11 @@ sub process {
             }
             elsif ($type eq "xcb_atom_t")
             {
-                $out .= "AtomFormatted($shname.$$field{name})\n";
+                $out .= "AtomFormatter($shname.$$field{name})\n";
+            }
+            elsif ($type eq "xcb_gravity_t")
+            {
+                $out .= "GravityFormatter($shname.$$field{name})\n";
             }
             else
             {

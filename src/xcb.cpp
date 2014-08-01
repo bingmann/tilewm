@@ -248,9 +248,41 @@ void XcbConnection::unload_cursorlist()
 }
 
 //! Output string "name (id)" as description of an atom
-std::ostream& operator << (std::ostream& os, const AtomFormatted& a)
+std::ostream& operator << (std::ostream& os, const AtomFormatter& a)
 {
     return os << g_xcb.find_atom_name(a.atom) << " (" << a.atom << ')';
+}
+
+//! Output description string of an window gravity value.
+std::ostream& operator << (std::ostream& os, const GravityFormatter& g)
+{
+    switch (g.gravity)
+    {
+    case XCB_GRAVITY_WIN_UNMAP:
+        return os << "GRAVITY_NULL";
+    case XCB_GRAVITY_NORTH_WEST:
+        return os << "GRAVITY_NORTH_WEST";
+    case XCB_GRAVITY_NORTH:
+        return os << "GRAVITY_NORTH";
+    case XCB_GRAVITY_NORTH_EAST:
+        return os << "GRAVITY_NORTH_EAST";
+    case XCB_GRAVITY_WEST:
+        return os << "GRAVITY_WEST";
+    case XCB_GRAVITY_CENTER:
+        return os << "GRAVITY_CENTER";
+    case XCB_GRAVITY_EAST:
+        return os << "GRAVITY_EAST";
+    case XCB_GRAVITY_SOUTH_WEST:
+        return os << "GRAVITY_SOUTH_WEST";
+    case XCB_GRAVITY_SOUTH:
+        return os << "GRAVITY_SOUTH";
+    case XCB_GRAVITY_SOUTH_EAST:
+        return os << "GRAVITY_SOUTH_EAST";
+    case XCB_GRAVITY_STATIC:
+        return os << "GRAVITY_STATIC";
+    default:
+        return os << "GRAVITY_INVALID";
+    }
 }
 
 //! Output client message data as hexdump
@@ -269,7 +301,23 @@ std::ostream& operator << (std::ostream& os, const xcb_icccm_wm_hints_t& h)
         os << " input=" << h.input;
 
     if (h.flags & XCB_ICCCM_WM_HINT_STATE)
-        os << " state=" << h.initial_state;
+    {
+        switch(h.initial_state)
+        {
+        case XCB_ICCCM_WM_STATE_WITHDRAWN:
+            os << " state=WM_STATE_WITHDRAWN";
+            break;
+        case XCB_ICCCM_WM_STATE_NORMAL:
+            os << " state=WM_STATE_NORMAL";
+            break;
+        case XCB_ICCCM_WM_STATE_ICONIC:
+            os << " state=WM_STATE_ICONIC";
+            break;
+        default:
+            os << " state=WM_STATE_INVALID";
+            break;
+        }
+    }
 
     if (h.flags & XCB_ICCCM_WM_HINT_ICON_PIXMAP)
         os << " icon_pixmap=" << h.icon_pixmap;
@@ -298,11 +346,15 @@ std::ostream& operator << (std::ostream& os, const xcb_size_hints_t& h)
     os << "[sizehints:"
        << " flags=" << h.flags;
 
-    if (h.flags & XCB_ICCCM_SIZE_HINT_P_POSITION)
-        os << " x=" << h.x << " y=" << h.y;
+    if (h.flags & XCB_ICCCM_SIZE_HINT_US_POSITION)
+        os << " u_x=" << h.x << " us_y=" << h.y;
+    else if (h.flags & XCB_ICCCM_SIZE_HINT_P_POSITION)
+        os << " p_x=" << h.x << " p_y=" << h.y;
 
-    if (h.flags & XCB_ICCCM_SIZE_HINT_P_SIZE)
-        os << " width=" << h.width << " height=" << h.height;
+    if (h.flags & XCB_ICCCM_SIZE_HINT_US_SIZE)
+        os << " us_width=" << h.width << " us_height=" << h.height;
+    else if (h.flags & XCB_ICCCM_SIZE_HINT_P_SIZE)
+        os << " p_width=" << h.width << " p_height=" << h.height;
 
     if (h.flags & XCB_ICCCM_SIZE_HINT_P_MIN_SIZE)
         os << " min_width=" << h.min_width << " min_height=" << h.min_height;
@@ -324,7 +376,7 @@ std::ostream& operator << (std::ostream& os, const xcb_size_hints_t& h)
            << " base_height=" << h.base_height;
 
     if (h.flags & XCB_ICCCM_SIZE_HINT_P_WIN_GRAVITY)
-        os << " win_gravity=" << h.win_gravity;
+        os << " win_gravity=" << GravityFormatter((xcb_gravity_t)h.win_gravity);
 
     return os << "]";
 }
