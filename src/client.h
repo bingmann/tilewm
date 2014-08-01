@@ -93,7 +93,7 @@ public:
     void update_wm_transient_for();
 
     //! Perform initial query/update of all fields of the Client structure
-    void initial_update();
+    void initial_update(const xcb_get_window_attributes_reply_t& a);
 
     //! Handle a XCB_CONFIGURE_REQUEST event, usually by ignoring it.
     void configure_request(const xcb_configure_request_event_t& e);

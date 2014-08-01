@@ -302,7 +302,7 @@ std::ostream& operator << (std::ostream& os, const xcb_icccm_wm_hints_t& h)
 
     if (h.flags & XCB_ICCCM_WM_HINT_STATE)
     {
-        switch(h.initial_state)
+        switch (h.initial_state)
         {
         case XCB_ICCCM_WM_STATE_WITHDRAWN:
             os << " state=WM_STATE_WITHDRAWN";

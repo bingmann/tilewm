@@ -232,8 +232,6 @@ static void handle_event_map_request(xcb_generic_event_t* event)
 
     // TODO: probably relayout desktop? and focus the new window?
 
-    c->move_resize(0, 0, 512, 512); // just resize for now.
-
     c->map();
 }
 

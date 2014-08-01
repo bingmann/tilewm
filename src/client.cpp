@@ -149,7 +149,7 @@ void Client::update_wm_transient_for()
 }
 
 //! Perform initial query/update of all fields of the Client structure
-void Client::initial_update()
+void Client::initial_update(const xcb_get_window_attributes_reply_t& winattr)
 {
     INFO << "Managing client window " << m_window;
 
@@ -184,6 +184,11 @@ void Client::initial_update()
     m_geometry = m_initial_geometry;
     m_border_width = m_initial_border_width;
 
+    if (m_border_width != 1) {
+        set_border_width(1);
+        m_border_width = 1;
+    }
+
     // *** get WM_CLASS and WM_PROTOCOLS, and more ICCCM properties.
 
     update_wm_class();
@@ -194,7 +199,8 @@ void Client::initial_update()
 
     // *** set remainder of fields
 
-    m_is_mapped = false;
+    m_is_mapped = (winattr.map_state == XCB_MAP_STATE_VIEWABLE);
+    INFO << "initial mapping state: " << m_is_mapped;
     m_has_focus = false;
 
     // *** subscribe to property change and mouse enter events
@@ -318,7 +324,7 @@ void ClientList::remanage_all_windows()
                 if (cwin[i] == child[j]) break;
             }
 
-            if (j == cwinlen) continue;
+            if (j == len) continue;
 
             child[j] = XCB_WINDOW_NONE;
             winlist.push_back(cwin[i]);
@@ -349,7 +355,12 @@ void ClientList::remanage_all_windows()
             c = manage_window(w);
 
         if (c)
+        {
             c->m_seen = true;
+
+            if (!c->m_is_mapped)
+                c->map();
+        }
     }
 
     // *** report lost managed windows
@@ -397,12 +408,11 @@ Client* ClientList::manage_window(xcb_window_t win)
         s_windowmap.emplace(win, win);
 
     Client& c = it.first->second;
-
-    c.initial_update();
-
+    c.initial_update(*gwar.get());
     return &c;
 }
 
+//! Unmanage a window by destroying the Client structure for it.
 bool ClientList::unmanage_window(Client* c)
 {
     ASSERT(c);
@@ -415,6 +425,7 @@ bool ClientList::unmanage_window(Client* c)
 
     ASSERT(&i->second == c);
     s_windowmap.erase(i);
+
     return true;
 }
 
@@ -434,7 +445,6 @@ void ClientList::focus_window(Client* active)
             // TODO: combine requests into one
             c.set_border_pixel(s_pixel_focused);
             c.stack_above();
-            c.set_border_width(6);
         }
         else if (c.m_has_focus)
         {
@@ -442,7 +452,6 @@ void ClientList::focus_window(Client* active)
 
             // TODO: combine requests into one
             c.set_border_pixel(s_pixel_blurred);
-            c.set_border_width(6);
         }
     }
 
