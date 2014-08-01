@@ -30,6 +30,13 @@ if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
    message(SEND_ERROR "In-source builds are not allowed.")
 endif("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
 
+# default to Debug building for single-config generators
+
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message("Defaulting CMAKE_BUILD_TYPE to Debug")
+  set(CMAKE_BUILD_TYPE "Debug")
+endif()
+
 # enable C++11 and more compiler features
 
 include(CheckCXXCompilerFlag)
