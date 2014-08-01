@@ -26,6 +26,7 @@
 #include "screen.h"
 #include "binding.h"
 #include "client.h"
+#include "ewmh.h"
 
 #include <unistd.h>
 #include <xcb/xinerama.h>
@@ -92,6 +93,10 @@ int main(int argc, char* argv[])
 
     ClientList::remanage_all_windows();
 
+    // *** set up EWMH properties
+
+    Ewmh::setup();
+
     // *** set up global event table and run loop!
 
     EventLoop::setup_global_eventtable();
@@ -99,6 +104,7 @@ int main(int argc, char* argv[])
 
     // *** graceful termination requested
 
+    Ewmh::teardown();
     BindingList::deinitialize();
     g_xcb.unload_cursorlist();
     g_xcb.close_connection();

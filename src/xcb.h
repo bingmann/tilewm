@@ -115,6 +115,7 @@ public:
     static XcbAtom _NET_WM_NAME;
     static XcbAtom _NET_ACTIVE_WINDOW;
     static XcbAtom _NET_CLIENT_LIST;
+    static XcbAtom _NET_NUMBER_OF_DESKTOPS;
 
     //! List of named atoms for caching.
     static struct XcbAtom* atomlist[];
