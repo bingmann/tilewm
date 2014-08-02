@@ -344,6 +344,7 @@ struct GravityFormatter
 {
     xcb_gravity_t gravity;
     GravityFormatter(const xcb_gravity_t& g) : gravity(g) { }
+    GravityFormatter(uint32_t g) : gravity((xcb_gravity_t)g) { }
 
     //! Output description string of an window gravity value.
     friend std::ostream& operator << (
@@ -368,6 +369,7 @@ struct IcccmWmStateFormatter
 {
     xcb_icccm_wm_state_t state;
     IcccmWmStateFormatter(const xcb_icccm_wm_state_t& s) : state(s) { }
+    IcccmWmStateFormatter(uint32_t s) : state((xcb_icccm_wm_state_t)s) { }
 
     //! Output description string of a WM_STATE property value.
     friend std::ostream& operator << (

@@ -301,23 +301,7 @@ std::ostream& operator << (std::ostream& os, const xcb_icccm_wm_hints_t& h)
         os << " input=" << h.input;
 
     if (h.flags & XCB_ICCCM_WM_HINT_STATE)
-    {
-        switch (h.initial_state)
-        {
-        case XCB_ICCCM_WM_STATE_WITHDRAWN:
-            os << " state=WM_STATE_WITHDRAWN";
-            break;
-        case XCB_ICCCM_WM_STATE_NORMAL:
-            os << " state=WM_STATE_NORMAL";
-            break;
-        case XCB_ICCCM_WM_STATE_ICONIC:
-            os << " state=WM_STATE_ICONIC";
-            break;
-        default:
-            os << " state=WM_STATE_INVALID";
-            break;
-        }
-    }
+        os << " state=" << IcccmWmStateFormatter(h.initial_state);
 
     if (h.flags & XCB_ICCCM_WM_HINT_ICON_PIXMAP)
         os << " icon_pixmap=" << h.icon_pixmap;
@@ -376,7 +360,7 @@ std::ostream& operator << (std::ostream& os, const xcb_size_hints_t& h)
            << " base_height=" << h.base_height;
 
     if (h.flags & XCB_ICCCM_SIZE_HINT_P_WIN_GRAVITY)
-        os << " win_gravity=" << GravityFormatter((xcb_gravity_t)h.win_gravity);
+        os << " win_gravity=" << GravityFormatter(h.win_gravity);
 
     return os << "]";
 }
@@ -387,13 +371,13 @@ std::ostream& operator << (std::ostream& os, const IcccmWmStateFormatter& g)
     switch (g.state)
     {
     case XCB_ICCCM_WM_STATE_WITHDRAWN:
-        return os << "WM_STATE_WITHDRAWN";
+        return os << "WithDrawn";
     case XCB_ICCCM_WM_STATE_NORMAL:
-        return os << "WM_STATE_NORMAL";
+        return os << "Normal";
     case XCB_ICCCM_WM_STATE_ICONIC:
-        return os << "WM_STATE_ICONIC";
+        return os << "Iconic";
     default:
-        return os << "INVALID (" << g.state << ")";
+        return os << "Invalid(" << g.state << ")";
     }
 }
 
