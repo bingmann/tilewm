@@ -46,10 +46,34 @@ XcbConnection::XcbAtom XcbConnection::_NET_CLIENT_LIST =
 { "_NET_CLIENT_LIST", XCB_ATOM_NONE };
 XcbConnection::XcbAtom XcbConnection::_NET_NUMBER_OF_DESKTOPS =
 { "_NET_NUMBER_OF_DESKTOPS", XCB_ATOM_NONE };
+XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE =
+{ "_NET_WM_STATE", XCB_ATOM_NONE };
+XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE_HIDDEN =
+{ "_NET_WM_STATE_HIDDEN", XCB_ATOM_NONE };
+XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE_STICKY =
+{ "_NET_WM_STATE_STICKY", XCB_ATOM_NONE };
+XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE_ABOVE =
+{ "_NET_WM_STATE_ABOVE", XCB_ATOM_NONE };
+XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE_FULLSCREEN =
+{ "_NET_WM_STATE_FULLSCREEN", XCB_ATOM_NONE };
+XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE_MAXIMIZED_VERT =
+{ "_NET_WM_STATE_MAXIMIZED_VERT", XCB_ATOM_NONE };
+XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE_MAXIMIZED_HORZ =
+{ "_NET_WM_STATE_MAXIMIZED_HORZ", XCB_ATOM_NONE };
+XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE_SKIP_TASKBAR =
+{ "_NET_WM_STATE_SKIP_TASKBAR", XCB_ATOM_NONE };
+XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE_SKIP_PAGER =
+{ "_NET_WM_STATE_SKIP_PAGER", XCB_ATOM_NONE };
+XcbConnection::XcbAtom XcbConnection::_NET_WM_WINDOW_TYPE =
+{ "_NET_WM_WINDOW_TYPE", XCB_ATOM_NONE };
+XcbConnection::XcbAtom XcbConnection::_NET_WM_WINDOW_TYPE_NORMAL =
+{ "_NET_WM_WINDOW_TYPE_NORMAL", XCB_ATOM_NONE };
+XcbConnection::XcbAtom XcbConnection::_NET_WM_WINDOW_TYPE_DOCK =
+{ "_NET_WM_WINDOW_TYPE_DOCK", XCB_ATOM_NONE };
 
 std::vector<xcb_atom_t> XcbConnection::get_ewmh_atomlist()
 {
-    std::vector<xcb_atom_t> atomlist(6);
+    std::vector<xcb_atom_t> atomlist(18);
 
     atomlist[0] = _NET_SUPPORTED.atom;
     atomlist[1] = _NET_SUPPORTING_WM_CHECK.atom;
@@ -57,6 +81,18 @@ std::vector<xcb_atom_t> XcbConnection::get_ewmh_atomlist()
     atomlist[3] = _NET_ACTIVE_WINDOW.atom;
     atomlist[4] = _NET_CLIENT_LIST.atom;
     atomlist[5] = _NET_NUMBER_OF_DESKTOPS.atom;
+    atomlist[6] = _NET_WM_STATE.atom;
+    atomlist[7] = _NET_WM_STATE_HIDDEN.atom;
+    atomlist[8] = _NET_WM_STATE_STICKY.atom;
+    atomlist[9] = _NET_WM_STATE_ABOVE.atom;
+    atomlist[10] = _NET_WM_STATE_FULLSCREEN.atom;
+    atomlist[11] = _NET_WM_STATE_MAXIMIZED_VERT.atom;
+    atomlist[12] = _NET_WM_STATE_MAXIMIZED_HORZ.atom;
+    atomlist[13] = _NET_WM_STATE_SKIP_TASKBAR.atom;
+    atomlist[14] = _NET_WM_STATE_SKIP_PAGER.atom;
+    atomlist[15] = _NET_WM_WINDOW_TYPE.atom;
+    atomlist[16] = _NET_WM_WINDOW_TYPE_NORMAL.atom;
+    atomlist[17] = _NET_WM_WINDOW_TYPE_DOCK.atom;
 
     return atomlist;
 }
@@ -74,6 +110,18 @@ struct XcbConnection::XcbAtom* XcbConnection::atomlist[] = {
     &_NET_ACTIVE_WINDOW,
     &_NET_CLIENT_LIST,
     &_NET_NUMBER_OF_DESKTOPS,
+    &_NET_WM_STATE,
+    &_NET_WM_STATE_HIDDEN,
+    &_NET_WM_STATE_STICKY,
+    &_NET_WM_STATE_ABOVE,
+    &_NET_WM_STATE_FULLSCREEN,
+    &_NET_WM_STATE_MAXIMIZED_VERT,
+    &_NET_WM_STATE_MAXIMIZED_HORZ,
+    &_NET_WM_STATE_SKIP_TASKBAR,
+    &_NET_WM_STATE_SKIP_PAGER,
+    &_NET_WM_WINDOW_TYPE,
+    &_NET_WM_WINDOW_TYPE_NORMAL,
+    &_NET_WM_WINDOW_TYPE_DOCK,
 };
 
 const unsigned int XcbConnection::atomlist_size

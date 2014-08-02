@@ -381,4 +381,20 @@ std::ostream& operator << (std::ostream& os, const xcb_size_hints_t& h)
     return os << "]";
 }
 
+//! Output description string of a WM_STATE property value.
+std::ostream& operator << (std::ostream& os, const IcccmWmStateFormatter& g)
+{
+    switch (g.state)
+    {
+    case XCB_ICCCM_WM_STATE_WITHDRAWN:
+        return os << "WM_STATE_WITHDRAWN";
+    case XCB_ICCCM_WM_STATE_NORMAL:
+        return os << "WM_STATE_NORMAL";
+    case XCB_ICCCM_WM_STATE_ICONIC:
+        return os << "WM_STATE_ICONIC";
+    default:
+        return os << "INVALID (" << g.state << ")";
+    }
+}
+
 /******************************************************************************/

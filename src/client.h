@@ -27,6 +27,7 @@
 
 #include "log.h"
 #include "geometry.h"
+#include "ewmh.h"
 #include "xcb.h"
 #include "xcb-window.h"
 #include <xcb/xcb_icccm.h>
@@ -60,6 +61,26 @@ public:
     //! whether WM_PROTOCOLS contains WM_DELETE_WINDOW
     bool m_can_delete_window;
 
+    //! ICCCM window state enum
+    xcb_icccm_wm_state_t m_wm_state;
+
+    //! flag whether window is currently mapped == !_NET_WM_STATE_HIDDEN
+    bool m_is_mapped;
+    //! EWHM window state flag for _NET_WM_STATE_STICKY (pinned)
+    bool m_state_sticky;
+    //! EWHM window state flag for _NET_WM_STATE_ABOVE (keep on top)
+    bool m_state_above;
+    //! EWHM window state flag for _NET_WM_STATE_FULLSCREEN
+    bool m_state_fullscreen;
+    //! EWHM window state flag for _NET_WM_STATE_MAXIMIZED_VERT
+    bool m_state_maximized_vert;
+    //! EWHM window state flag for _NET_WM_STATE_MAXIMIZED_HORZ
+    bool m_state_maximized_horz;
+    //! EWHM window state flag for _NET_WM_STATE_SKIP_TASKBAR
+    bool m_state_skip_taskbar;
+    //! EWHM window state flag for _NET_WM_STATE_SKIP_PAGER
+    bool m_state_skip_pager;
+
     //! ICCCM WM_HINTS structure
     xcb_icccm_wm_hints_t m_wm_hints;
     //! ICCCM WM_NORMAL_HINTS / WM_SIZE_HINTS structure
@@ -67,8 +88,11 @@ public:
     //! ICCCM WM_TRANSIENT_FOR window id
     xcb_window_t m_wm_transient_for;
 
-    //! flag whether window is currently mapped
-    bool m_is_mapped;
+    //! Enumerate indicating the EWMH property _NET_WM_WINDOW_TYPE value.
+    enum m_wm_window_type_type { TYPE_NORMAL, TYPE_DOCK };
+    //! Variable Indicating the EWMH property _NET_WM_WINDOW_TYPE value.
+    m_wm_window_type_type m_wm_window_type;
+
     //! flag whether the window has focus
     bool m_has_focus;
 
@@ -83,20 +107,49 @@ public:
     //! Return window handle for direct requests.
     xcb_window_t window() { return m_win.window(); }
 
+    //! Map or unmap (Hide/Show and iconify or uniconify) the window.
+    void set_mapped(bool state);
+
+    //! Stick or unstick (pin or unpin) window.
+    void set_sticky(bool state);
+
+
+    //! Apply the EWMH compatible state change request.
+    void change_ewmh_state(xcb_atom_t state, net_wm_state_action_t action);
+
+    //! Retrieve _NET_WM_STATE property and update flags from property.
+    void retrieve_ewmh_state();
+
+    //! Update the EWMH _NET_WM_STATE property from flags.
+    void update_ewmh_state();
+
+
+    //! Retrieve WM_STATE property and update fields
+    void retrieve_wm_state();
+
     //! Retrieve WM_CLASS property and update fields
-    void update_wm_class();
+    void retrieve_wm_class();
 
     //! Retrieve WM_PROTOCOLS property and update fields
-    void update_wm_protocols();
+    void retrieve_wm_protocols();
 
     //! Retrieve WM_HINTS property and update fields
-    void update_wm_hints();
+    void retrieve_wm_hints();
 
     //! Retrieve WM_NORMAL_HINTS property and size hints fields
-    void update_wm_normal_hints();
+    void retrieve_wm_normal_hints();
 
     //! Retrieve ICCCM WM_TRANSIENT_FOR window id
-    void update_wm_transient_for();
+    void retrieve_wm_transient_for();
+
+    //! Retrieve _NET_WM_WINDOW_TYPE property and update fields
+    void retrieve_net_wm_window_type();
+
+    //! Whether the client is allowed free configuration placement.
+    bool free_placement()
+    {
+        return m_wm_window_type == TYPE_DOCK;
+    }
 
     //! Perform initial query/update of all fields of the Client structure
     void initial_update(const xcb_get_window_attributes_reply_t& a);
@@ -141,6 +194,9 @@ public:
 
     //! Unmanage a window by destroying the Client structure for it.
     static bool unmanage_window(Client* c);
+
+    //! Update EWMH _NET_CLIENT_LIST property
+    static void update_net_client_list();
 
     //! Configure client to have focus.
     static void focus_window(Client* active);

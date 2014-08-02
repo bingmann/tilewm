@@ -26,8 +26,66 @@
 #include <cstring>
 #include <xcb/xcb_icccm.h>
 
+//! Map or unmap the window.
+void Client::set_mapped(bool state)
+{
+    if (state && !m_is_mapped)
+    {
+        m_win.map_window();
+        m_win.set_wm_state(XCB_ICCCM_WM_STATE_NORMAL);
+        m_is_mapped = true;
+
+        update_ewmh_state();
+    }
+    else if (!state && m_is_mapped)
+    {
+        m_win.unmap_window();
+        m_win.set_wm_state(XCB_ICCCM_WM_STATE_ICONIC);
+        m_is_mapped = false;
+
+        update_ewmh_state();
+    }
+}
+
+//! Retrieve WM_STATE property and update fields
+void Client::retrieve_wm_state()
+{
+    // *** retrieve WM_STATE property
+
+    xcb_get_property_cookie_t gpc =
+        xcb_get_property(g_xcb.connection, 0, window(),
+                         g_xcb.WM_STATE.atom,
+                         g_xcb.WM_STATE.atom, 0, 2);
+
+    autofree_ptr<xcb_get_property_reply_t> gpr(
+        xcb_get_property_reply(g_xcb.connection, gpc, NULL)
+        );
+
+    if (!gpr) {
+        WARN << "Could not retrieve WM_STATE for window";
+        m_wm_state = XCB_ICCCM_WM_STATE_NORMAL;
+        return;
+    }
+
+    TRACE << *gpr;
+
+    if (gpr->type != g_xcb.WM_STATE.atom || gpr->format != 32 ||
+        gpr->length != 2)
+    {
+        WARN << "Could not retrieve WM_STATE for window";
+        m_wm_state = XCB_ICCCM_WM_STATE_NORMAL;
+        return;
+    }
+
+    m_wm_state = (xcb_icccm_wm_state_t)(
+        *(uint32_t*)xcb_get_property_value(gpr.get())
+        );
+
+    INFO << "ICCCM: state = " << IcccmWmStateFormatter(m_wm_state);
+}
+
 //! Retrieve WM_CLASS property and update fields
-void Client::update_wm_class()
+void Client::retrieve_wm_class()
 {
     xcb_get_property_cookie_t igwcc =
         xcb_icccm_get_wm_class(g_xcb.connection, window());
@@ -56,7 +114,7 @@ void Client::update_wm_class()
 }
 
 //! Retrieve WM_PROTOCOLS property and update fields
-void Client::update_wm_protocols()
+void Client::retrieve_wm_protocols()
 {
     xcb_get_property_cookie_t igwpc =
         xcb_icccm_get_wm_protocols(g_xcb.connection, window(),
@@ -98,7 +156,7 @@ void Client::update_wm_protocols()
 }
 
 //! Retrieve WM_HINTS property and update fields
-void Client::update_wm_hints()
+void Client::retrieve_wm_hints()
 {
     xcb_get_property_cookie_t igwhc =
         xcb_icccm_get_wm_hints(g_xcb.connection, window());
@@ -115,7 +173,7 @@ void Client::update_wm_hints()
 }
 
 //! Retrieve WM_NORMAL_HINTS property and size hints fields
-void Client::update_wm_normal_hints()
+void Client::retrieve_wm_normal_hints()
 {
     xcb_get_property_cookie_t igwnhc =
         xcb_icccm_get_wm_normal_hints(g_xcb.connection, window());
@@ -132,7 +190,7 @@ void Client::update_wm_normal_hints()
 }
 
 //! Retrieve ICCCM WM_TRANSIENT_FOR window id
-void Client::update_wm_transient_for()
+void Client::retrieve_wm_transient_for()
 {
     xcb_get_property_cookie_t igwtfc =
         xcb_icccm_get_wm_transient_for(g_xcb.connection, window());
@@ -145,6 +203,48 @@ void Client::update_wm_transient_for()
     else
     {
         WARN << "ICCCM WM_TRANSIENT_FOR could not be retrieved.";
+    }
+}
+
+//! Retrieve _NET_WM_WINDOW_TYPE property and update fields
+void Client::retrieve_net_wm_window_type()
+{
+    m_wm_window_type = TYPE_NORMAL;
+
+    xcb_get_property_cookie_t gpc =
+        xcb_get_property(g_xcb.connection, 0, window(),
+                         g_xcb._NET_WM_WINDOW_TYPE.atom,
+                         XCB_ATOM_ATOM, 0, UINT32_MAX);
+
+    autofree_ptr<xcb_get_property_reply_t> gpr(
+        xcb_get_property_reply(g_xcb.connection, gpc, NULL)
+        );
+
+    if (!gpr || gpr->type != XCB_ATOM_ATOM) {
+        INFO << "Could not retrieve _NET_WM_WINDOW_TYPE for window";
+        return;
+    }
+
+    TRACE << *gpr;
+
+    xcb_atom_t* atomlist = (xcb_atom_t*)xcb_get_property_value(gpr.get());
+    int n = xcb_get_property_value_length(gpr.get()) / sizeof(xcb_atom_t);
+
+    for (int i = 0; i < n; ++i)
+    {
+        if (atomlist[i] == g_xcb._NET_WM_WINDOW_TYPE_NORMAL.atom) {
+            INFO << "Found _NET_WM_WINDOW_TYPE_NORMAL atom.";
+            break;
+        }
+        else if (atomlist[i] == g_xcb._NET_WM_WINDOW_TYPE_DOCK.atom) {
+            INFO << "Found _NET_WM_WINDOW_TYPE_DOCK atom.";
+            m_wm_window_type = TYPE_DOCK;
+            break;
+        }
+        else {
+            WARN << "Unknown _NET_WM_WINDOW_TYPE atom: "
+                 << g_xcb.find_atom_name(atomlist[i]);
+        }
     }
 }
 
@@ -189,18 +289,32 @@ void Client::initial_update(const xcb_get_window_attributes_reply_t& winattr)
         m_border_width = 1;
     }
 
-    // *** get WM_CLASS and WM_PROTOCOLS, and more ICCCM properties.
+    m_is_mapped = (winattr.map_state == XCB_MAP_STATE_VIEWABLE);
+    INFO << "initial mapping state: " << m_is_mapped;
 
-    update_wm_class();
-    update_wm_protocols();
-    update_wm_hints();
-    update_wm_normal_hints();
-    update_wm_transient_for();
+    // *** get WM_CLASS and WM_PROTOCOLS, and more ICCCM/EWMH properties.
+
+    retrieve_wm_class();
+    retrieve_wm_protocols();
+    retrieve_wm_hints();
+    retrieve_wm_normal_hints();
+    retrieve_wm_transient_for();
+    retrieve_wm_state();
+
+    retrieve_net_wm_window_type();
+
+    // initially clear _NET_WM_STATE flags (in case window doesn't support it)
+    m_state_sticky = false;
+    m_state_above = false;
+    m_state_fullscreen = false;
+    m_state_maximized_vert = false;
+    m_state_maximized_horz = false;
+    m_state_skip_taskbar = false;
+    m_state_skip_pager = false;
+    retrieve_ewmh_state();
 
     // *** set remainder of fields
 
-    m_is_mapped = (winattr.map_state == XCB_MAP_STATE_VIEWABLE);
-    INFO << "initial mapping state: " << m_is_mapped;
     m_has_focus = false;
 
     // *** subscribe to property change and mouse enter events
@@ -250,6 +364,98 @@ void Client::configure_request(const xcb_configure_request_event_t& e)
 
     xcb_send_event(g_xcb.connection, 0,
                    window(), XCB_EVENT_MASK_STRUCTURE_NOTIFY, (char*)&ce);
+}
+
+//! Apply the EWMH compatible state change request.
+void Client::change_ewmh_state(xcb_atom_t state, net_wm_state_action_t action)
+{
+    if (state == g_xcb._NET_WM_STATE_HIDDEN.atom)
+    {
+        if (action == ACTION_NET_WM_STATE_REMOVE)
+            set_mapped(false);
+        else if (action == ACTION_NET_WM_STATE_ADD)
+            set_mapped(true);
+        else if (action == ACTION_NET_WM_STATE_TOGGLE)
+            set_mapped(!m_is_mapped);
+        else
+            ERROR << "unknown action requested for state "
+                  << g_xcb._NET_WM_STATE_HIDDEN.name;
+    }
+    else {
+        ERROR << "requesting action on unknown state "
+              << g_xcb.find_atom_name(state);
+        return;
+    }
+}
+
+//! Retrieve _NET_WM_STATE property and update flags from property.
+void Client::retrieve_ewmh_state()
+{
+    // *** retrieve _NET_WM_STATE property
+
+    xcb_get_property_cookie_t gpc =
+        xcb_get_property(g_xcb.connection, 0, window(),
+                         g_xcb._NET_WM_STATE.atom,
+                         XCB_ATOM_ATOM, 0, UINT32_MAX);
+
+    autofree_ptr<xcb_get_property_reply_t> gpr(
+        xcb_get_property_reply(g_xcb.connection, gpc, NULL)
+        );
+
+    if (!gpr || gpr->type != XCB_ATOM_ATOM) {
+        INFO << "Could not retrieve _NET_WM_STATE for window";
+        return;
+    }
+
+    TRACE << *gpr;
+
+    m_state_sticky = false;
+    m_state_above = false;
+    m_state_fullscreen = false;
+    m_state_maximized_vert = false;
+    m_state_maximized_horz = false;
+    m_state_skip_taskbar = false;
+    m_state_skip_pager = false;
+
+    xcb_atom_t* atoms = (xcb_atom_t*)xcb_get_property_value(gpr.get());
+    int n = xcb_get_property_value_length(gpr.get()) / sizeof(xcb_atom_t);
+
+    // iterate and apply properties to window
+
+    for (int i = 0; i < n; ++i)
+        change_ewmh_state(atoms[i], ACTION_NET_WM_STATE_ADD);
+}
+
+//! Update the EWMH _NET_WM_STATE property from flags.
+void Client::update_ewmh_state()
+{
+    xcb_atom_t values[8];
+    int i = 0;
+
+    if (!m_is_mapped)
+        values[i++] = g_xcb._NET_WM_STATE_HIDDEN.atom;
+    if (m_state_sticky)
+        values[i++] = g_xcb._NET_WM_STATE_STICKY.atom;
+    if (m_state_above)
+        values[i++] = g_xcb._NET_WM_STATE_ABOVE.atom;
+    if (m_state_fullscreen)
+        values[i++] = g_xcb._NET_WM_STATE_FULLSCREEN.atom;
+    if (m_state_maximized_vert)
+        values[i++] = g_xcb._NET_WM_STATE_MAXIMIZED_VERT.atom;
+    if (m_state_maximized_horz)
+        values[i++] = g_xcb._NET_WM_STATE_MAXIMIZED_HORZ.atom;
+    if (m_state_skip_taskbar)
+        values[i++] = g_xcb._NET_WM_STATE_SKIP_TASKBAR.atom;
+    if (m_state_skip_pager)
+        values[i++] = g_xcb._NET_WM_STATE_SKIP_PAGER.atom;
+
+    if (i != 0)
+        xcb_change_property(g_xcb.connection, XCB_PROP_MODE_REPLACE, window(),
+                            g_xcb._NET_WM_STATE.atom,
+                            XCB_ATOM_ATOM, 32, i, values);
+    else
+        xcb_delete_property(g_xcb.connection, window(),
+                            g_xcb._NET_WM_STATE.atom);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -374,6 +580,8 @@ void ClientList::remanage_all_windows()
             s_windowmap.erase(c.window());
         }
     }
+
+    update_net_client_list();
 }
 
 //! Manage a window by creating a new Client structure for it.
@@ -429,6 +637,20 @@ bool ClientList::unmanage_window(Client* c)
     return true;
 }
 
+//! Update EWMH _NET_CLIENT_LIST property
+void ClientList::update_net_client_list()
+{
+    std::vector<xcb_window_t> winlist(s_windowmap.size());
+
+    size_t i = 0;
+    for (windowmap_type::value_type& w : s_windowmap)
+        winlist[i++] = w.first;
+
+    xcb_change_property(g_xcb.connection, XCB_PROP_MODE_REPLACE,
+                        g_xcb.root, g_xcb._NET_CLIENT_LIST.atom,
+                        XCB_ATOM_WINDOW, 32, winlist.size(), winlist.data());
+}
+
 //! Configure client to have focus.
 void ClientList::focus_window(Client* active)
 {
@@ -440,6 +662,9 @@ void ClientList::focus_window(Client* active)
 
         if (active == &c)
         {
+            if (!c.m_is_mapped)
+                c.set_mapped(true);
+
             c.m_has_focus = true;
 
             // TODO: combine requests into one

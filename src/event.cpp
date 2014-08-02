@@ -173,9 +173,11 @@ static void handle_event_unmap_notify(xcb_generic_event_t* event)
         // set internal mapped state
         c->m_is_mapped = false;
 
-        // unmanage window
-        if (ev->window != g_xcb.root)
-            ClientList::unmanage_window(c);
+        // set ICCCM property
+        if (c->m_is_mapped)
+            c->m_win.set_wm_state(XCB_ICCCM_WM_STATE_WITHDRAWN);
+        else
+            c->m_win.set_wm_state(XCB_ICCCM_WM_STATE_ICONIC);
     }
     else
     {
@@ -194,6 +196,8 @@ static void handle_event_map_notify(xcb_generic_event_t* event)
     {
         c = ClientList::manage_window(ev->window);
         if (!c) return;
+
+        ClientList::update_net_client_list();
     }
     else if (c->m_is_mapped)
     {
@@ -203,10 +207,10 @@ static void handle_event_map_notify(xcb_generic_event_t* event)
     {
         // set internal mapped state
         c->m_is_mapped = true;
+
+        // set ICCCM property
         c->m_win.set_wm_state(XCB_ICCCM_WM_STATE_NORMAL);
     }
-
-    // TODO: probably relayout desktop? and focus the mapped window?
 }
 
 //! Event handler stub for XCB_MAP_REQUEST
@@ -220,6 +224,8 @@ static void handle_event_map_request(xcb_generic_event_t* event)
     {
         c = ClientList::manage_window(ev->window);
         if (!c) return;
+
+        ClientList::update_net_client_list();
     }
     else if (c->m_is_mapped)
     {
@@ -228,11 +234,8 @@ static void handle_event_map_request(xcb_generic_event_t* event)
 
     // set window to mapped state
     c->m_is_mapped = true;
-    c->m_win.set_wm_state(XCB_ICCCM_WM_STATE_NORMAL);
-
-    // TODO: probably relayout desktop? and focus the new window?
-
     c->m_win.map_window();
+    c->m_win.set_wm_state(XCB_ICCCM_WM_STATE_NORMAL);
 }
 
 //! Event handler stub for XCB_REPARENT_NOTIFY
@@ -258,7 +261,7 @@ static void handle_event_configure_request(xcb_generic_event_t* event)
     TRACE << "Event handler: " << *ev;
 
     Client* c = ClientList::find_window(ev->window);
-    if (c)
+    if (c && !c->free_placement())
     {
         // known window -> probably send fake notify of unchanged position
         c->configure_request(*ev);
@@ -326,12 +329,47 @@ static void handle_event_property_notify(xcb_generic_event_t* event)
         }
         else if (ev->atom == g_xcb.WM_STATE.atom)
         {
-            ERROR << "window requested a change of WM_STATE. TODO";
+            c->retrieve_wm_state();
         }
         else if (ev->atom == g_xcb.WM_PROTOCOLS.atom)
         {
-            c->update_wm_protocols();
+            c->retrieve_wm_protocols();
         }
+        else if (ev->atom == XCB_ATOM_WM_HINTS)
+        {
+            c->retrieve_wm_hints();
+        }
+        else if (ev->atom == XCB_ATOM_WM_NORMAL_HINTS)
+        {
+            c->retrieve_wm_normal_hints();
+        }
+        else if (ev->atom == XCB_ATOM_WM_TRANSIENT_FOR)
+        {
+            c->retrieve_wm_transient_for();
+        }
+        else if (ev->atom == g_xcb._NET_WM_STATE.atom)
+        { }
+        else
+        {
+            INFO << "unknown atom: "
+                 << ev->atom << " - " << g_xcb.find_atom_name(ev->atom);
+        }
+    }
+    else if (ev->window == g_xcb.root)
+    {
+        // root window
+        TRACE << "property_notify for root window";
+
+        if (ev->atom == g_xcb._NET_SUPPORTING_WM_CHECK.atom)
+        { }
+        else if (ev->atom == g_xcb._NET_SUPPORTED.atom)
+        { }
+        else if (ev->atom == g_xcb._NET_NUMBER_OF_DESKTOPS.atom)
+        { }
+        else if (ev->atom == g_xcb._NET_CLIENT_LIST.atom)
+        { }
+        else if (ev->atom == g_xcb._NET_ACTIVE_WINDOW.atom)
+        { }
         else
         {
             INFO << "unknown atom: "
@@ -348,7 +386,7 @@ static void handle_event_property_notify(xcb_generic_event_t* event)
     }
 }
 
-//! Event handler stub for XCB_CLIENT_MESSAGE
+//! Event handler for XCB_CLIENT_MESSAGE
 static void handle_event_client_message(xcb_generic_event_t* event)
 {
     xcb_client_message_event_t* ev = (xcb_client_message_event_t*)event;
@@ -360,8 +398,27 @@ static void handle_event_client_message(xcb_generic_event_t* event)
         // known window -> possibly handle client message
         TRACE << "client_message for window " << c;
 
-        INFO << "unknown atom: "
-             << ev->type << " - " << g_xcb.find_atom_name(ev->type);
+        if (ev->type == g_xcb._NET_ACTIVE_WINDOW.atom)
+        {
+            ClientList::focus_window(c);
+        }
+        else if (ev->type == g_xcb.WM_CHANGE_STATE.atom)
+        {
+            if (ev->data.data32[0] == 3)
+                c->set_mapped(false);
+            else
+                INFO << "Unknown WM_CHANGE_STATE request: "
+                     << ev->data.data32[0];
+        }
+        else if (ev->type == g_xcb._NET_WM_STATE.atom)
+        {
+            c->retrieve_ewmh_state();
+        }
+        else
+        {
+            INFO << "unknown atom: "
+                 << ev->type << " - " << g_xcb.find_atom_name(ev->type);
+        }
     }
     else
     {

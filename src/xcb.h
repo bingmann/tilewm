@@ -117,6 +117,20 @@ public:
     static XcbAtom _NET_CLIENT_LIST;
     static XcbAtom _NET_NUMBER_OF_DESKTOPS;
 
+    static XcbAtom _NET_WM_STATE;
+    static XcbAtom _NET_WM_STATE_HIDDEN;
+    static XcbAtom _NET_WM_STATE_STICKY;
+    static XcbAtom _NET_WM_STATE_ABOVE;
+    static XcbAtom _NET_WM_STATE_FULLSCREEN;
+    static XcbAtom _NET_WM_STATE_MAXIMIZED_VERT;
+    static XcbAtom _NET_WM_STATE_MAXIMIZED_HORZ;
+    static XcbAtom _NET_WM_STATE_SKIP_TASKBAR;
+    static XcbAtom _NET_WM_STATE_SKIP_PAGER;
+
+    static XcbAtom _NET_WM_WINDOW_TYPE;
+    static XcbAtom _NET_WM_WINDOW_TYPE_NORMAL;
+    static XcbAtom _NET_WM_WINDOW_TYPE_DOCK;
+
     //! List of named atoms for caching.
     static struct XcbAtom* atomlist[];
 
@@ -318,20 +332,24 @@ struct AtomFormatter
 {
     xcb_atom_t atom;
     AtomFormatter(const xcb_atom_t& a) : atom(a) { }
-};
 
-//! Output string "name (id)" as description of an atom
-extern std::ostream& operator << (std::ostream& os, const AtomFormatter& atom);
+    //! Output string "name (id)" as description of an atom
+    friend std::ostream& operator << (
+        std::ostream& os,
+        const AtomFormatter& atom);
+};
 
 //! Helper class to generate more descriptive output for xcb_gravity_t type.
 struct GravityFormatter
 {
     xcb_gravity_t gravity;
     GravityFormatter(const xcb_gravity_t& g) : gravity(g) { }
-};
 
-//! Output description string of an window gravity value.
-extern std::ostream& operator << (std::ostream& os, const GravityFormatter& g);
+    //! Output description string of an window gravity value.
+    friend std::ostream& operator << (
+        std::ostream& os,
+        const GravityFormatter& g);
+};
 
 //! Output client message data as hexdump
 extern std::ostream& operator << (
@@ -344,6 +362,18 @@ extern std::ostream& operator << (
 //! Output only valid fields of WM_SIZE_HINTS data structure.
 extern std::ostream& operator << (
     std::ostream& os, const xcb_size_hints_t& h);
+
+//! Helper class to generate more descriptive output for xcb_icccm_wm_state_t.
+struct IcccmWmStateFormatter
+{
+    xcb_icccm_wm_state_t state;
+    IcccmWmStateFormatter(const xcb_icccm_wm_state_t& s) : state(s) { }
+
+    //! Output description string of a WM_STATE property value.
+    friend std::ostream& operator << (
+        std::ostream& os,
+        const IcccmWmStateFormatter& g);
+};
 
 #endif // !TILEWM_XCB_HEADER
 

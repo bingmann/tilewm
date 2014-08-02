@@ -43,6 +43,12 @@ public:
     static void teardown();
 };
 
+enum net_wm_state_action_t {
+    ACTION_NET_WM_STATE_REMOVE = 0, //!< remove/unset property
+    ACTION_NET_WM_STATE_ADD = 1,    //!< add/set property
+    ACTION_NET_WM_STATE_TOGGLE = 2  //!< toggle property
+};
+
 #endif // !TILEWM_EWMH_HEADER
 
 /******************************************************************************/
