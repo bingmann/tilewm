@@ -130,13 +130,13 @@ public:
     // *** xcb_map/unmap_window()
 
     //! Map the window to the screen.
-    void map()
+    void map_window()
     {
         xcb_map_window(g_xcb.connection, m_window);
     }
 
     //! Unmap the window from the screen.
-    void unmap()
+    void unmap_window()
     {
         xcb_unmap_window(g_xcb.connection, m_window);
     }

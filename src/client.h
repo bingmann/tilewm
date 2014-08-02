@@ -34,9 +34,12 @@
 /*!
  * All information we collect about our manage clients are in Client.
  */
-class Client : public XcbWindow
+class Client
 {
 public:
+    //! A zero-overhead convenience class to call xcb calls.
+    XcbWindow m_win;
+
     //! Current geometry of the client.
     Rectangle m_geometry;
     //! Current border width of the client.
@@ -74,8 +77,11 @@ public:
 
     //! Constructor from window
     Client(xcb_window_t w)
-        : XcbWindow(w)
+        : m_win(w)
     { }
+
+    //! Return window handle for direct requests.
+    xcb_window_t window() { return m_win.window(); }
 
     //! Retrieve WM_CLASS property and update fields
     void update_wm_class();

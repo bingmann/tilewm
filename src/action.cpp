@@ -108,7 +108,7 @@ static void mouse_move_handler(ButtonEvent& be)
             // only do actual movement every 10 milliseconds
             if ((ev->time - timestamp) * 100 >= 1000) {
                 timestamp = ev->time;
-                be.client()->move(c.m_geometry.origin());
+                be.client()->m_win.move(c.m_geometry.origin());
             }
 
             break;
@@ -224,7 +224,7 @@ static void mouse_resize_handler(ButtonEvent& be)
             // only do actual movement every 10 milliseconds
             if ((ev->time - timestamp) * 100 >= 1000) {
                 timestamp = ev->time;
-                be.client()->move_resize(new_geo);
+                be.client()->m_win.move_resize(new_geo);
             }
 
             break;
@@ -268,7 +268,7 @@ static void action_key_quit_window(KeyEvent& ke)
     Client& c = *ke.client();
 
     if (c.m_can_delete_window)
-        c.wm_delete_window();
+        c.m_win.wm_delete_window();
     else {
         INFO << "Window " << c.window() << " does not have WM_DELETE_WINDOW.";
     }

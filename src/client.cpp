@@ -30,7 +30,7 @@
 void Client::update_wm_class()
 {
     xcb_get_property_cookie_t igwcc =
-        xcb_icccm_get_wm_class(g_xcb.connection, m_window);
+        xcb_icccm_get_wm_class(g_xcb.connection, window());
 
     xcb_icccm_get_wm_class_reply_t igwcr;
 
@@ -59,7 +59,7 @@ void Client::update_wm_class()
 void Client::update_wm_protocols()
 {
     xcb_get_property_cookie_t igwpc =
-        xcb_icccm_get_wm_protocols(g_xcb.connection, m_window,
+        xcb_icccm_get_wm_protocols(g_xcb.connection, window(),
                                    g_xcb.WM_PROTOCOLS.atom);
 
     xcb_icccm_get_wm_protocols_reply_t igwpr;
@@ -101,7 +101,7 @@ void Client::update_wm_protocols()
 void Client::update_wm_hints()
 {
     xcb_get_property_cookie_t igwhc =
-        xcb_icccm_get_wm_hints(g_xcb.connection, m_window);
+        xcb_icccm_get_wm_hints(g_xcb.connection, window());
 
     if (xcb_icccm_get_wm_hints_reply(g_xcb.connection, igwhc,
                                      &m_wm_hints, NULL))
@@ -118,7 +118,7 @@ void Client::update_wm_hints()
 void Client::update_wm_normal_hints()
 {
     xcb_get_property_cookie_t igwnhc =
-        xcb_icccm_get_wm_normal_hints(g_xcb.connection, m_window);
+        xcb_icccm_get_wm_normal_hints(g_xcb.connection, window());
 
     if (xcb_icccm_get_wm_normal_hints_reply(g_xcb.connection,
                                             igwnhc, &m_wm_size_hints, NULL))
@@ -135,7 +135,7 @@ void Client::update_wm_normal_hints()
 void Client::update_wm_transient_for()
 {
     xcb_get_property_cookie_t igwtfc =
-        xcb_icccm_get_wm_transient_for(g_xcb.connection, m_window);
+        xcb_icccm_get_wm_transient_for(g_xcb.connection, window());
 
     if (xcb_icccm_get_wm_transient_for_reply(g_xcb.connection,
                                              igwtfc, &m_wm_transient_for, NULL))
@@ -151,12 +151,12 @@ void Client::update_wm_transient_for()
 //! Perform initial query/update of all fields of the Client structure
 void Client::initial_update(const xcb_get_window_attributes_reply_t& winattr)
 {
-    INFO << "Managing client window " << m_window;
+    INFO << "Managing client window " << window();
 
     // *** get initial window geometry
 
     xcb_get_geometry_cookie_t ggc =
-        xcb_get_geometry(g_xcb.connection, m_window);
+        xcb_get_geometry(g_xcb.connection, window());
 
     autofree_ptr<xcb_get_geometry_reply_t> ggr(
         xcb_get_geometry_reply(g_xcb.connection, ggc, NULL)
@@ -185,7 +185,7 @@ void Client::initial_update(const xcb_get_window_attributes_reply_t& winattr)
     m_border_width = m_initial_border_width;
 
     if (m_border_width != 1) {
-        set_border_width(1);
+        m_win.set_border_width(1);
         m_border_width = 1;
     }
 
@@ -209,7 +209,7 @@ void Client::initial_update(const xcb_get_window_attributes_reply_t& winattr)
         XCB_EVENT_MASK_PROPERTY_CHANGE |
         XCB_EVENT_MASK_ENTER_WINDOW;
 
-    xcb_change_window_attributes(g_xcb.connection, m_window,
+    xcb_change_window_attributes(g_xcb.connection, window(),
                                  XCB_CW_EVENT_MASK, &values);
 
     // *** subscribe to mouse and keyboard events
@@ -220,7 +220,7 @@ void Client::initial_update(const xcb_get_window_attributes_reply_t& winattr)
 //! Handle a XCB_CONFIGURE_REQUEST event, usually by ignoring it.
 void Client::configure_request(const xcb_configure_request_event_t& e)
 {
-    ASSERT(e.window == m_window);
+    ASSERT(e.window == window());
 
     // TODO: under what conditions do we honor the configure request?
 
@@ -230,8 +230,8 @@ void Client::configure_request(const xcb_configure_request_event_t& e)
 
     ce.response_type = XCB_CONFIGURE_NOTIFY;
     ce.sequence = 0;
-    ce.event = m_window;
-    ce.window = m_window;
+    ce.event = window();
+    ce.window = window();
 
     // honor stacking order!
     ce.above_sibling = e.sibling;
@@ -249,7 +249,7 @@ void Client::configure_request(const xcb_configure_request_event_t& e)
     TRACE << "sending " << ce;
 
     xcb_send_event(g_xcb.connection, 0,
-                   m_window, XCB_EVENT_MASK_STRUCTURE_NOTIFY, (char*)&ce);
+                   window(), XCB_EVENT_MASK_STRUCTURE_NOTIFY, (char*)&ce);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -359,7 +359,7 @@ void ClientList::remanage_all_windows()
             c->m_seen = true;
 
             if (!c->m_is_mapped)
-                c->map();
+                c->m_win.map_window();
         }
     }
 
@@ -443,15 +443,15 @@ void ClientList::focus_window(Client* active)
             c.m_has_focus = true;
 
             // TODO: combine requests into one
-            c.set_border_pixel(s_pixel_focused);
-            c.stack_above();
+            c.m_win.set_border_pixel(s_pixel_focused);
+            c.m_win.stack_above();
         }
         else if (c.m_has_focus)
         {
             c.m_has_focus = false;
 
             // TODO: combine requests into one
-            c.set_border_pixel(s_pixel_blurred);
+            c.m_win.set_border_pixel(s_pixel_blurred);
         }
     }
 

@@ -170,7 +170,7 @@ static void handle_event_unmap_notify(xcb_generic_event_t* event)
     Client* c = ClientList::find_window(ev->window);
     if (c)
     {
-        // set mapped state
+        // set internal mapped state
         c->m_is_mapped = false;
 
         // unmanage window
@@ -197,13 +197,13 @@ static void handle_event_map_notify(xcb_generic_event_t* event)
     }
     else if (c->m_is_mapped)
     {
-        TRACE << "map_notify for managed window that is already mapped?";
+        TRACE << "map_notify for managed window that is already mapped.";
     }
     else
     {
-        // set window to mapped state
+        // set internal mapped state
         c->m_is_mapped = true;
-        c->set_wm_state(XCB_ICCCM_WM_STATE_NORMAL);
+        c->m_win.set_wm_state(XCB_ICCCM_WM_STATE_NORMAL);
     }
 
     // TODO: probably relayout desktop? and focus the mapped window?
@@ -223,16 +223,16 @@ static void handle_event_map_request(xcb_generic_event_t* event)
     }
     else if (c->m_is_mapped)
     {
-        ERROR << "map_request for managed window that is already mapped";
+        ERROR << "map_request for managed window that is already mapped???";
     }
 
     // set window to mapped state
     c->m_is_mapped = true;
-    c->set_wm_state(XCB_ICCCM_WM_STATE_NORMAL);
+    c->m_win.set_wm_state(XCB_ICCCM_WM_STATE_NORMAL);
 
     // TODO: probably relayout desktop? and focus the new window?
 
-    c->map();
+    c->m_win.map_window();
 }
 
 //! Event handler stub for XCB_REPARENT_NOTIFY
@@ -373,7 +373,7 @@ static void handle_event_client_message(xcb_generic_event_t* event)
     }
 }
 
-//! Event handler stub for XCB_CLIENT_MESSAGE
+//! Event handler stub for XCB_MAPPING_NOTIFY
 static void handle_event_mapping_notify(xcb_generic_event_t* event)
 {
     xcb_mapping_notify_event_t* ev = (xcb_mapping_notify_event_t*)event;
