@@ -26,7 +26,7 @@
 #include <sstream>
 #include <string>
 
-/**
+/*!
  * Template transformation function which uses std::ostringstream to serialize
  * any ostreamable type into a std::string.
  */
@@ -38,7 +38,7 @@ static inline std::string to_str(const Type& val)
     return os.str();
 }
 
-/**
+/*!
  * Template transformation function which uses std::istringstream to parse any
  * istreamable type from a std::string.
  */
@@ -50,7 +50,7 @@ static inline bool from_str(const std::string& str, Type& outval)
     return is.eof();
 }
 
-/**
+/*!
  * Dump a (binary) memory area as a sequence of hexadecimal pairs.
  *
  * @param data  memory area to output in hex
@@ -79,7 +79,7 @@ static inline std::string string_hexdump(const void* data, size_t size)
     return out;
 }
 
-/**
+/*!
  * Dump a (binary) string as a sequence of hexadecimal pairs.
  *
  * @param str   string to output in hex

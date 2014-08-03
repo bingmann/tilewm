@@ -143,6 +143,8 @@ public:
 
     // *** other window functions
 
+    //! Close the window by either sending a client message or terminating the
+    //! X connection.
     void kill_client()
     {
         xcb_kill_client(g_xcb.connection, m_window);

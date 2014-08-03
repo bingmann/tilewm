@@ -65,6 +65,7 @@ EOF
 
 foreach my $atom (@atomlist)
 {
+    print "//! Cached value of $atom atom\n";
     print "XcbConnection::XcbAtom XcbConnection::$atom =\n";
     print "{ \"$atom\", XCB_ATOM_NONE \};\n";
 }
@@ -106,6 +107,7 @@ EOF
 
 foreach my $cursor (@cursorlist)
 {
+    print "//! Cached value of $cursor cursor identifier\n";
     print "XcbConnection::XcbCursor XcbConnection::CR_$cursor =\n";
     print "{ \"$cursor\", XCB_CURSOR_NONE \};\n";
 }

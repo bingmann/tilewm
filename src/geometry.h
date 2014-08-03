@@ -30,8 +30,10 @@
  */
 struct Point
 {
-    //! The Point's coordinates.
-    int16_t x, y;
+    //! The Point's x coordinate
+    int16_t x;
+    //! The Point's y coordinate
+    int16_t y;
 
     //! Default constructor leaves members uninitialized!
     Point()
@@ -66,11 +68,15 @@ struct Point
  */
 struct Rectangle
 {
-    //! top left position
-    int16_t x, y;
+    //! top left x coordinate
+    int16_t x;
+    //! top left y coordinate
+    int16_t y;
 
-    //! width and height
-    uint16_t w, h;
+    //! the rectangle width
+    uint16_t w;
+    //! the rectangle height
+    uint16_t h;
 
     //! Default constructor leaves members uninitialized!
     Rectangle()

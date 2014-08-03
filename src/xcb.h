@@ -96,7 +96,9 @@ public:
     //! Struct to keep information about cached named atoms
     struct XcbAtom
     {
+        //! constant name of the cached atom
         const char* name;
+        //! identifier of the atom as fetched from the X server
         xcb_atom_t atom;
     };
 
@@ -162,7 +164,9 @@ public:
     //! Struct to keep information about cached cursors
     struct XcbCursor
     {
+        //! constant name of the cached cursor
         const char* name;
+        //! identifier of the cursor as loaded into the X server
         xcb_cursor_t cursor;
     };
 
@@ -330,7 +334,9 @@ extern std::ostream& operator << (
 //! Helper class to generate more descriptive output for atoms
 struct AtomFormatter
 {
+    //! temporary variable containing atom identifier
     xcb_atom_t atom;
+    //! constructor for temporary formatting object.
     AtomFormatter(const xcb_atom_t& a) : atom(a) { }
 
     //! Output string "name (id)" as description of an atom
@@ -342,8 +348,11 @@ struct AtomFormatter
 //! Helper class to generate more descriptive output for xcb_gravity_t type.
 struct GravityFormatter
 {
+    //! temporary variable containing gravity value.
     xcb_gravity_t gravity;
+    //! constructor for temporary formatting object.
     GravityFormatter(const xcb_gravity_t& g) : gravity(g) { }
+    //! constructor for temporary formatting object.
     GravityFormatter(uint32_t g) : gravity((xcb_gravity_t)g) { }
 
     //! Output description string of an window gravity value.
@@ -367,8 +376,11 @@ extern std::ostream& operator << (
 //! Helper class to generate more descriptive output for xcb_icccm_wm_state_t.
 struct IcccmWmStateFormatter
 {
+    //! temporary variable containing ICCCM WM_STATE
     xcb_icccm_wm_state_t state;
+    //! constructor for temporary formatting object.
     IcccmWmStateFormatter(const xcb_icccm_wm_state_t& s) : state(s) { }
+    //! constructor for temporary formatting object.
     IcccmWmStateFormatter(uint32_t s) : state((xcb_icccm_wm_state_t)s) { }
 
     //! Output description string of a WM_STATE property value.

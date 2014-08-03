@@ -22,52 +22,76 @@
 
 #include "xcb.h"
 
+//! Cached value of WM_STATE atom
 XcbConnection::XcbAtom XcbConnection::WM_STATE =
 { "WM_STATE", XCB_ATOM_NONE };
+//! Cached value of WM_CHANGE_STATE atom
 XcbConnection::XcbAtom XcbConnection::WM_CHANGE_STATE =
 { "WM_CHANGE_STATE", XCB_ATOM_NONE };
+//! Cached value of WM_PROTOCOLS atom
 XcbConnection::XcbAtom XcbConnection::WM_PROTOCOLS =
 { "WM_PROTOCOLS", XCB_ATOM_NONE };
+//! Cached value of WM_DELETE_WINDOW atom
 XcbConnection::XcbAtom XcbConnection::WM_DELETE_WINDOW =
 { "WM_DELETE_WINDOW", XCB_ATOM_NONE };
+//! Cached value of WM_TAKE_FOCUS atom
 XcbConnection::XcbAtom XcbConnection::WM_TAKE_FOCUS =
 { "WM_TAKE_FOCUS", XCB_ATOM_NONE };
+//! Cached value of UTF8_STRING atom
 XcbConnection::XcbAtom XcbConnection::UTF8_STRING =
 { "UTF8_STRING", XCB_ATOM_NONE };
+//! Cached value of _NET_SUPPORTED atom
 XcbConnection::XcbAtom XcbConnection::_NET_SUPPORTED =
 { "_NET_SUPPORTED", XCB_ATOM_NONE };
+//! Cached value of _NET_SUPPORTING_WM_CHECK atom
 XcbConnection::XcbAtom XcbConnection::_NET_SUPPORTING_WM_CHECK =
 { "_NET_SUPPORTING_WM_CHECK", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_NAME atom
 XcbConnection::XcbAtom XcbConnection::_NET_WM_NAME =
 { "_NET_WM_NAME", XCB_ATOM_NONE };
+//! Cached value of _NET_ACTIVE_WINDOW atom
 XcbConnection::XcbAtom XcbConnection::_NET_ACTIVE_WINDOW =
 { "_NET_ACTIVE_WINDOW", XCB_ATOM_NONE };
+//! Cached value of _NET_CLIENT_LIST atom
 XcbConnection::XcbAtom XcbConnection::_NET_CLIENT_LIST =
 { "_NET_CLIENT_LIST", XCB_ATOM_NONE };
+//! Cached value of _NET_NUMBER_OF_DESKTOPS atom
 XcbConnection::XcbAtom XcbConnection::_NET_NUMBER_OF_DESKTOPS =
 { "_NET_NUMBER_OF_DESKTOPS", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_STATE atom
 XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE =
 { "_NET_WM_STATE", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_STATE_HIDDEN atom
 XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE_HIDDEN =
 { "_NET_WM_STATE_HIDDEN", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_STATE_STICKY atom
 XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE_STICKY =
 { "_NET_WM_STATE_STICKY", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_STATE_ABOVE atom
 XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE_ABOVE =
 { "_NET_WM_STATE_ABOVE", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_STATE_FULLSCREEN atom
 XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE_FULLSCREEN =
 { "_NET_WM_STATE_FULLSCREEN", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_STATE_MAXIMIZED_VERT atom
 XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE_MAXIMIZED_VERT =
 { "_NET_WM_STATE_MAXIMIZED_VERT", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_STATE_MAXIMIZED_HORZ atom
 XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE_MAXIMIZED_HORZ =
 { "_NET_WM_STATE_MAXIMIZED_HORZ", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_STATE_SKIP_TASKBAR atom
 XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE_SKIP_TASKBAR =
 { "_NET_WM_STATE_SKIP_TASKBAR", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_STATE_SKIP_PAGER atom
 XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE_SKIP_PAGER =
 { "_NET_WM_STATE_SKIP_PAGER", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_WINDOW_TYPE atom
 XcbConnection::XcbAtom XcbConnection::_NET_WM_WINDOW_TYPE =
 { "_NET_WM_WINDOW_TYPE", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_WINDOW_TYPE_NORMAL atom
 XcbConnection::XcbAtom XcbConnection::_NET_WM_WINDOW_TYPE_NORMAL =
 { "_NET_WM_WINDOW_TYPE_NORMAL", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_WINDOW_TYPE_DOCK atom
 XcbConnection::XcbAtom XcbConnection::_NET_WM_WINDOW_TYPE_DOCK =
 { "_NET_WM_WINDOW_TYPE_DOCK", XCB_ATOM_NONE };
 
@@ -127,14 +151,19 @@ struct XcbConnection::XcbAtom* XcbConnection::atomlist[] = {
 const unsigned int XcbConnection::atomlist_size
     = sizeof(atomlist) / sizeof(*atomlist);
 
+//! Cached value of fleur cursor identifier
 XcbConnection::XcbCursor XcbConnection::CR_fleur =
 { "fleur", XCB_CURSOR_NONE };
+//! Cached value of top_left_corner cursor identifier
 XcbConnection::XcbCursor XcbConnection::CR_top_left_corner =
 { "top_left_corner", XCB_CURSOR_NONE };
+//! Cached value of top_right_corner cursor identifier
 XcbConnection::XcbCursor XcbConnection::CR_top_right_corner =
 { "top_right_corner", XCB_CURSOR_NONE };
+//! Cached value of bottom_right_corner cursor identifier
 XcbConnection::XcbCursor XcbConnection::CR_bottom_right_corner =
 { "bottom_right_corner", XCB_CURSOR_NONE };
+//! Cached value of bottom_left_corner cursor identifier
 XcbConnection::XcbCursor XcbConnection::CR_bottom_left_corner =
 { "bottom_left_corner", XCB_CURSOR_NONE };
 
