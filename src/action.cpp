@@ -207,19 +207,56 @@ static void mouse_resize_handler(ButtonEvent& be)
 
             if (left) {
                 new_geo.x += -delta.x;
-                new_geo.w += delta.x;
             }
             else {
-                new_geo.w += -delta.x;
+                delta.x = -delta.x;
             }
+
+            int32_t width = new_geo.w + delta.x;
 
             if (top) {
                 new_geo.y += -delta.y;
-                new_geo.h += delta.y;
             }
             else {
-                new_geo.h += -delta.y;
+                delta.y = -delta.y;
             }
+
+            int32_t height = new_geo.h + delta.y;
+
+            if (c.has_size_hint_min_size())
+            {
+                if (width < c.get_size_hint_min_width())
+                    width = c.get_size_hint_min_width();
+
+                if (height < c.get_size_hint_min_height())
+                    height = c.get_size_hint_min_height();
+            }
+            else
+            {
+                if (width < 0) width = 0;
+                if (height < 0) height = 0;
+            }
+
+            if (c.has_size_hint_max_size())
+            {
+                if (width > c.get_size_hint_max_width())
+                    width = c.get_size_hint_max_width();
+
+                if (height > c.get_size_hint_max_height())
+                    height = c.get_size_hint_max_height();
+            }
+
+            if (c.has_size_hint_resize_inc())
+            {
+                width -= (width - c.get_size_hint_min_width())
+                         % c.get_size_hint_width_inc();
+
+                height -= (height - c.get_size_hint_min_height())
+                          % c.get_size_hint_height_inc();
+            }
+
+            new_geo.w = width;
+            new_geo.h = height;
 
             // only do actual movement every 10 milliseconds
             if ((ev->time - timestamp) * 100 >= 1000) {
