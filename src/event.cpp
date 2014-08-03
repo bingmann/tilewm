@@ -59,7 +59,6 @@ static void handle_event_error(xcb_generic_event_t* event)
               << " minor_code: " << uint32_t(e->minor_code)
               << " sequence: " << e->sequence
               << " resource_id: " << e->resource_id;
-        free(e);
     }
 }
 
