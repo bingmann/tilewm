@@ -94,6 +94,8 @@ sub process {
         my $pname = $$str{name};
         $pname =~ s/_t$//;
 
+        $out .= "//! automaticatically generated ostream output function for\n";
+        $out .= "//! $$str{name}\n";
         $out .= "std::ostream&\n";
         $out .= "operator << (std::ostream& os, const $$str{name}& $shname)\n";
         $out .= "{\n";
@@ -145,12 +147,12 @@ sub process {
 }
 
 print <<EOF;
-/*******************************************************************************
- * src/xcb-ostream.cpp
+/******************************************************************************/
+/*! \\file src/xcb-ostream.cpp
  *
  * Auto-generated ostream operators for many XCB structures.
- *
- *******************************************************************************
+ */
+/*******************************************************************************
  * Copyright (C) 2014 Timo Bingmann <tb\@panthema.net>
  *
  * This program is free software: you can redistribute it and/or modify it

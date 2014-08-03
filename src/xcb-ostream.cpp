@@ -26,6 +26,8 @@
 #include <xcb/randr.h>
 #include <xcb/xcb_icccm.h>
 
+//! automaticatically generated ostream output function for
+//! xcb_screen_t
 std::ostream&
 operator << (std::ostream& os, const xcb_screen_t& s)
 {
@@ -50,6 +52,8 @@ operator << (std::ostream& os, const xcb_screen_t& s)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_key_press_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_key_press_event_t& e)
 {
@@ -71,6 +75,8 @@ operator << (std::ostream& os, const xcb_key_press_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_button_press_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_button_press_event_t& e)
 {
@@ -92,6 +98,8 @@ operator << (std::ostream& os, const xcb_button_press_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_motion_notify_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_motion_notify_event_t& e)
 {
@@ -113,6 +121,8 @@ operator << (std::ostream& os, const xcb_motion_notify_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_enter_notify_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_enter_notify_event_t& e)
 {
@@ -135,6 +145,8 @@ operator << (std::ostream& os, const xcb_enter_notify_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_focus_in_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_focus_in_event_t& e)
 {
@@ -148,6 +160,8 @@ operator << (std::ostream& os, const xcb_focus_in_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_expose_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_expose_event_t& e)
 {
@@ -164,6 +178,8 @@ operator << (std::ostream& os, const xcb_expose_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_graphics_exposure_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_graphics_exposure_event_t& e)
 {
@@ -182,6 +198,8 @@ operator << (std::ostream& os, const xcb_graphics_exposure_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_no_exposure_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_no_exposure_event_t& e)
 {
@@ -195,6 +213,8 @@ operator << (std::ostream& os, const xcb_no_exposure_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_visibility_notify_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_visibility_notify_event_t& e)
 {
@@ -207,6 +227,8 @@ operator << (std::ostream& os, const xcb_visibility_notify_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_create_notify_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_create_notify_event_t& e)
 {
@@ -225,6 +247,8 @@ operator << (std::ostream& os, const xcb_create_notify_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_destroy_notify_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_destroy_notify_event_t& e)
 {
@@ -237,6 +261,8 @@ operator << (std::ostream& os, const xcb_destroy_notify_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_unmap_notify_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_unmap_notify_event_t& e)
 {
@@ -250,6 +276,8 @@ operator << (std::ostream& os, const xcb_unmap_notify_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_map_notify_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_map_notify_event_t& e)
 {
@@ -263,6 +291,8 @@ operator << (std::ostream& os, const xcb_map_notify_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_map_request_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_map_request_event_t& e)
 {
@@ -275,6 +305,8 @@ operator << (std::ostream& os, const xcb_map_request_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_reparent_notify_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_reparent_notify_event_t& e)
 {
@@ -291,6 +323,8 @@ operator << (std::ostream& os, const xcb_reparent_notify_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_configure_notify_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_configure_notify_event_t& e)
 {
@@ -310,6 +344,8 @@ operator << (std::ostream& os, const xcb_configure_notify_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_configure_request_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_configure_request_event_t& e)
 {
@@ -330,6 +366,8 @@ operator << (std::ostream& os, const xcb_configure_request_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_property_notify_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_property_notify_event_t& e)
 {
@@ -344,6 +382,8 @@ operator << (std::ostream& os, const xcb_property_notify_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_client_message_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_client_message_event_t& e)
 {
@@ -358,6 +398,8 @@ operator << (std::ostream& os, const xcb_client_message_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_mapping_notify_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_mapping_notify_event_t& e)
 {
@@ -371,6 +413,8 @@ operator << (std::ostream& os, const xcb_mapping_notify_event_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_query_extension_reply_t
 std::ostream&
 operator << (std::ostream& os, const xcb_query_extension_reply_t& e)
 {
@@ -386,6 +430,8 @@ operator << (std::ostream& os, const xcb_query_extension_reply_t& e)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_get_property_reply_t
 std::ostream&
 operator << (std::ostream& os, const xcb_get_property_reply_t& p)
 {
@@ -401,6 +447,8 @@ operator << (std::ostream& os, const xcb_get_property_reply_t& p)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_get_window_attributes_reply_t
 std::ostream&
 operator << (std::ostream& os, const xcb_get_window_attributes_reply_t& a)
 {
@@ -427,6 +475,8 @@ operator << (std::ostream& os, const xcb_get_window_attributes_reply_t& a)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_get_geometry_reply_t
 std::ostream&
 operator << (std::ostream& os, const xcb_get_geometry_reply_t& g)
 {
@@ -445,6 +495,8 @@ operator << (std::ostream& os, const xcb_get_geometry_reply_t& g)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_icccm_get_wm_class_reply_t
 std::ostream&
 operator << (std::ostream& os, const xcb_icccm_get_wm_class_reply_t& i)
 {
@@ -456,6 +508,8 @@ operator << (std::ostream& os, const xcb_icccm_get_wm_class_reply_t& i)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_get_modifier_mapping_reply_t
 std::ostream&
 operator << (std::ostream& os, const xcb_get_modifier_mapping_reply_t& m)
 {
@@ -468,6 +522,8 @@ operator << (std::ostream& os, const xcb_get_modifier_mapping_reply_t& m)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_alloc_color_reply_t
 std::ostream&
 operator << (std::ostream& os, const xcb_alloc_color_reply_t& c)
 {
@@ -483,6 +539,8 @@ operator << (std::ostream& os, const xcb_alloc_color_reply_t& c)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_query_tree_reply_t
 std::ostream&
 operator << (std::ostream& os, const xcb_query_tree_reply_t& q)
 {
@@ -497,6 +555,8 @@ operator << (std::ostream& os, const xcb_query_tree_reply_t& q)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_xinerama_is_active_reply_t
 std::ostream&
 operator << (std::ostream& os, const xcb_xinerama_is_active_reply_t& x)
 {
@@ -509,6 +569,8 @@ operator << (std::ostream& os, const xcb_xinerama_is_active_reply_t& x)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_xinerama_query_screens_reply_t
 std::ostream&
 operator << (std::ostream& os, const xcb_xinerama_query_screens_reply_t& x)
 {
@@ -521,6 +583,8 @@ operator << (std::ostream& os, const xcb_xinerama_query_screens_reply_t& x)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_xinerama_screen_info_t
 std::ostream&
 operator << (std::ostream& os, const xcb_xinerama_screen_info_t& x)
 {
@@ -533,6 +597,8 @@ operator << (std::ostream& os, const xcb_xinerama_screen_info_t& x)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_randr_query_version_reply_t
 std::ostream&
 operator << (std::ostream& os, const xcb_randr_query_version_reply_t& r)
 {
@@ -546,6 +612,8 @@ operator << (std::ostream& os, const xcb_randr_query_version_reply_t& r)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_randr_get_crtc_info_reply_t
 std::ostream&
 operator << (std::ostream& os, const xcb_randr_get_crtc_info_reply_t& r)
 {
@@ -568,6 +636,8 @@ operator << (std::ostream& os, const xcb_randr_get_crtc_info_reply_t& r)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_randr_get_output_primary_reply_t
 std::ostream&
 operator << (std::ostream& os, const xcb_randr_get_output_primary_reply_t& r)
 {
@@ -580,6 +650,8 @@ operator << (std::ostream& os, const xcb_randr_get_output_primary_reply_t& r)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_randr_get_screen_resources_current_reply_t
 std::ostream&
 operator << (std::ostream& os, const xcb_randr_get_screen_resources_current_reply_t& r)
 {
@@ -597,6 +669,8 @@ operator << (std::ostream& os, const xcb_randr_get_screen_resources_current_repl
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_randr_get_output_info_reply_t
 std::ostream&
 operator << (std::ostream& os, const xcb_randr_get_output_info_reply_t& r)
 {
@@ -620,6 +694,8 @@ operator << (std::ostream& os, const xcb_randr_get_output_info_reply_t& r)
     return os;
 }
 
+//! automaticatically generated ostream output function for
+//! xcb_randr_screen_change_notify_event_t
 std::ostream&
 operator << (std::ostream& os, const xcb_randr_screen_change_notify_event_t& e)
 {
