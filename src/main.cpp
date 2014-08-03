@@ -79,23 +79,19 @@ int main(int argc, char* argv[])
     xcb_prefetch_extension_data(g_xcb.connection, &xcb_xinerama_id);
 
     // *** detect monitors
-
     ScreenList::detect();
 
     // *** grab root key bindings
-
     BindingList::regrab_root();
 
-    // *** set up client list
+    // *** set up EWMH properties
+    Ewmh::setup();
 
+    // *** set up client list
     ClientList::s_pixel_focused = g_xcb.allocate_color(65535, 0, 0);
     ClientList::s_pixel_blurred = g_xcb.allocate_color(0, 0, 65535);
 
     ClientList::remanage_all_windows();
-
-    // *** set up EWMH properties
-
-    Ewmh::setup();
 
     // *** set up global event table and run loop!
 

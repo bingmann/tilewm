@@ -97,7 +97,7 @@ void Client::retrieve_wm_class()
         TRACE << "ICCCM: " << igwcr;
 
         INFO << "WM_CLASS = " << igwcr.class_name
-             << " instance = " << igwcr.instance_name;
+             << " - INSTANCE = " << igwcr.instance_name;
 
         m_wm_class = igwcr.class_name;
         m_wm_class_instance = igwcr.instance_name;
@@ -561,12 +561,7 @@ void ClientList::remanage_all_windows()
             c = manage_window(w);
 
         if (c)
-        {
             c->m_seen = true;
-
-            if (!c->m_is_mapped)
-                c->m_win.map_window();
-        }
     }
 
     // *** report lost managed windows

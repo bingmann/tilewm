@@ -301,7 +301,7 @@ std::ostream& operator << (std::ostream& os, const xcb_icccm_wm_hints_t& h)
         os << " input=" << h.input;
 
     if (h.flags & XCB_ICCCM_WM_HINT_STATE)
-        os << " state=" << IcccmWmStateFormatter(h.initial_state);
+        os << " initial_state=" << IcccmWmStateFormatter(h.initial_state);
 
     if (h.flags & XCB_ICCCM_WM_HINT_ICON_PIXMAP)
         os << " icon_pixmap=" << h.icon_pixmap;
