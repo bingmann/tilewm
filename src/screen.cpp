@@ -1,9 +1,9 @@
-/*******************************************************************************
- * src/screen.cpp
+/******************************************************************************/
+/*! \file src/screen.cpp
  *
  * Detect screens (usually monitors) via RandR and Xinerama.
- *
- *******************************************************************************
+ */
+/*******************************************************************************
  * Copyright (C) 2014 Timo Bingmann <tb@panthema.net>
  *
  * This program is free software: you can redistribute it and/or modify it

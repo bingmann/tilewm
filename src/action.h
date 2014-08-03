@@ -1,9 +1,9 @@
-/*******************************************************************************
- * src/action.h
+/******************************************************************************/
+/*! \file src/action.h
  *
  * Abstract Action class, KeyEvent and ButtonEvent and many simple actions.
- *
- *******************************************************************************
+ */
+/*******************************************************************************
  * Copyright (C) 2014 Timo Bingmann <tb@panthema.net>
  *
  * This program is free software: you can redistribute it and/or modify it

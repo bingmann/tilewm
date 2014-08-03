@@ -1,9 +1,9 @@
-/*******************************************************************************
- * src/geometry.h
+/******************************************************************************/
+/*! \file src/geometry.h
  *
  * Some classes to make working with Rectangles more convenient.
- *
- *******************************************************************************
+ */
+/*******************************************************************************
  * Copyright (C) 2014 Timo Bingmann <tb@panthema.net>
  *
  * This program is free software: you can redistribute it and/or modify it

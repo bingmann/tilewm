@@ -1,9 +1,9 @@
-/*******************************************************************************
- * src/xcb-atom.cpp
+/******************************************************************************/
+/*! \file src/xcb-atom.cpp
  *
  * Auto-generated functions to manage named cached atoms and cursors.
- *
- *******************************************************************************
+ */
+/*******************************************************************************
  * Copyright (C) 2014 Timo Bingmann <tb@panthema.net>
  *
  * This program is free software: you can redistribute it and/or modify it

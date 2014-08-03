@@ -1,10 +1,10 @@
-/*******************************************************************************
- * src/xcb-ostream-stub.cpp
+/******************************************************************************/
+/*! \file src/xcb-ostream-stub.cpp
  *
  * Stub file, which is compiled by gccxml in xcb-ostream-gen.pl to generate
  * structures.
- *
- *******************************************************************************
+ */
+/*******************************************************************************
  * Copyright (C) 2014 Timo Bingmann <tb@panthema.net>
  *
  * This program is free software: you can redistribute it and/or modify it

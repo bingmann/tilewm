@@ -1,9 +1,9 @@
-/*******************************************************************************
- * src/client.h
+/******************************************************************************/
+/*! \file src/client.h
  *
  * All information about our managed clients and a big client list.
- *
- *******************************************************************************
+ */
+/*******************************************************************************
  * Copyright (C) 2014 Timo Bingmann <tb@panthema.net>
  *
  * This program is free software: you can redistribute it and/or modify it

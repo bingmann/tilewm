@@ -1,9 +1,9 @@
-/*******************************************************************************
- * src/xcb-ostream.cpp
+/******************************************************************************/
+/*! \file src/xcb-ostream.cpp
  *
  * Auto-generated ostream operators for many XCB structures.
- *
- *******************************************************************************
+ */
+/*******************************************************************************
  * Copyright (C) 2014 Timo Bingmann <tb@panthema.net>
  *
  * This program is free software: you can redistribute it and/or modify it

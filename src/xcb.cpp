@@ -1,9 +1,9 @@
-/*******************************************************************************
- * src/xcb.cpp
+/******************************************************************************/
+/*! \file src/xcb.cpp
  *
  * Crude C++ abstraction of a XCB/Xlib connection to the X window server.
- *
- *******************************************************************************
+ */
+/*******************************************************************************
  * Copyright (C) 2014 Timo Bingmann <tb@panthema.net>
  *
  * This program is free software: you can redistribute it and/or modify it
