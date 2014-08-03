@@ -81,7 +81,8 @@ void Client::retrieve_wm_state()
         *(uint32_t*)xcb_get_property_value(gpr.get())
         );
 
-    INFO << "ICCCM: state = " << IcccmWmStateFormatter(m_wm_state);
+    INFO << "ICCCM WM_STATE of window " << window() << " is "
+         << IcccmWmStateFormatter(m_wm_state);
 }
 
 //! Retrieve WM_CLASS property and update fields

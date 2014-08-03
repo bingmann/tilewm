@@ -157,44 +157,11 @@ public:
     {
         uint32_t values[2] = { state, XCB_ATOM_NONE };
 
-        INFO << "setting WM_STATE to " << state;
+        INFO << "setting ICCCM WM_STATE to " << IcccmWmStateFormatter(state);
 
         xcb_change_property(g_xcb.connection, XCB_PROP_MODE_REPLACE,
                             m_window, g_xcb.WM_STATE.atom,
                             g_xcb.WM_STATE.atom, 32, 2, values);
-    }
-
-    //! Retrieve ICCCM WM_STATE property.
-    uint32_t get_wm_state()
-    {
-        xcb_get_property_cookie_t gpc
-            = xcb_get_property(g_xcb.connection, 0, m_window,
-                               g_xcb.WM_STATE.atom, g_xcb.WM_STATE.atom, 0, 2);
-
-        autofree_ptr<xcb_get_property_reply_t> gpr(
-            xcb_get_property_reply(g_xcb.connection, gpc, NULL)
-            );
-
-        if (!gpr) {
-            ERROR << "Could not retrieve WM_STATE for window " << m_window;
-            return 0;
-        }
-
-        TRACE << *gpr;
-
-        if (gpr->type != g_xcb.WM_STATE.atom ||
-            gpr->format != 32 || gpr->length != 2)
-        {
-            ERROR << "Invalid answer to WM_STATE request for window "
-                  << m_window;
-            return 0;
-        }
-
-        uint32_t result = *((uint32_t*)xcb_get_property_value(gpr.get()));
-
-        DEBUG << "WM_STATE of window " << m_window << " is " << result;
-
-        return result;
     }
 
     //! Send a ICCCM WM_DELETE_WINDOW client message.
