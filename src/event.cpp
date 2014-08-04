@@ -348,6 +348,14 @@ static void handle_event_property_notify(xcb_generic_event_t* event)
         }
         else if (ev->atom == g_xcb._NET_WM_STATE.atom)
         { }
+        else if (ev->atom == g_xcb._NET_WM_STRUT.atom)
+        {
+            c->retrieve_ewmh_strut();
+        }
+        else if (ev->atom == g_xcb._NET_WM_STRUT_PARTIAL.atom)
+        {
+            c->retrieve_ewmh_strut_partial();
+        }
         else
         {
             INFO << "unknown atom: "

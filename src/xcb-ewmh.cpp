@@ -1,7 +1,7 @@
 /******************************************************************************/
-/*! \file src/ewmh.h
+/*! \file src/xcb-ewmh.cpp
  *
- * Functions to setup and update EWMH properties.
+ * Crude C++ abstraction of EWMH structures and methods.
  */
 /*******************************************************************************
  * Copyright (C) 2014 Timo Bingmann <tb@panthema.net>
@@ -20,29 +20,7 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-#ifndef TILEWM_EWMH_HEADER
-#define TILEWM_EWMH_HEADER
+#include "xcb-ewmh.h"
 
-#include "xcb.h"
-#include "log.h"
-
-/*!
- * Class containing helper methods to make TileWM's state available via the
- * EWMH properties protocol.
- */
-class Ewmh
-{
-public:
-    //! The window manager name to set.
-    static const std::string s_wmname;
-
-    //! Set up and publish available supported EWMH methods.
-    static void setup();
-
-    //! Tear down supporting structures.
-    static void teardown();
-};
-
-#endif // !TILEWM_EWMH_HEADER
 
 /******************************************************************************/

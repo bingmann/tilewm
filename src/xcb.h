@@ -129,6 +129,9 @@ public:
     static XcbAtom _NET_WM_STATE_SKIP_TASKBAR;
     static XcbAtom _NET_WM_STATE_SKIP_PAGER;
 
+    static XcbAtom _NET_WM_STRUT;
+    static XcbAtom _NET_WM_STRUT_PARTIAL;
+
     static XcbAtom _NET_WM_WINDOW_TYPE;
     static XcbAtom _NET_WM_WINDOW_TYPE_NORMAL;
     static XcbAtom _NET_WM_WINDOW_TYPE_DOCK;
@@ -326,6 +329,14 @@ extern std::ostream& operator << (
 extern std::ostream& operator << (
     std::ostream& os,
     const xcb_query_tree_reply_t& q);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const struct ewmh_strut_t& q);
+
+extern std::ostream& operator << (
+    std::ostream& os,
+    const struct ewmh_strut_partial_t& q);
 
 // *** END Auto-generated ostream operators for XCB structures ***
 

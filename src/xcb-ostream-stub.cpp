@@ -26,6 +26,7 @@
 #include <xcb/xinerama.h>
 #include <xcb/randr.h>
 #include <xcb/xcb_icccm.h>
+#include "xcb-ewmh.h"
 
 int main(int argc, char* argv[])
 {

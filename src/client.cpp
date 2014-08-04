@@ -103,6 +103,9 @@ void Client::initial_update(const xcb_get_window_attributes_reply_t& winattr)
 
     xcb_get_property_cookie_t gp_ewmh_state = query_ewmh_state();
     xcb_get_property_cookie_t gp_ewmh_window_type = query_ewmh_window_type();
+    xcb_get_property_cookie_t gp_ewmh_strut = query_ewmh_strut();
+    xcb_get_property_cookie_t gp_ewmh_strut_partial
+        = query_ewmh_strut_partial();
 
     // initially clear _NET_WM_STATE flags (in case window doesn't support it)
     m_state_sticky = false;
@@ -123,6 +126,8 @@ void Client::initial_update(const xcb_get_window_attributes_reply_t& winattr)
 
     process_ewmh_state(gp_ewmh_state);
     process_ewmh_window_type(gp_ewmh_window_type);
+    process_ewmh_strut(gp_ewmh_strut);
+    process_ewmh_strut_partial(gp_ewmh_strut_partial);
 
     // *** set remainder of fields
 
@@ -178,15 +183,15 @@ void Client::configure_request(const xcb_configure_request_event_t& e)
 }
 
 //! Apply the EWMH compatible state change request.
-void Client::change_ewmh_state(xcb_atom_t state, net_wm_state_action_t action)
+void Client::change_ewmh_state(xcb_atom_t state, ewmh_state_action_t action)
 {
     if (state == g_xcb._NET_WM_STATE_HIDDEN.atom)
     {
-        if (action == ACTION_NET_WM_STATE_REMOVE)
+        if (action == EWMH_STATE_REMOVE)
             set_mapped(false);
-        else if (action == ACTION_NET_WM_STATE_ADD)
+        else if (action == EWMH_STATE_ADD)
             set_mapped(true);
-        else if (action == ACTION_NET_WM_STATE_TOGGLE)
+        else if (action == EWMH_STATE_TOGGLE)
             set_mapped(!m_is_mapped);
         else
             ERROR << "unknown action requested for state "

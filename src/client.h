@@ -32,6 +32,7 @@
 #include "xcb.h"
 #include "xcb-window.h"
 #include "xcb-icccm.h"
+#include "xcb-ewmh.h"
 #include <xcb/xcb_icccm.h>
 
 /*!
@@ -90,6 +91,11 @@ public:
     //! ICCCM WM_TRANSIENT_FOR window id
     xcb_window_t m_wm_transient_for;
 
+    //! EWMH _NET_WM_STRUT property data structure
+    ewmh_strut_t m_ewmh_strut;
+    //! EWMH _NET_WM_STRUT_PARTIAL property data structure
+    ewmh_strut_partial_t m_ewmh_strut_partial;
+
     //! Enumerate indicating the EWMH property _NET_WM_WINDOW_TYPE value.
     enum m_wm_window_type_type { TYPE_NORMAL, TYPE_DOCK };
     //! Variable Indicating the EWMH property _NET_WM_WINDOW_TYPE value.
@@ -117,7 +123,7 @@ public:
 
 
     //! Apply the EWMH compatible state change request.
-    void change_ewmh_state(xcb_atom_t state, net_wm_state_action_t action);
+    void change_ewmh_state(xcb_atom_t state, ewmh_state_action_t action);
 
     //! Update the EWMH _NET_WM_STATE property from flags.
     void update_ewmh_state();
@@ -180,6 +186,20 @@ public:
     void process_ewmh_window_type(xcb_get_property_cookie_t gpc);
     //! Retrieve _NET_WM_WINDOW_TYPE property and update fields
     void retrieve_ewmh_window_type();
+
+    //! Query _NET_WM_STRUT property
+    xcb_get_property_cookie_t query_ewmh_strut();
+    //! Process _NET_WM_STRUT reply and update fields
+    void process_ewmh_strut(xcb_get_property_cookie_t gpc);
+    //! Retrieve _NET_WM_STRUT property and update fields
+    void retrieve_ewmh_strut();
+
+    //! Query _NET_WM_STRUT_PARTIAL property
+    xcb_get_property_cookie_t query_ewmh_strut_partial();
+    //! Process _NET_WM_STRUT_PARTIAL reply and update fields
+    void process_ewmh_strut_partial(xcb_get_property_cookie_t gpc);
+    //! Retrieve _NET_WM_STRUT_PARTIAL property and update fields
+    void retrieve_ewmh_strut_partial();
 
     // \}
 

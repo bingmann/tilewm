@@ -49,8 +49,8 @@ void Client::process_wm_state(xcb_get_property_cookie_t gpc)
 
     TRACE << *gpr;
 
-    if (gpr->type != g_xcb.WM_STATE.atom || gpr->format != 32 ||
-        gpr->length != 2)
+    if (gpr->type != g_xcb.WM_STATE.atom ||
+        gpr->format != 32 || gpr->length != 2)
     {
         WARN << "Could not retrieve WM_STATE for window";
         m_wm_state = XCB_ICCCM_WM_STATE_NORMAL;
@@ -288,7 +288,7 @@ void Client::process_ewmh_state(xcb_get_property_cookie_t gpc)
     // iterate and apply properties to window
 
     for (int i = 0; i < n; ++i)
-        change_ewmh_state(atoms[i], ACTION_NET_WM_STATE_ADD);
+        change_ewmh_state(atoms[i], EWMH_STATE_ADD);
 }
 
 //! Retrieve _NET_WM_STATE property and update fields
@@ -348,6 +348,119 @@ void Client::process_ewmh_window_type(xcb_get_property_cookie_t gpc)
 void Client::retrieve_ewmh_window_type()
 {
     process_ewmh_window_type(query_ewmh_window_type());
+}
+
+// -----------------------------------------------------------------------------
+
+//! Query _NET_WM_STRUT property
+xcb_get_property_cookie_t Client::query_ewmh_strut()
+{
+    return xcb_get_property(g_xcb.connection, 0, window(),
+                            g_xcb._NET_WM_STRUT.atom,
+                            XCB_ATOM_CARDINAL, 0, 4);
+}
+
+//! Process _NET_WM_STRUT reply and update fields
+void Client::process_ewmh_strut(xcb_get_property_cookie_t gpc)
+{
+    autofree_ptr<xcb_get_property_reply_t> gpr(
+        xcb_get_property_reply(g_xcb.connection, gpc, NULL)
+        );
+
+    if (!gpr) {
+        WARN << "Could not retrieve _NET_WM_STRUT for window";
+        m_ewmh_strut.clear();
+        return;
+    }
+
+    TRACE << *gpr;
+
+    if (gpr->type != XCB_ATOM_CARDINAL ||
+        gpr->format != 32 || gpr->length != 4)
+    {
+        WARN << "Could not retrieve _NET_WM_STRUT for window";
+        m_ewmh_strut.clear();
+        return;
+    }
+
+    uint32_t* strut = (uint32_t*)xcb_get_property_value(gpr.get());
+
+    m_ewmh_strut.valid = true;
+
+    m_ewmh_strut.left = strut[0];
+    m_ewmh_strut.right = strut[1];
+    m_ewmh_strut.top = strut[2];
+    m_ewmh_strut.bottom = strut[3];
+
+    INFO << "EWMH _NET_WM_STRUT of window " << window() << " is "
+         << m_ewmh_strut;
+}
+
+//! Retrieve _NET_WM_STRUT property and update fields
+void Client::retrieve_ewmh_strut()
+{
+    process_ewmh_strut(query_ewmh_strut());
+}
+
+// -----------------------------------------------------------------------------
+
+//! Query _NET_WM_STRUT_PARTIAL property
+xcb_get_property_cookie_t Client::query_ewmh_strut_partial()
+{
+    return xcb_get_property(g_xcb.connection, 0, window(),
+                            g_xcb._NET_WM_STRUT_PARTIAL.atom,
+                            XCB_ATOM_CARDINAL, 0, 12);
+}
+
+//! Process _NET_WM_STRUT_PARTIAL reply and update fields
+void Client::process_ewmh_strut_partial(xcb_get_property_cookie_t gpc)
+{
+    autofree_ptr<xcb_get_property_reply_t> gpr(
+        xcb_get_property_reply(g_xcb.connection, gpc, NULL)
+        );
+
+    if (!gpr) {
+        WARN << "Could not retrieve _NET_WM_STRUT_PARTIAL for window";
+        m_ewmh_strut.clear();
+        return;
+    }
+
+    TRACE << *gpr;
+
+    if (gpr->type != XCB_ATOM_CARDINAL ||
+        gpr->format != 32 || gpr->length != 12)
+    {
+        WARN << "Could not retrieve _NET_WM_STRUT_PARTIAL for window";
+        m_ewmh_strut.clear();
+        return;
+    }
+
+    uint32_t* strut = (uint32_t*)xcb_get_property_value(gpr.get());
+
+    m_ewmh_strut_partial.valid = true;
+
+    m_ewmh_strut_partial.left = strut[0];
+    m_ewmh_strut_partial.right = strut[1];
+    m_ewmh_strut_partial.top = strut[2];
+    m_ewmh_strut_partial.bottom = strut[3];
+
+    m_ewmh_strut_partial.left_start_y = strut[4];
+    m_ewmh_strut_partial.left_end_y = strut[5];
+    m_ewmh_strut_partial.right_start_y = strut[6];
+    m_ewmh_strut_partial.right_end_y = strut[7];
+    m_ewmh_strut_partial.top_start_x = strut[8];
+    m_ewmh_strut_partial.top_end_x = strut[9];
+    m_ewmh_strut_partial.bottom_start_x = strut[10];
+    m_ewmh_strut_partial.bottom_end_x = strut[11];
+
+    INFO << "EWMH _NET_WM_STRUT_PARTIAL of window " << window() << " is "
+         << m_ewmh_strut_partial;
+}
+
+//! Retrieve _NET_WM_STRUT_PARTIAL property and update fields
+void Client::retrieve_ewmh_strut_partial()
+{
+    process_ewmh_strut_partial(query_ewmh_strut_partial());
 }
 
 /******************************************************************************/

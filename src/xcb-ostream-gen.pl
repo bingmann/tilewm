@@ -61,7 +61,7 @@ sub find_typeid {
 sub find_field {
     my ($fieldid) = @_;
 
-    foreach my $key (qw(Field Constructor Destructor OperatorMethod))
+    foreach my $key (qw(Field Constructor Destructor Method OperatorMethod))
     {
         foreach my $field (@{$$ref{$key}})
         {
@@ -79,7 +79,7 @@ sub find_field {
 }
 
 sub process {
-    my ($name,$shname,$trace) = @_;
+    my ($name,$shname,$extra,$trace) = @_;
 
     my $out = "";
 
@@ -97,7 +97,7 @@ sub process {
         $out .= "//! automaticatically generated ostream output function for\n";
         $out .= "//! $$str{name}\n";
         $out .= "std::ostream&\n";
-        $out .= "operator << (std::ostream& os, const $$str{name}& $shname)\n";
+        $out .= "operator << (std::ostream& os, const $extra$$str{name}& $shname)\n";
         $out .= "{\n";
         $out .= "    os << \"[$pname:\"\n";
 
@@ -174,6 +174,7 @@ print <<EOF;
 #include <xcb/xinerama.h>
 #include <xcb/randr.h>
 #include <xcb/xcb_icccm.h>
+#include "xcb-ewmh.h"
 
 EOF
 
@@ -185,9 +186,12 @@ foreach my $header (glob("*.{h,cpp}"))
 
     $source =~ s!^.*BEGIN Auto(.+?)END Auto.*$!$1!s or next;
 
-    while ($source =~ m!operator << \(\s*std::ostream& os,\s*const (\S+?)& (\S+?)\)!g)
+    while ($source =~ m!operator\s*<<\s*\(\s*
+                        std::ostream&\s*os,\s*
+                        const\s*(?<extra>(struct|class)\s*)?
+                        (?<struct>\S+?)&\s*(?<name>\S+?)\)!gx)
     {
-        process($1, $2);
+        process($+{struct}, $+{name}, $+{extra} || "");
     }
 }
 

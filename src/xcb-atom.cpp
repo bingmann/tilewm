@@ -85,6 +85,12 @@ XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE_SKIP_TASKBAR =
 //! Cached value of _NET_WM_STATE_SKIP_PAGER atom
 XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE_SKIP_PAGER =
 { "_NET_WM_STATE_SKIP_PAGER", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_STRUT atom
+XcbConnection::XcbAtom XcbConnection::_NET_WM_STRUT =
+{ "_NET_WM_STRUT", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_STRUT_PARTIAL atom
+XcbConnection::XcbAtom XcbConnection::_NET_WM_STRUT_PARTIAL =
+{ "_NET_WM_STRUT_PARTIAL", XCB_ATOM_NONE };
 //! Cached value of _NET_WM_WINDOW_TYPE atom
 XcbConnection::XcbAtom XcbConnection::_NET_WM_WINDOW_TYPE =
 { "_NET_WM_WINDOW_TYPE", XCB_ATOM_NONE };
@@ -97,7 +103,7 @@ XcbConnection::XcbAtom XcbConnection::_NET_WM_WINDOW_TYPE_DOCK =
 
 std::vector<xcb_atom_t> XcbConnection::get_ewmh_atomlist()
 {
-    std::vector<xcb_atom_t> atomlist(18);
+    std::vector<xcb_atom_t> atomlist(20);
 
     atomlist[0] = _NET_SUPPORTED.atom;
     atomlist[1] = _NET_SUPPORTING_WM_CHECK.atom;
@@ -114,9 +120,11 @@ std::vector<xcb_atom_t> XcbConnection::get_ewmh_atomlist()
     atomlist[12] = _NET_WM_STATE_MAXIMIZED_HORZ.atom;
     atomlist[13] = _NET_WM_STATE_SKIP_TASKBAR.atom;
     atomlist[14] = _NET_WM_STATE_SKIP_PAGER.atom;
-    atomlist[15] = _NET_WM_WINDOW_TYPE.atom;
-    atomlist[16] = _NET_WM_WINDOW_TYPE_NORMAL.atom;
-    atomlist[17] = _NET_WM_WINDOW_TYPE_DOCK.atom;
+    atomlist[15] = _NET_WM_STRUT.atom;
+    atomlist[16] = _NET_WM_STRUT_PARTIAL.atom;
+    atomlist[17] = _NET_WM_WINDOW_TYPE.atom;
+    atomlist[18] = _NET_WM_WINDOW_TYPE_NORMAL.atom;
+    atomlist[19] = _NET_WM_WINDOW_TYPE_DOCK.atom;
 
     return atomlist;
 }
@@ -143,6 +151,8 @@ struct XcbConnection::XcbAtom* XcbConnection::atomlist[] = {
     &_NET_WM_STATE_MAXIMIZED_HORZ,
     &_NET_WM_STATE_SKIP_TASKBAR,
     &_NET_WM_STATE_SKIP_PAGER,
+    &_NET_WM_STRUT,
+    &_NET_WM_STRUT_PARTIAL,
     &_NET_WM_WINDOW_TYPE,
     &_NET_WM_WINDOW_TYPE_NORMAL,
     &_NET_WM_WINDOW_TYPE_DOCK,

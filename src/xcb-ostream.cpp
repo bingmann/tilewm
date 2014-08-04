@@ -25,6 +25,7 @@
 #include <xcb/xinerama.h>
 #include <xcb/randr.h>
 #include <xcb/xcb_icccm.h>
+#include "xcb-ewmh.h"
 
 //! automaticatically generated ostream output function for
 //! xcb_screen_t
@@ -551,6 +552,44 @@ operator << (std::ostream& os, const xcb_query_tree_reply_t& q)
        << " root=" << q.root
        << " parent=" << q.parent
        << " children_len=" << q.children_len
+       << "]";
+    return os;
+}
+
+//! automaticatically generated ostream output function for
+//! ewmh_strut_t
+std::ostream&
+operator << (std::ostream& os, const struct ewmh_strut_t& q)
+{
+    os << "[ewmh_strut:"
+       << " valid=" << q.valid
+       << " left=" << q.left
+       << " right=" << q.right
+       << " top=" << q.top
+       << " bottom=" << q.bottom
+       << "]";
+    return os;
+}
+
+//! automaticatically generated ostream output function for
+//! ewmh_strut_partial_t
+std::ostream&
+operator << (std::ostream& os, const struct ewmh_strut_partial_t& q)
+{
+    os << "[ewmh_strut_partial:"
+       << " valid=" << q.valid
+       << " left=" << q.left
+       << " right=" << q.right
+       << " top=" << q.top
+       << " bottom=" << q.bottom
+       << " left_start_y=" << q.left_start_y
+       << " left_end_y=" << q.left_end_y
+       << " right_start_y=" << q.right_start_y
+       << " right_end_y=" << q.right_end_y
+       << " top_start_x=" << q.top_start_x
+       << " top_end_x=" << q.top_end_x
+       << " bottom_start_x=" << q.bottom_start_x
+       << " bottom_end_x=" << q.bottom_end_x
        << "]";
     return os;
 }
