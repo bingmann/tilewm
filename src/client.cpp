@@ -47,197 +47,6 @@ void Client::set_mapped(bool state)
     }
 }
 
-//! Retrieve WM_STATE property and update fields
-void Client::retrieve_wm_state()
-{
-    // *** retrieve WM_STATE property
-
-    xcb_get_property_cookie_t gpc =
-        xcb_get_property(g_xcb.connection, 0, window(),
-                         g_xcb.WM_STATE.atom,
-                         g_xcb.WM_STATE.atom, 0, 2);
-
-    autofree_ptr<xcb_get_property_reply_t> gpr(
-        xcb_get_property_reply(g_xcb.connection, gpc, NULL)
-        );
-
-    if (!gpr) {
-        WARN << "Could not retrieve WM_STATE for window";
-        m_wm_state = XCB_ICCCM_WM_STATE_NORMAL;
-        return;
-    }
-
-    TRACE << *gpr;
-
-    if (gpr->type != g_xcb.WM_STATE.atom || gpr->format != 32 ||
-        gpr->length != 2)
-    {
-        WARN << "Could not retrieve WM_STATE for window";
-        m_wm_state = XCB_ICCCM_WM_STATE_NORMAL;
-        return;
-    }
-
-    m_wm_state = (xcb_icccm_wm_state_t)(
-        *(uint32_t*)xcb_get_property_value(gpr.get())
-        );
-
-    INFO << "ICCCM WM_STATE of window " << window() << " is "
-         << IcccmWmStateFormatter(m_wm_state);
-}
-
-//! Retrieve WM_CLASS property and update fields
-void Client::retrieve_wm_class()
-{
-    xcb_get_property_cookie_t igwcc =
-        xcb_icccm_get_wm_class(g_xcb.connection, window());
-
-    xcb_icccm_get_wm_class_reply_t igwcr;
-
-    if (xcb_icccm_get_wm_class_reply(g_xcb.connection, igwcc, &igwcr, NULL))
-    {
-        TRACE << "ICCCM: " << igwcr;
-
-        INFO << "WM_CLASS = " << igwcr.class_name
-             << " - INSTANCE = " << igwcr.instance_name;
-
-        m_wm_class = igwcr.class_name;
-        m_wm_class_instance = igwcr.instance_name;
-
-        xcb_icccm_get_wm_class_reply_wipe(&igwcr);
-    }
-    else
-    {
-        WARN << "ICCCM WM_CLASS could not be retrieved.";
-
-        m_wm_class = "<no WM_CLASS name>";
-        m_wm_class_instance = "<no WM_CLASS instance>";
-    }
-}
-
-//! Retrieve WM_PROTOCOLS property and update fields
-void Client::retrieve_wm_protocols()
-{
-    xcb_get_property_cookie_t igwpc =
-        xcb_icccm_get_wm_protocols(g_xcb.connection, window(),
-                                   g_xcb.WM_PROTOCOLS.atom);
-
-    xcb_icccm_get_wm_protocols_reply_t igwpr;
-
-    m_can_take_focus = false;
-    m_can_delete_window = false;
-
-    if (xcb_icccm_get_wm_protocols_reply(g_xcb.connection,
-                                         igwpc, &igwpr, NULL))
-    {
-        for (uint32_t i = 0; i < igwpr.atoms_len; i++)
-        {
-            if (igwpr.atoms[i] == g_xcb.WM_TAKE_FOCUS.atom)
-            {
-                m_can_take_focus = true;
-                INFO << "ICCCM: protocol atom: " << g_xcb.WM_TAKE_FOCUS.name;
-            }
-            else if (igwpr.atoms[i] == g_xcb.WM_DELETE_WINDOW.atom)
-            {
-                m_can_delete_window = true;
-                INFO << "ICCCM: protocol atom: " << g_xcb.WM_DELETE_WINDOW.name;
-            }
-            else
-            {
-                INFO << "ICCCM: unknown protocol atom: " << igwpr.atoms[i]
-                     << " - " << g_xcb.find_atom_name(igwpr.atoms[i]);
-            }
-        }
-
-        xcb_icccm_get_wm_protocols_reply_wipe(&igwpr);
-    }
-    else
-    {
-        WARN << "ICCCM WM_PROTOCOLS could not be retrieved.";
-    }
-}
-
-//! Retrieve WM_HINTS property and update fields
-void Client::retrieve_wm_hints()
-{
-    xcb_get_property_cookie_t igwhc =
-        xcb_icccm_get_wm_hints(g_xcb.connection, window());
-
-    if (xcb_icccm_get_wm_hints_reply(g_xcb.connection, igwhc,
-                                     &m_wm_hints, NULL))
-    {
-        INFO << "ICCCM: " << m_wm_hints;
-    }
-    else
-    {
-        WARN << "ICCCM WM_HINTS could not be retrieved.";
-    }
-}
-
-//! Retrieve WM_NORMAL_HINTS property containing size hints field
-void Client::retrieve_wm_normal_hints()
-{
-    m_wm_size_hints.retrieve_wm_normal_hints(window());
-}
-
-//! Retrieve ICCCM WM_TRANSIENT_FOR window id
-void Client::retrieve_wm_transient_for()
-{
-    xcb_get_property_cookie_t igwtfc =
-        xcb_icccm_get_wm_transient_for(g_xcb.connection, window());
-
-    if (xcb_icccm_get_wm_transient_for_reply(g_xcb.connection,
-                                             igwtfc, &m_wm_transient_for, NULL))
-    {
-        INFO << "ICCCM: transient for " << m_wm_transient_for;
-    }
-    else
-    {
-        WARN << "ICCCM WM_TRANSIENT_FOR could not be retrieved.";
-    }
-}
-
-//! Retrieve _NET_WM_WINDOW_TYPE property and update fields
-void Client::retrieve_net_wm_window_type()
-{
-    m_wm_window_type = TYPE_NORMAL;
-
-    xcb_get_property_cookie_t gpc =
-        xcb_get_property(g_xcb.connection, 0, window(),
-                         g_xcb._NET_WM_WINDOW_TYPE.atom,
-                         XCB_ATOM_ATOM, 0, UINT32_MAX);
-
-    autofree_ptr<xcb_get_property_reply_t> gpr(
-        xcb_get_property_reply(g_xcb.connection, gpc, NULL)
-        );
-
-    if (!gpr || gpr->type != XCB_ATOM_ATOM) {
-        INFO << "Could not retrieve _NET_WM_WINDOW_TYPE for window";
-        return;
-    }
-
-    TRACE << *gpr;
-
-    xcb_atom_t* atomlist = (xcb_atom_t*)xcb_get_property_value(gpr.get());
-    int n = xcb_get_property_value_length(gpr.get()) / sizeof(xcb_atom_t);
-
-    for (int i = 0; i < n; ++i)
-    {
-        if (atomlist[i] == g_xcb._NET_WM_WINDOW_TYPE_NORMAL.atom) {
-            INFO << "Found _NET_WM_WINDOW_TYPE_NORMAL atom.";
-            break;
-        }
-        else if (atomlist[i] == g_xcb._NET_WM_WINDOW_TYPE_DOCK.atom) {
-            INFO << "Found _NET_WM_WINDOW_TYPE_DOCK atom.";
-            m_wm_window_type = TYPE_DOCK;
-            break;
-        }
-        else {
-            WARN << "Unknown _NET_WM_WINDOW_TYPE atom: "
-                 << g_xcb.find_atom_name(atomlist[i]);
-        }
-    }
-}
-
 //! Perform initial query/update of all fields of the Client structure
 void Client::initial_update(const xcb_get_window_attributes_reply_t& winattr)
 {
@@ -284,14 +93,16 @@ void Client::initial_update(const xcb_get_window_attributes_reply_t& winattr)
 
     // *** get WM_CLASS and WM_PROTOCOLS, and more ICCCM/EWMH properties.
 
-    retrieve_wm_class();
-    retrieve_wm_protocols();
-    retrieve_wm_hints();
-    retrieve_wm_normal_hints();
-    retrieve_wm_transient_for();
-    retrieve_wm_state();
+    // first issue property requests
+    xcb_get_property_cookie_t gp_wm_state = query_wm_state();
+    xcb_get_property_cookie_t gp_wm_class = query_wm_class();
+    xcb_get_property_cookie_t gp_wm_protocols = query_wm_protocols();
+    xcb_get_property_cookie_t gp_wm_hints = query_wm_hints();
+    xcb_get_property_cookie_t gp_wm_normal_hints = query_wm_normal_hints();
+    xcb_get_property_cookie_t gp_wm_transient_for = query_wm_transient_for();
 
-    retrieve_net_wm_window_type();
+    xcb_get_property_cookie_t gp_ewmh_state = query_ewmh_state();
+    xcb_get_property_cookie_t gp_ewmh_window_type = query_ewmh_window_type();
 
     // initially clear _NET_WM_STATE flags (in case window doesn't support it)
     m_state_sticky = false;
@@ -301,7 +112,17 @@ void Client::initial_update(const xcb_get_window_attributes_reply_t& winattr)
     m_state_maximized_horz = false;
     m_state_skip_taskbar = false;
     m_state_skip_pager = false;
-    retrieve_ewmh_state();
+
+    // process answers to property requests
+    process_wm_state(gp_wm_state);
+    process_wm_class(gp_wm_class);
+    process_wm_protocols(gp_wm_protocols);
+    process_wm_hints(gp_wm_hints);
+    process_wm_normal_hints(gp_wm_normal_hints);
+    process_wm_transient_for(gp_wm_transient_for);
+
+    process_ewmh_state(gp_ewmh_state);
+    process_ewmh_window_type(gp_ewmh_window_type);
 
     // *** set remainder of fields
 
@@ -376,44 +197,6 @@ void Client::change_ewmh_state(xcb_atom_t state, net_wm_state_action_t action)
               << g_xcb.find_atom_name(state);
         return;
     }
-}
-
-//! Retrieve _NET_WM_STATE property and update flags from property.
-void Client::retrieve_ewmh_state()
-{
-    // *** retrieve _NET_WM_STATE property
-
-    xcb_get_property_cookie_t gpc =
-        xcb_get_property(g_xcb.connection, 0, window(),
-                         g_xcb._NET_WM_STATE.atom,
-                         XCB_ATOM_ATOM, 0, UINT32_MAX);
-
-    autofree_ptr<xcb_get_property_reply_t> gpr(
-        xcb_get_property_reply(g_xcb.connection, gpc, NULL)
-        );
-
-    if (!gpr || gpr->type != XCB_ATOM_ATOM) {
-        INFO << "Could not retrieve _NET_WM_STATE for window";
-        return;
-    }
-
-    TRACE << *gpr;
-
-    m_state_sticky = false;
-    m_state_above = false;
-    m_state_fullscreen = false;
-    m_state_maximized_vert = false;
-    m_state_maximized_horz = false;
-    m_state_skip_taskbar = false;
-    m_state_skip_pager = false;
-
-    xcb_atom_t* atoms = (xcb_atom_t*)xcb_get_property_value(gpr.get());
-    int n = xcb_get_property_value_length(gpr.get()) / sizeof(xcb_atom_t);
-
-    // iterate and apply properties to window
-
-    for (int i = 0; i < n; ++i)
-        change_ewmh_state(atoms[i], ACTION_NET_WM_STATE_ADD);
 }
 
 //! Update the EWMH _NET_WM_STATE property from flags.

@@ -28,6 +28,7 @@ add_executable(tilewm
   event.cpp
   screen.cpp
   client.cpp
+  client-properties.cpp
   binding.cpp
   action.cpp
   ewmh.cpp

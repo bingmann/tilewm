@@ -53,19 +53,6 @@ public:
     //! Initial border_width when first mapped.
     uint16_t m_initial_border_width;
 
-    //! WM_CLASS name
-    std::string m_wm_class;
-    //! WM_CLASS instance name
-    std::string m_wm_class_instance;
-
-    //! whether WM_PROTOCOLS contains WM_TAKE_FOCUS
-    bool m_can_take_focus;
-    //! whether WM_PROTOCOLS contains WM_DELETE_WINDOW
-    bool m_can_delete_window;
-
-    //! ICCCM window state enum
-    xcb_icccm_wm_state_t m_wm_state;
-
     //! flag whether window is currently mapped == !_NET_WM_STATE_HIDDEN
     bool m_is_mapped;
     //! EWHM window state flag for _NET_WM_STATE_STICKY (pinned)
@@ -82,6 +69,19 @@ public:
     bool m_state_skip_taskbar;
     //! EWHM window state flag for _NET_WM_STATE_SKIP_PAGER
     bool m_state_skip_pager;
+
+    //! ICCCM window state enum
+    xcb_icccm_wm_state_t m_wm_state;
+
+    //! ICCCM WM_CLASS name
+    std::string m_wm_class;
+    //! ICCCM WM_CLASS instance name
+    std::string m_wm_class_instance;
+
+    //! whether WM_PROTOCOLS contains WM_TAKE_FOCUS
+    bool m_can_take_focus;
+    //! whether WM_PROTOCOLS contains WM_DELETE_WINDOW
+    bool m_can_delete_window;
 
     //! ICCCM WM_HINTS structure
     xcb_icccm_wm_hints_t m_wm_hints;
@@ -119,33 +119,69 @@ public:
     //! Apply the EWMH compatible state change request.
     void change_ewmh_state(xcb_atom_t state, net_wm_state_action_t action);
 
-    //! Retrieve _NET_WM_STATE property and update flags from property.
-    void retrieve_ewmh_state();
-
     //! Update the EWMH _NET_WM_STATE property from flags.
     void update_ewmh_state();
 
+    // \name Query, Process and Retrieval of Window Properties
+    // \{
 
+    //! Query WM_STATE property
+    xcb_get_property_cookie_t query_wm_state();
+    //! Process WM_STATE reply and update fields
+    void process_wm_state(xcb_get_property_cookie_t gpc);
     //! Retrieve WM_STATE property and update fields
     void retrieve_wm_state();
 
+    //! Query WM_CLASS property
+    xcb_get_property_cookie_t query_wm_class();
+    //! Process WM_CLASS reply and update fields
+    void process_wm_class(xcb_get_property_cookie_t gpc);
     //! Retrieve WM_CLASS property and update fields
     void retrieve_wm_class();
 
+    //! Query WM_PROTOCOLS property
+    xcb_get_property_cookie_t query_wm_protocols();
+    //! Process WM_PROTOCOLS reply and update fields
+    void process_wm_protocols(xcb_get_property_cookie_t gpc);
     //! Retrieve WM_PROTOCOLS property and update fields
     void retrieve_wm_protocols();
 
+    //! Query WM_HINTS property
+    xcb_get_property_cookie_t query_wm_hints();
+    //! Process WM_HINTS reply and update fields
+    void process_wm_hints(xcb_get_property_cookie_t gpc);
     //! Retrieve WM_HINTS property and update fields
     void retrieve_wm_hints();
 
-    //! Retrieve WM_NORMAL_HINTS property containing size hints field
+    //! Query WM_NORMAL_HINTS property containing size hints field
+    xcb_get_property_cookie_t query_wm_normal_hints();
+    //! Process WM_NORMAL_HINTS reply and update size hints fields
+    void process_wm_normal_hints(xcb_get_property_cookie_t gpc);
+    //! Retrieve WM_NORMAL_HINTS property and update fields
     void retrieve_wm_normal_hints();
 
-    //! Retrieve ICCCM WM_TRANSIENT_FOR window id
+    //! Query WM_TRANSIENT_FOR property
+    xcb_get_property_cookie_t query_wm_transient_for();
+    //! Process WM_TRANSIENT_FOR reply and update fields
+    void process_wm_transient_for(xcb_get_property_cookie_t gpc);
+    //! Retrieve WM_TRANSIENT_FOR property and update fields
     void retrieve_wm_transient_for();
 
+    //! Query _NET_WM_STATE property
+    xcb_get_property_cookie_t query_ewmh_state();
+    //! Process _NET_WM_STATE reply and update fields
+    void process_ewmh_state(xcb_get_property_cookie_t gpc);
+    //! Retrieve _NET_WM_STATE property and update fields
+    void retrieve_ewmh_state();
+
+    //! Query _NET_WM_WINDOW_TYPE property
+    xcb_get_property_cookie_t query_ewmh_window_type();
+    //! Process _NET_WM_WINDOW_TYPE reply and update fields
+    void process_ewmh_window_type(xcb_get_property_cookie_t gpc);
     //! Retrieve _NET_WM_WINDOW_TYPE property and update fields
-    void retrieve_net_wm_window_type();
+    void retrieve_ewmh_window_type();
+
+    // \}
 
     //! Whether the client is allowed free configuration placement.
     bool free_placement()
