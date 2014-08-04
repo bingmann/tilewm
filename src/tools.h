@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <string>
+#include <limits>
 
 /*!
  * Template transformation function which uses std::ostringstream to serialize
@@ -88,6 +89,21 @@ static inline std::string string_hexdump(const void* data, size_t size)
 static inline std::string string_hexdump(const std::string& str)
 {
     return string_hexdump(str.data(), str.size());
+}
+
+/*!
+ * Apply a signed integer addition to an unsigned integer but correctly limit
+ * overflows.
+ */
+template <typename UnsignedType, typename SignedType>
+static inline UnsignedType
+add_limit_overflow(const UnsignedType& a, const SignedType& b)
+{
+    if (b > 0 && (UnsignedType)(a + b) < a)
+        return std::numeric_limits<UnsignedType>::max();
+    if (b < 0 && (UnsignedType)(a + b) > a)
+        return std::numeric_limits<UnsignedType>::min();
+    return a + b;
 }
 
 #endif // !TILEWM_TOOLS_HEADER

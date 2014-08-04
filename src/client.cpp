@@ -173,21 +173,10 @@ void Client::retrieve_wm_hints()
     }
 }
 
-//! Retrieve WM_NORMAL_HINTS property and size hints fields
+//! Retrieve WM_NORMAL_HINTS property containing size hints field
 void Client::retrieve_wm_normal_hints()
 {
-    xcb_get_property_cookie_t igwnhc =
-        xcb_icccm_get_wm_normal_hints(g_xcb.connection, window());
-
-    if (xcb_icccm_get_wm_normal_hints_reply(g_xcb.connection,
-                                            igwnhc, &m_wm_size_hints, NULL))
-    {
-        INFO << "ICCCM: " << m_wm_size_hints;
-    }
-    else
-    {
-        WARN << "ICCCM WM_NORMAL_HINTS / WM_SIZE_HINTS could not be retrieved.";
-    }
+    m_wm_size_hints.retrieve_wm_normal_hints(window());
 }
 
 //! Retrieve ICCCM WM_TRANSIENT_FOR window id

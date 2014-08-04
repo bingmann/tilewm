@@ -31,6 +31,7 @@
 #include "ewmh.h"
 #include "xcb.h"
 #include "xcb-window.h"
+#include "xcb-icccm.h"
 #include <xcb/xcb_icccm.h>
 
 /*!
@@ -85,7 +86,7 @@ public:
     //! ICCCM WM_HINTS structure
     xcb_icccm_wm_hints_t m_wm_hints;
     //! ICCCM WM_NORMAL_HINTS / WM_SIZE_HINTS structure
-    xcb_size_hints_t m_wm_size_hints;
+    IcccmSizeHints m_wm_size_hints;
     //! ICCCM WM_TRANSIENT_FOR window id
     xcb_window_t m_wm_transient_for;
 
@@ -137,7 +138,7 @@ public:
     //! Retrieve WM_HINTS property and update fields
     void retrieve_wm_hints();
 
-    //! Retrieve WM_NORMAL_HINTS property and size hints fields
+    //! Retrieve WM_NORMAL_HINTS property containing size hints field
     void retrieve_wm_normal_hints();
 
     //! Retrieve ICCCM WM_TRANSIENT_FOR window id
@@ -157,85 +158,6 @@ public:
 
     //! Handle a XCB_CONFIGURE_REQUEST event, usually by ignoring it.
     void configure_request(const xcb_configure_request_event_t& e);
-
-    //! \name Methods to access WM_NORMAL_HINTS size hints or defaults
-    //! \{
-
-    //! Return true if a minimum size width/height is configured.
-    bool has_size_hint_min_size() const
-    {
-        return (m_wm_size_hints.flags & XCB_ICCCM_SIZE_HINT_P_MIN_SIZE);
-    }
-
-    //! Return configured minimum width size hint or zero.
-    int32_t get_size_hint_min_width() const
-    {
-        if (has_size_hint_min_size())
-            return std::max<int32_t>(0, m_wm_size_hints.min_width);
-        else
-            return 0;
-    }
-
-    //! Return configured minimum height size hint or zero.
-    int32_t get_size_hint_min_height() const
-    {
-        if (has_size_hint_min_size())
-            return std::max<int32_t>(0, m_wm_size_hints.min_height);
-        else
-            return 0;
-    }
-
-    //! Return true if a maximum size width/height is configured.
-    bool has_size_hint_max_size() const
-    {
-        return (m_wm_size_hints.flags & XCB_ICCCM_SIZE_HINT_P_MAX_SIZE);
-    }
-
-    //! Return configured maximum width size hint or zero.
-    int32_t get_size_hint_max_width() const
-    {
-        if (has_size_hint_max_size())
-            return std::max<int32_t>(get_size_hint_min_width(),
-                                     m_wm_size_hints.max_width);
-        else
-            return std::numeric_limits<int32_t>::max();
-    }
-
-    //! Return configured maximum height size hint or zero.
-    int32_t get_size_hint_max_height() const
-    {
-        if (has_size_hint_max_size())
-            return std::min<int32_t>(get_size_hint_min_height(),
-                                     m_wm_size_hints.max_height);
-        else
-            return std::numeric_limits<int32_t>::max();
-    }
-
-    //! Return true if a valid size increment for  width/height is configured.
-    bool has_size_hint_resize_inc() const
-    {
-        return (m_wm_size_hints.flags & XCB_ICCCM_SIZE_HINT_P_RESIZE_INC);
-    }
-
-    //! Return configured maximum width increment size hint or zero.
-    int32_t get_size_hint_width_inc() const
-    {
-        if (has_size_hint_resize_inc())
-            return std::max<int32_t>(1, m_wm_size_hints.width_inc);
-        else
-            return 1;
-    }
-
-    //! Return configured maximum height increment size hint or zero.
-    int32_t get_size_hint_height_inc() const
-    {
-        if (has_size_hint_resize_inc())
-            return std::max<int32_t>(1, m_wm_size_hints.height_inc);
-        else
-            return 1;
-    }
-
-    //! \}
 };
 
 /*!
