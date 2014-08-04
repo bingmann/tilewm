@@ -31,6 +31,7 @@ add_executable(tilewm
   binding.cpp
   action.cpp
   ewmh.cpp
+  desktop.cpp
   )
 
 if(PERL_FOUND)
