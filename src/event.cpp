@@ -391,40 +391,44 @@ static void handle_event_client_message(xcb_generic_event_t* event)
     xcb_client_message_event_t* ev = (xcb_client_message_event_t*)event;
     TRACE << "Event handler: " << *ev;
 
-    Client* c = ClientList::find_window(ev->window);
-    if (c)
+    if (ev->type == g_xcb._NET_ACTIVE_WINDOW.atom)
     {
-        // known window -> possibly handle client message
-        TRACE << "client_message for window " << c;
-
-        if (ev->type == g_xcb._NET_ACTIVE_WINDOW.atom)
-        {
+        Client* c = ClientList::find_window(ev->window);
+        if (c) {
+            INFO << "_NET_ACTIVE_WINDOW for window " << c;
             ClientList::focus_window(c);
         }
-        else if (ev->type == g_xcb.WM_CHANGE_STATE.atom)
-        {
+        else
+            WARN << "_NET_ACTIVE_WINDOW for unmanaged window?";
+    }
+    else if (ev->type == g_xcb.WM_CHANGE_STATE.atom)
+    {
+        Client* c = ClientList::find_window(ev->window);
+        if (c) {
+            INFO << "WM_CHANGE_STATE for window " << c;
+
             if (ev->data.data32[0] == 3)
                 c->set_mapped(false);
             else
                 INFO << "Unknown WM_CHANGE_STATE request: "
                      << ev->data.data32[0];
         }
-        else if (ev->type == g_xcb._NET_WM_STATE.atom)
-        {
+        else
+            WARN << "WM_CHANGE_STATE for unmanaged window?";
+    }
+    else if (ev->type == g_xcb._NET_WM_STATE.atom)
+    {
+        Client* c = ClientList::find_window(ev->window);
+        if (c) {
+            INFO << "_NET_WM_STATE for window " << c;
             c->retrieve_ewmh_state();
         }
         else
-        {
-            INFO << "unknown atom: "
-                 << ev->type << " - " << g_xcb.find_atom_name(ev->type);
-        }
+            WARN << "_NET_WM_STATE for unmanaged window?";
     }
     else
     {
-        // unknown window
-        TRACE << "client_message for unmanaged window?";
-
-        INFO << "unknown atom: "
+        WARN << "unknown atom: "
              << ev->type << " - " << g_xcb.find_atom_name(ev->type);
     }
 }
