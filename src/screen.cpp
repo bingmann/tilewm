@@ -25,6 +25,7 @@
 #include "log.h"
 #include "tools.h"
 #include "event.h"
+#include "desktop.h"
 
 #include <xcb/xinerama.h>
 #include <xcb/randr.h>
@@ -70,7 +71,7 @@ extern std::ostream& operator << (
 // *** END Auto-generated ostream operators for XCB structures ***
 
 //! The main screen list of detected screens.
-std::vector<Screen> ScreenList::s_list;
+ScreenList::screenlist_type ScreenList::s_list;
 
 //! Detected RandR version
 unsigned int ScreenList::s_randr_version = 0;
@@ -487,6 +488,9 @@ void ScreenList::randr_screen_change_notify(xcb_generic_event_t* event)
         detect_randr11();
     else
         ERROR << "RandR screen_change_notify without RandR support?";
+
+    // setup of new Desks
+    DeskList::setup();
 }
 
 //! Set up a detect screen spanning the whole virtual screen.

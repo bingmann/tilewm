@@ -61,6 +61,12 @@ struct Point
     {
         return os << '(' << p.x << ',' << p.y << ')';
     }
+
+    //! Test equality of two Points
+    bool operator == (const Point& p) const { return (x == p.x && y == p.y); }
+
+    //! Test inequality of two Points
+    bool operator != (const Point& p) const { return (x != p.x || y != p.y); }
 };
 
 /*!
@@ -105,12 +111,6 @@ struct Rectangle
         return (x == px) && (y == py);
     }
 
-    //! Test if a point p is the origin of this rectangle.
-    bool is_origin(const Point& p) const
-    {
-        return is_origin(p.x, p.y);
-    }
-
     //! Test if a point (px,py) is contained in the rectangle.
     bool contains(int16_t px, int16_t py) const
     {
@@ -121,6 +121,38 @@ struct Rectangle
     bool contains(const Point& p) const
     {
         return contains(p.x, p.y);
+    }
+
+    //! Return top left point
+    Point top_left() const { return Point(x, y); }
+
+    //! Return top right point
+    Point top_right() const { return Point(x + w, y); }
+
+    //! Return bottom left point
+    Point buttom_left() const { return Point(x, y + h); }
+
+    //! Return bottom left point
+    Point buttom_right() const { return Point(x + w, y + h); }
+
+    //! Returns true if the rectangles intersect.
+    bool intersects(const Rectangle& r) const
+    {
+        return !(x >= r.x + r.w || r.x >= x + w ||
+                 y >= r.y + r.h || r.y >= y + h);
+    }
+
+    //! Return the intersections of the two rectangles.
+    Rectangle intersection(const Rectangle& r) const
+    {
+        int16_t x1 = std::max(x, r.x), y1 = std::max(y, r.y);
+        uint16_t x2 = std::min(x + w, r.x + r.w);
+        uint16_t y2 = std::min(y + h, r.y + r.h);
+
+        if (x2 >= x1 && y2 >= y1)
+            return Rectangle(x1, y1, x2 - x1, y2 - y1);
+        else
+            return Rectangle(0, 0, 0, 0);
     }
 
     //! Return as string "pos X x Y size W x H"

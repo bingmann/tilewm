@@ -22,5 +22,85 @@
  ******************************************************************************/
 
 #include "desktop.h"
+#include "screen.h"
+
+//! the list of Desks (both active and inactive)
+DeskList::desklist_type DeskList::m_list;
+
+//! Setup new Desks and Desktops for newly created Screens.
+void DeskList::setup()
+{
+    // deactivate all Desks: ones matching a Screen origin will be reactivated.
+    for (Desk& d : m_list) d.active = false;
+
+    // iterate over available Screens
+    for (size_t i = 0; i < ScreenList::size(); ++i)
+    {
+        Screen& s = ScreenList::get(i);
+        if (!s.active) continue;
+
+        setup_screen(s);
+    }
+}
+
+//! Maybe setup a new Desk for a Screen in the current Desk layout.
+bool DeskList::setup_screen(const Screen& s)
+{
+    // check if Screen intersects with any already seen Desks
+
+    for (size_t i = 0; i < m_list.size(); ++i)
+    {
+        Desk& d = m_list[i];
+
+        if (!d.active) continue;
+
+        if (d.m_geometry.intersects(s.geometry))
+        {
+            INFO << "Screen " << s.name
+                 << " (" << s.geometry.str_pos_size() << ")"
+                 << " intersects with " << " Desk " << i
+                 << " (" << d.m_geometry.str_pos_size() << ")"
+                 << " -> skipping.";
+
+            return false;
+        }
+    }
+
+    // then: check if existing Desk for Screen geometry exists
+
+    for (size_t i = 0; i < m_list.size(); ++i)
+    {
+        Desk& d = m_list[i];
+
+        if (s.geometry.origin() == d.m_geometry.origin())
+        {
+            // found Desk matching Screen's origin -> activate
+
+            INFO << "Screen " << s.name
+                 << " (" << s.geometry.str_pos_size() << ")"
+                 << " matches origin of existing Desk " << i
+                 << " (" << d.m_geometry.str_pos_size() << ")"
+                 << " -> reactivating.";
+
+            d.active = true;
+            return true;
+        }
+    }
+
+    // otherwise: create new Desk for the Screen
+
+    Desk d;
+    d.m_geometry = s.geometry;
+    d.active = true;
+    d.initialize();
+    m_list.push_back(d);
+
+    INFO << "Screen " << s.name
+         << " (" << s.geometry.str_pos_size() << ")"
+         << " matches no existing Desk"
+         << " -> created new Desk " << m_list.size() - 1;
+
+    return true;
+}
 
 /******************************************************************************/

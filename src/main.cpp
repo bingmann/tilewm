@@ -27,6 +27,7 @@
 #include "binding.h"
 #include "client.h"
 #include "ewmh.h"
+#include "desktop.h"
 
 #include <unistd.h>
 #include <xcb/xinerama.h>
@@ -78,8 +79,9 @@ int main(int argc, char* argv[])
     xcb_prefetch_extension_data(g_xcb.connection, &xcb_randr_id);
     xcb_prefetch_extension_data(g_xcb.connection, &xcb_xinerama_id);
 
-    // *** detect monitors
+    // *** detect monitors and setup up desktops
     ScreenList::detect();
+    DeskList::setup();
 
     // *** grab root key bindings
     BindingList::regrab_root();

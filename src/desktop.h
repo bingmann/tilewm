@@ -28,6 +28,8 @@
 #include "geometry.h"
 #include "log.h"
 
+class Screen;
+
 /*!
  * A Desktop object, which will contain layout information and a stacked client
  * list.
@@ -35,6 +37,22 @@
 class Desktop
 {
 public:
+    //! Identifier name of desktop, usually 1,2,3,... or custom names.
+    std::string m_name;
+
+    //! Return the default desktop name for desktop i
+    static std::string get_default_name(size_t i)
+    {
+        if (i < 9)
+            return std::string(1, '1' + i);
+        else if (i < 10)
+            return std::string(1, '0');
+        else if (i < 10 + 26)
+            return std::string(1, 'A' + (i - 10));
+        else if (i < 10 + 26 + 26)
+            return std::string(1, 'a' + (i - 10 - 26));
+        return " ";
+    }
 };
 
 /*!
@@ -52,11 +70,14 @@ public:
     //! Rectangular work area for clients without docks and status bars.
     Rectangle m_workarea;
 
+    //! Flag whether the Desk is still active.
+    bool active;
+
     //! typedef list of Desktops on the Desk
     typedef std::vector<Desktop> desktoplist_type;
 
     //! List of Desktops on the Desk
-    desktoplist_type m_desktoplist;
+    desktoplist_type m_list;
 
     //! Currently visible desktop
     int m_cdesktop;
@@ -64,7 +85,12 @@ public:
     void initialize()
     {
         m_cdesktop = 0;
-        m_desktoplist.resize(10);
+        m_list.resize(10);
+
+        for (size_t i = 0; i < m_list.size(); ++i)
+        {
+            m_list[i].m_name = Desktop::get_default_name(i);
+        }
     }
 };
 
@@ -78,7 +104,7 @@ protected:
     //! typedef of list of Desks
     typedef std::vector<Desk> desklist_type;
 
-    //! the list of Desks
+    //! the list of Desks (both active and inactive)
     static desklist_type m_list;
 
 public:
@@ -103,6 +129,18 @@ public:
         }
         return NULL;
     }
+
+    //! Search for first Desk containing the point p
+    static Desk * find_point(const Point& p)
+    {
+        return find_point(p.x, p.y);
+    }
+
+    //! Setup new Desks and Desktops for newly created Screens.
+    static void setup();
+
+    //! Maybe setup a new Desk for a Screen in the current Desk layout.
+    static bool setup_screen(const Screen& s);
 };
 
 #endif // !TILEWM_DESKTOP_HEADER

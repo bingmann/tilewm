@@ -24,6 +24,7 @@
 #define TILEWM_SCREEN_HEADER
 
 #include "geometry.h"
+#include "log.h"
 #include <vector>
 #include <string>
 #include <memory>
@@ -62,8 +63,11 @@ public:
 class ScreenList
 {
 protected:
+    //! The type of the main screen list of detected screens.
+    typedef std::vector<Screen> screenlist_type;
+
     //! The main screen list of detected screens.
-    static std::vector<Screen> s_list;
+    static screenlist_type s_list;
 
     //! Detected RandR version
     static unsigned int s_randr_version;
@@ -101,6 +105,12 @@ public:
         }
         return NULL;
     }
+
+    //! Return the number of detected screens.
+    static size_t size() { return s_list.size(); }
+
+    //! Return mutable reference to the screen i.
+    static Screen & get(size_t i) { ASSERT(i < size()); return s_list[i]; }
 };
 
 #endif // !TILEWM_SCREEN_HEADER
