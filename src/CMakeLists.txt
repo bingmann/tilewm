@@ -19,8 +19,9 @@
 
 include_directories(${XCB_INCLUDE_DIRS})
 
-add_executable(tilewm
-  main.cpp
+# compile most sources into a static library
+
+add_library(tile STATIC
   log.cpp
   xcb.cpp
   xcb-ostream.cpp
@@ -33,10 +34,17 @@ add_executable(tilewm
   action.cpp
   ewmh.cpp
   desktop.cpp
-  )
+)
+
+# compile TileWM main and link static library
+
+add_executable(tilewm main.cpp)
+target_link_libraries(tilewm tile ${XCB_LIBRARIES})
+
+# auto generate source files using perl scripts
 
 if(PERL_FOUND)
-  # auto generate source files using perl scripts
+
   add_custom_command(
     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/xcb-ostream.cpp
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
@@ -53,6 +61,5 @@ if(PERL_FOUND)
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/xcb-atom-gen.pl
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/xcb.h
     )
-endif()
 
-target_link_libraries(tilewm ${XCB_LIBRARIES})
+endif()
