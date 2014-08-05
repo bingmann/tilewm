@@ -63,9 +63,8 @@ if(CXX_HAS_FLAGS_WEXTRA)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
 endif()
 
-# check whether perl is available for auto generating code
-
-find_package(Perl)
+################################################################################
+# required additional libraries
 
 # use pkg-config to find xcb and fellows
 
@@ -80,6 +79,44 @@ pkg_check_modules(XCB REQUIRED
   xcb-keysyms
   xcb-cursor)
 
+# check whether perl is available for auto generating code
+
+find_package(Perl)
+
+################################################################################
+# enable use of "make test" for unittests and macros
+
+enable_testing()
+include(CTest)
+
+# macro for building unittests
+macro(unittest_build NAME)
+
+  if(BUILD_TESTING)
+
+    add_executable(${NAME} ${NAME}.cpp ${ARGN})
+    target_link_libraries(${NAME} tile ${XCB_LIBRARIES})
+
+  endif(BUILD_TESTING)
+
+endmacro(unittest_build)
+
+# macro for running unittests
+macro(unittest_run NAME)
+
+  if(BUILD_TESTING)
+
+    set(FULLNAME ${NAME} ${ARGN})
+    string(REPLACE ";" "_" FULLNAME "${FULLNAME}") # stringify list
+
+    add_test(${FULLNAME} ${NAME} ${ARGN}) # add test with arguments
+
+  endif(BUILD_TESTING)
+
+endmacro(unittest_run)
+
+################################################################################
 # descend into source
 
 add_subdirectory(src)
+add_subdirectory(unittests)

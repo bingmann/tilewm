@@ -93,6 +93,12 @@ struct Rectangle
         : x(_x), y(_y), w(_w), h(_h)
     { }
 
+    //! Construct a rectangle from two points.
+    Rectangle(const Point& top_left, const Point& bottom_right)
+        : x(top_left.x), y(top_left.y),
+          w(bottom_right.x - top_left.x), h(bottom_right.y - top_left.y)
+    { }
+
     //! Return the rectangle's origin point
     Point origin() const
     {
