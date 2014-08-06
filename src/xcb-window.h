@@ -159,9 +159,8 @@ public:
 
         INFO << "setting ICCCM WM_STATE to " << IcccmWmStateFormatter(state);
 
-        xcb_change_property(g_xcb.connection, XCB_PROP_MODE_REPLACE,
-                            m_window, g_xcb.WM_STATE.atom,
-                            g_xcb.WM_STATE.atom, 32, 2, values);
+        g_xcb.change_property(m_window, g_xcb.WM_STATE.atom,
+                              g_xcb.WM_STATE.atom, 32, 2, values);
     }
 
     //! Send a ICCCM WM_DELETE_WINDOW client message.

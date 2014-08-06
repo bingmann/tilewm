@@ -41,37 +41,24 @@ void Ewmh::setup()
                       XCB_COPY_FROM_PARENT,
                       0, NULL);
 
-    xcb_change_property(g_xcb.connection, XCB_PROP_MODE_REPLACE, g_xcb.root,
-                        g_xcb._NET_SUPPORTING_WM_CHECK.atom,
-                        XCB_ATOM_WINDOW, 32, 1, &win);
+    g_xcb.change_property(g_xcb.root, g_xcb._NET_SUPPORTING_WM_CHECK.atom,
+                          XCB_ATOM_WINDOW, 32, 1, &win);
 
-    xcb_change_property(g_xcb.connection, XCB_PROP_MODE_REPLACE, win,
-                        g_xcb._NET_SUPPORTING_WM_CHECK.atom,
-                        XCB_ATOM_WINDOW, 32, 1, &win);
+    g_xcb.change_property(win, g_xcb._NET_SUPPORTING_WM_CHECK.atom,
+                          XCB_ATOM_WINDOW, 32, 1, &win);
 
     // *** set WM_NAME property on sentinel window
 
-    xcb_change_property(g_xcb.connection, XCB_PROP_MODE_REPLACE, win,
-                        g_xcb._NET_WM_NAME.atom,
-                        g_xcb.UTF8_STRING.atom,
-                        8, s_wmname.size(), s_wmname.data());
+    g_xcb.change_property(win, g_xcb._NET_WM_NAME.atom,
+                          g_xcb.UTF8_STRING.atom,
+                          8, s_wmname.size(), s_wmname.data());
 
     // *** set all supported atoms in _NET_SUPPORTED on root
 
     std::vector<xcb_atom_t> ewmh = g_xcb.get_ewmh_atomlist();
 
-    xcb_change_property(g_xcb.connection, XCB_PROP_MODE_REPLACE, g_xcb.root,
-                        g_xcb._NET_SUPPORTED.atom,
-                        XCB_ATOM_ATOM, 32, ewmh.size(), ewmh.data());
-
-    // TODO: set this to the number of desktops
-
-    uint32_t ndesktops = 1;
-
-    xcb_change_property(g_xcb.connection, XCB_PROP_MODE_REPLACE, g_xcb.root,
-                        g_xcb._NET_NUMBER_OF_DESKTOPS.atom,
-                        XCB_ATOM_CARDINAL,
-                        32, 1, &ndesktops);
+    g_xcb.change_property(g_xcb.root, g_xcb._NET_SUPPORTED.atom,
+                          XCB_ATOM_ATOM, 32, ewmh.size(), ewmh.data());
 }
 
 //! Tear down supporting structures.

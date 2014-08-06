@@ -160,6 +160,39 @@ public:
     static std::string find_atom_name(xcb_atom_t atom);
 
 public:
+    //! Replace the value of a window property
+    static xcb_void_cookie_t
+    change_property(xcb_window_t win, xcb_atom_t property, xcb_atom_t type,
+                     uint8_t format, uint32_t data_len, const void* data)
+    {
+        return xcb_change_property(connection, XCB_PROP_MODE_REPLACE,
+                                   win, property, type, format, data_len, data);
+    }
+
+    //! Delete a property on a window.
+    static xcb_void_cookie_t
+    delete_property(xcb_window_t win, xcb_atom_t property)
+    {
+        return xcb_delete_property(connection, win, property);
+    }
+
+    //! Replace the value of a window property
+    static xcb_void_cookie_t
+    change_property(xcb_window_t win, const XcbAtom& property, xcb_atom_t type,
+                     uint8_t format, uint32_t data_len, const void* data)
+    {
+        return change_property(win, property.atom, type,
+                               format, data_len, data);
+    }
+
+    //! Delete a property on a window.
+    static xcb_void_cookie_t
+    delete_property(xcb_window_t win, const XcbAtom& property)
+    {
+        return delete_property(win, property.atom);
+    }
+
+public:
     //! Allocate a color in the default color map.
     static uint32_t allocate_color(uint16_t r, uint16_t g, uint16_t b);
 

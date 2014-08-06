@@ -228,12 +228,10 @@ void Client::update_ewmh_state()
         values[i++] = g_xcb._NET_WM_STATE_SKIP_PAGER.atom;
 
     if (i != 0)
-        xcb_change_property(g_xcb.connection, XCB_PROP_MODE_REPLACE, window(),
-                            g_xcb._NET_WM_STATE.atom,
-                            XCB_ATOM_ATOM, 32, i, values);
+        g_xcb.change_property(window(), g_xcb._NET_WM_STATE,
+                              XCB_ATOM_ATOM, 32, i, values);
     else
-        xcb_delete_property(g_xcb.connection, window(),
-                            g_xcb._NET_WM_STATE.atom);
+        g_xcb.delete_property(window(), g_xcb._NET_WM_STATE);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -419,9 +417,8 @@ void ClientList::update_net_client_list()
     for (windowmap_type::value_type& w : s_windowmap)
         winlist[i++] = w.first;
 
-    xcb_change_property(g_xcb.connection, XCB_PROP_MODE_REPLACE,
-                        g_xcb.root, g_xcb._NET_CLIENT_LIST.atom,
-                        XCB_ATOM_WINDOW, 32, winlist.size(), winlist.data());
+    g_xcb.change_property(g_xcb.root, g_xcb._NET_CLIENT_LIST,
+                          XCB_ATOM_WINDOW, 32, winlist.size(), winlist.data());
 }
 
 //! Configure client to have focus.
@@ -455,9 +452,8 @@ void ClientList::focus_window(Client* active)
 
     xcb_window_t win = active->window();
 
-    xcb_change_property(g_xcb.connection, XCB_PROP_MODE_REPLACE,
-                        g_xcb.root, g_xcb._NET_ACTIVE_WINDOW.atom,
-                        XCB_ATOM_WINDOW, 32, 1, &win);
+    g_xcb.change_property(g_xcb.root, g_xcb._NET_ACTIVE_WINDOW,
+                          XCB_ATOM_WINDOW, 32, 1, &win);
 
     xcb_set_input_focus(g_xcb.connection, XCB_INPUT_FOCUS_POINTER_ROOT,
                         win, XCB_CURRENT_TIME);
