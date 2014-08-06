@@ -96,10 +96,8 @@ public:
     //! EWMH _NET_WM_STRUT_PARTIAL property data structure
     ewmh_strut_partial_t m_ewmh_strut_partial;
 
-    //! Enumerate indicating the EWMH property _NET_WM_WINDOW_TYPE value.
-    enum m_wm_window_type_type { TYPE_NORMAL, TYPE_DOCK };
     //! Variable Indicating the EWMH property _NET_WM_WINDOW_TYPE value.
-    m_wm_window_type_type m_wm_window_type;
+    ewmh_window_type_t m_ewmh_window_type;
 
     //! flag whether the window has focus
     bool m_has_focus;
@@ -206,7 +204,7 @@ public:
     //! Whether the client is allowed free configuration placement.
     bool free_placement()
     {
-        return m_wm_window_type == TYPE_DOCK;
+        return m_ewmh_window_type == EWMH_WINDOW_TYPE_DOCK;
     }
 
     //! Perform initial query/update of all fields of the Client structure

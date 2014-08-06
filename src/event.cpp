@@ -152,7 +152,10 @@ static void handle_event_destroy_notify(xcb_generic_event_t* event)
     {
         // unmanage window
         if (ev->window != g_xcb.root)
+        {
             ClientList::unmanage_window(c);
+            ClientList::update_net_client_list();
+        }
     }
     else
     {
@@ -352,6 +355,10 @@ static void handle_event_property_notify(xcb_generic_event_t* event)
         {
             c->retrieve_ewmh_strut();
         }
+        else if (ev->atom == g_xcb._NET_WM_WINDOW_TYPE.atom)
+        {
+            c->retrieve_ewmh_window_type();
+        }
         else if (ev->atom == g_xcb._NET_WM_STRUT_PARTIAL.atom)
         {
             c->retrieve_ewmh_strut_partial();
@@ -367,16 +374,13 @@ static void handle_event_property_notify(xcb_generic_event_t* event)
         // root window
         TRACE << "property_notify for root window";
 
-        if (ev->atom == g_xcb._NET_SUPPORTING_WM_CHECK.atom)
-        { }
-        else if (ev->atom == g_xcb._NET_SUPPORTED.atom)
-        { }
-        else if (ev->atom == g_xcb._NET_NUMBER_OF_DESKTOPS.atom)
-        { }
-        else if (ev->atom == g_xcb._NET_CLIENT_LIST.atom)
-        { }
-        else if (ev->atom == g_xcb._NET_ACTIVE_WINDOW.atom)
-        { }
+        if (ev->atom == g_xcb._NET_SUPPORTING_WM_CHECK.atom) { }
+        else if (ev->atom == g_xcb._NET_SUPPORTED.atom) { }
+        else if (ev->atom == g_xcb._NET_NUMBER_OF_DESKTOPS.atom) { }
+        else if (ev->atom == g_xcb._NET_DESKTOP_NAMES.atom) { }
+        else if (ev->atom == g_xcb._NET_DESKTOP_LAYOUT.atom) { }
+        else if (ev->atom == g_xcb._NET_CLIENT_LIST.atom) { }
+        else if (ev->atom == g_xcb._NET_ACTIVE_WINDOW.atom) { }
         else
         {
             INFO << "unknown atom: "

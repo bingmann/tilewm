@@ -136,7 +136,13 @@ public:
 
     static XcbAtom _NET_WM_WINDOW_TYPE;
     static XcbAtom _NET_WM_WINDOW_TYPE_NORMAL;
+    static XcbAtom _NET_WM_WINDOW_TYPE_DESKTOP;
     static XcbAtom _NET_WM_WINDOW_TYPE_DOCK;
+    static XcbAtom _NET_WM_WINDOW_TYPE_TOOLBAR;
+    static XcbAtom _NET_WM_WINDOW_TYPE_MENU;
+    static XcbAtom _NET_WM_WINDOW_TYPE_UTILITY;
+    static XcbAtom _NET_WM_WINDOW_TYPE_SPLASH;
+    static XcbAtom _NET_WM_WINDOW_TYPE_DIALOG;
 
     //! List of named atoms for caching.
     static struct XcbAtom* atomlist[];

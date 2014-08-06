@@ -310,7 +310,7 @@ xcb_get_property_cookie_t Client::query_ewmh_window_type()
 //! Process _NET_WM_WINDOW_TYPE reply and update fields
 void Client::process_ewmh_window_type(xcb_get_property_cookie_t gpc)
 {
-    m_wm_window_type = TYPE_NORMAL;
+    m_ewmh_window_type = EWMH_WINDOW_TYPE_NORMAL;
 
     autofree_ptr<xcb_get_property_reply_t> gpr(
         xcb_get_property_reply(g_xcb.connection, gpc, NULL)
@@ -328,13 +328,44 @@ void Client::process_ewmh_window_type(xcb_get_property_cookie_t gpc)
 
     for (int i = 0; i < n; ++i)
     {
+        // use the first value in the array that we know
         if (atomlist[i] == g_xcb._NET_WM_WINDOW_TYPE_NORMAL.atom) {
             INFO << "Found _NET_WM_WINDOW_TYPE_NORMAL atom.";
             break;
         }
+        else if (atomlist[i] == g_xcb._NET_WM_WINDOW_TYPE_DESKTOP.atom) {
+            INFO << "Found _NET_WM_WINDOW_TYPE_DESKTOP atom.";
+            m_ewmh_window_type = EWMH_WINDOW_TYPE_DESKTOP;
+            break;
+        }
         else if (atomlist[i] == g_xcb._NET_WM_WINDOW_TYPE_DOCK.atom) {
             INFO << "Found _NET_WM_WINDOW_TYPE_DOCK atom.";
-            m_wm_window_type = TYPE_DOCK;
+            m_ewmh_window_type = EWMH_WINDOW_TYPE_DOCK;
+            break;
+        }
+        else if (atomlist[i] == g_xcb._NET_WM_WINDOW_TYPE_TOOLBAR.atom) {
+            INFO << "Found _NET_WM_WINDOW_TYPE_TOOLBAR atom.";
+            m_ewmh_window_type = EWMH_WINDOW_TYPE_TOOLBAR;
+            break;
+        }
+        else if (atomlist[i] == g_xcb._NET_WM_WINDOW_TYPE_MENU.atom) {
+            INFO << "Found _NET_WM_WINDOW_TYPE_MENU atom.";
+            m_ewmh_window_type = EWMH_WINDOW_TYPE_MENU;
+            break;
+        }
+        else if (atomlist[i] == g_xcb._NET_WM_WINDOW_TYPE_UTILITY.atom) {
+            INFO << "Found _NET_WM_WINDOW_TYPE_UTILITY atom.";
+            m_ewmh_window_type = EWMH_WINDOW_TYPE_UTILITY;
+            break;
+        }
+        else if (atomlist[i] == g_xcb._NET_WM_WINDOW_TYPE_SPLASH.atom) {
+            INFO << "Found _NET_WM_WINDOW_TYPE_SPLASH atom.";
+            m_ewmh_window_type = EWMH_WINDOW_TYPE_SPLASH;
+            break;
+        }
+        else if (atomlist[i] == g_xcb._NET_WM_WINDOW_TYPE_DIALOG.atom) {
+            INFO << "Found _NET_WM_WINDOW_TYPE_DIALOG atom.";
+            m_ewmh_window_type = EWMH_WINDOW_TYPE_DIALOG;
             break;
         }
         else {

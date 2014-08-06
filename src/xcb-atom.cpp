@@ -103,13 +103,31 @@ XcbConnection::XcbAtom XcbConnection::_NET_WM_WINDOW_TYPE =
 //! Cached value of _NET_WM_WINDOW_TYPE_NORMAL atom
 XcbConnection::XcbAtom XcbConnection::_NET_WM_WINDOW_TYPE_NORMAL =
 { "_NET_WM_WINDOW_TYPE_NORMAL", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_WINDOW_TYPE_DESKTOP atom
+XcbConnection::XcbAtom XcbConnection::_NET_WM_WINDOW_TYPE_DESKTOP =
+{ "_NET_WM_WINDOW_TYPE_DESKTOP", XCB_ATOM_NONE };
 //! Cached value of _NET_WM_WINDOW_TYPE_DOCK atom
 XcbConnection::XcbAtom XcbConnection::_NET_WM_WINDOW_TYPE_DOCK =
 { "_NET_WM_WINDOW_TYPE_DOCK", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_WINDOW_TYPE_TOOLBAR atom
+XcbConnection::XcbAtom XcbConnection::_NET_WM_WINDOW_TYPE_TOOLBAR =
+{ "_NET_WM_WINDOW_TYPE_TOOLBAR", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_WINDOW_TYPE_MENU atom
+XcbConnection::XcbAtom XcbConnection::_NET_WM_WINDOW_TYPE_MENU =
+{ "_NET_WM_WINDOW_TYPE_MENU", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_WINDOW_TYPE_UTILITY atom
+XcbConnection::XcbAtom XcbConnection::_NET_WM_WINDOW_TYPE_UTILITY =
+{ "_NET_WM_WINDOW_TYPE_UTILITY", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_WINDOW_TYPE_SPLASH atom
+XcbConnection::XcbAtom XcbConnection::_NET_WM_WINDOW_TYPE_SPLASH =
+{ "_NET_WM_WINDOW_TYPE_SPLASH", XCB_ATOM_NONE };
+//! Cached value of _NET_WM_WINDOW_TYPE_DIALOG atom
+XcbConnection::XcbAtom XcbConnection::_NET_WM_WINDOW_TYPE_DIALOG =
+{ "_NET_WM_WINDOW_TYPE_DIALOG", XCB_ATOM_NONE };
 
 std::vector<xcb_atom_t> XcbConnection::get_ewmh_atomlist()
 {
-    std::vector<xcb_atom_t> atomlist(22);
+    std::vector<xcb_atom_t> atomlist(28);
 
     atomlist[0] = _NET_SUPPORTED.atom;
     atomlist[1] = _NET_SUPPORTING_WM_CHECK.atom;
@@ -132,7 +150,13 @@ std::vector<xcb_atom_t> XcbConnection::get_ewmh_atomlist()
     atomlist[18] = _NET_WM_STRUT_PARTIAL.atom;
     atomlist[19] = _NET_WM_WINDOW_TYPE.atom;
     atomlist[20] = _NET_WM_WINDOW_TYPE_NORMAL.atom;
-    atomlist[21] = _NET_WM_WINDOW_TYPE_DOCK.atom;
+    atomlist[21] = _NET_WM_WINDOW_TYPE_DESKTOP.atom;
+    atomlist[22] = _NET_WM_WINDOW_TYPE_DOCK.atom;
+    atomlist[23] = _NET_WM_WINDOW_TYPE_TOOLBAR.atom;
+    atomlist[24] = _NET_WM_WINDOW_TYPE_MENU.atom;
+    atomlist[25] = _NET_WM_WINDOW_TYPE_UTILITY.atom;
+    atomlist[26] = _NET_WM_WINDOW_TYPE_SPLASH.atom;
+    atomlist[27] = _NET_WM_WINDOW_TYPE_DIALOG.atom;
 
     return atomlist;
 }
@@ -165,7 +189,13 @@ struct XcbConnection::XcbAtom* XcbConnection::atomlist[] = {
     &_NET_WM_STRUT_PARTIAL,
     &_NET_WM_WINDOW_TYPE,
     &_NET_WM_WINDOW_TYPE_NORMAL,
+    &_NET_WM_WINDOW_TYPE_DESKTOP,
     &_NET_WM_WINDOW_TYPE_DOCK,
+    &_NET_WM_WINDOW_TYPE_TOOLBAR,
+    &_NET_WM_WINDOW_TYPE_MENU,
+    &_NET_WM_WINDOW_TYPE_UTILITY,
+    &_NET_WM_WINDOW_TYPE_SPLASH,
+    &_NET_WM_WINDOW_TYPE_DIALOG,
 };
 
 const unsigned int XcbConnection::atomlist_size
