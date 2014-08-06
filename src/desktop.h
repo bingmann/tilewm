@@ -141,6 +141,9 @@ public:
 
     //! Maybe setup a new Desk for a Screen in the current Desk layout.
     static bool setup_screen(const Screen& s);
+
+    //! Update basic EWMH properties to indicate virtual desktops.
+    static void update_ewmh();
 };
 
 #endif // !TILEWM_DESKTOP_HEADER

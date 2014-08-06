@@ -49,9 +49,7 @@ void Ewmh::setup()
 
     // *** set WM_NAME property on sentinel window
 
-    g_xcb.change_property(win, g_xcb._NET_WM_NAME.atom,
-                          g_xcb.UTF8_STRING.atom,
-                          8, s_wmname.size(), s_wmname.data());
+    g_xcb.change_property_utf8(win, g_xcb._NET_WM_NAME, s_wmname);
 
     // *** set all supported atoms in _NET_SUPPORTED on root
 
@@ -81,11 +79,9 @@ void Ewmh::teardown()
         xcb_destroy_window(g_xcb.connection, win);
     }
 
-    xcb_delete_property(g_xcb.connection, g_xcb.root,
-                        g_xcb._NET_SUPPORTING_WM_CHECK.atom);
+    g_xcb.delete_property(g_xcb.root, g_xcb._NET_SUPPORTING_WM_CHECK);
 
-    xcb_delete_property(g_xcb.connection, g_xcb.root,
-                        g_xcb._NET_SUPPORTED.atom);
+    g_xcb.delete_property(g_xcb.root, g_xcb._NET_SUPPORTED);
 }
 
 /******************************************************************************/

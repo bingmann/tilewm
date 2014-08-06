@@ -58,6 +58,12 @@ XcbConnection::XcbAtom XcbConnection::_NET_CLIENT_LIST =
 //! Cached value of _NET_NUMBER_OF_DESKTOPS atom
 XcbConnection::XcbAtom XcbConnection::_NET_NUMBER_OF_DESKTOPS =
 { "_NET_NUMBER_OF_DESKTOPS", XCB_ATOM_NONE };
+//! Cached value of _NET_DESKTOP_NAMES atom
+XcbConnection::XcbAtom XcbConnection::_NET_DESKTOP_NAMES =
+{ "_NET_DESKTOP_NAMES", XCB_ATOM_NONE };
+//! Cached value of _NET_DESKTOP_LAYOUT atom
+XcbConnection::XcbAtom XcbConnection::_NET_DESKTOP_LAYOUT =
+{ "_NET_DESKTOP_LAYOUT", XCB_ATOM_NONE };
 //! Cached value of _NET_WM_STATE atom
 XcbConnection::XcbAtom XcbConnection::_NET_WM_STATE =
 { "_NET_WM_STATE", XCB_ATOM_NONE };
@@ -103,7 +109,7 @@ XcbConnection::XcbAtom XcbConnection::_NET_WM_WINDOW_TYPE_DOCK =
 
 std::vector<xcb_atom_t> XcbConnection::get_ewmh_atomlist()
 {
-    std::vector<xcb_atom_t> atomlist(20);
+    std::vector<xcb_atom_t> atomlist(22);
 
     atomlist[0] = _NET_SUPPORTED.atom;
     atomlist[1] = _NET_SUPPORTING_WM_CHECK.atom;
@@ -111,20 +117,22 @@ std::vector<xcb_atom_t> XcbConnection::get_ewmh_atomlist()
     atomlist[3] = _NET_ACTIVE_WINDOW.atom;
     atomlist[4] = _NET_CLIENT_LIST.atom;
     atomlist[5] = _NET_NUMBER_OF_DESKTOPS.atom;
-    atomlist[6] = _NET_WM_STATE.atom;
-    atomlist[7] = _NET_WM_STATE_HIDDEN.atom;
-    atomlist[8] = _NET_WM_STATE_STICKY.atom;
-    atomlist[9] = _NET_WM_STATE_ABOVE.atom;
-    atomlist[10] = _NET_WM_STATE_FULLSCREEN.atom;
-    atomlist[11] = _NET_WM_STATE_MAXIMIZED_VERT.atom;
-    atomlist[12] = _NET_WM_STATE_MAXIMIZED_HORZ.atom;
-    atomlist[13] = _NET_WM_STATE_SKIP_TASKBAR.atom;
-    atomlist[14] = _NET_WM_STATE_SKIP_PAGER.atom;
-    atomlist[15] = _NET_WM_STRUT.atom;
-    atomlist[16] = _NET_WM_STRUT_PARTIAL.atom;
-    atomlist[17] = _NET_WM_WINDOW_TYPE.atom;
-    atomlist[18] = _NET_WM_WINDOW_TYPE_NORMAL.atom;
-    atomlist[19] = _NET_WM_WINDOW_TYPE_DOCK.atom;
+    atomlist[6] = _NET_DESKTOP_NAMES.atom;
+    atomlist[7] = _NET_DESKTOP_LAYOUT.atom;
+    atomlist[8] = _NET_WM_STATE.atom;
+    atomlist[9] = _NET_WM_STATE_HIDDEN.atom;
+    atomlist[10] = _NET_WM_STATE_STICKY.atom;
+    atomlist[11] = _NET_WM_STATE_ABOVE.atom;
+    atomlist[12] = _NET_WM_STATE_FULLSCREEN.atom;
+    atomlist[13] = _NET_WM_STATE_MAXIMIZED_VERT.atom;
+    atomlist[14] = _NET_WM_STATE_MAXIMIZED_HORZ.atom;
+    atomlist[15] = _NET_WM_STATE_SKIP_TASKBAR.atom;
+    atomlist[16] = _NET_WM_STATE_SKIP_PAGER.atom;
+    atomlist[17] = _NET_WM_STRUT.atom;
+    atomlist[18] = _NET_WM_STRUT_PARTIAL.atom;
+    atomlist[19] = _NET_WM_WINDOW_TYPE.atom;
+    atomlist[20] = _NET_WM_WINDOW_TYPE_NORMAL.atom;
+    atomlist[21] = _NET_WM_WINDOW_TYPE_DOCK.atom;
 
     return atomlist;
 }
@@ -142,6 +150,8 @@ struct XcbConnection::XcbAtom* XcbConnection::atomlist[] = {
     &_NET_ACTIVE_WINDOW,
     &_NET_CLIENT_LIST,
     &_NET_NUMBER_OF_DESKTOPS,
+    &_NET_DESKTOP_NAMES,
+    &_NET_DESKTOP_LAYOUT,
     &_NET_WM_STATE,
     &_NET_WM_STATE_HIDDEN,
     &_NET_WM_STATE_STICKY,

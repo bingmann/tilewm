@@ -118,6 +118,8 @@ public:
     static XcbAtom _NET_ACTIVE_WINDOW;
     static XcbAtom _NET_CLIENT_LIST;
     static XcbAtom _NET_NUMBER_OF_DESKTOPS;
+    static XcbAtom _NET_DESKTOP_NAMES;
+    static XcbAtom _NET_DESKTOP_LAYOUT;
 
     static XcbAtom _NET_WM_STATE;
     static XcbAtom _NET_WM_STATE_HIDDEN;
@@ -160,13 +162,22 @@ public:
     static std::string find_atom_name(xcb_atom_t atom);
 
 public:
-    //! Replace the value of a window property
+    //! Replace the value of a window property.
     static xcb_void_cookie_t
     change_property(xcb_window_t win, xcb_atom_t property, xcb_atom_t type,
-                     uint8_t format, uint32_t data_len, const void* data)
+                    uint8_t format, uint32_t data_len, const void* data)
     {
         return xcb_change_property(connection, XCB_PROP_MODE_REPLACE,
                                    win, property, type, format, data_len, data);
+    }
+
+    //! Replace the value of a window property
+    static xcb_void_cookie_t
+    change_property(xcb_window_t win, const XcbAtom& property, xcb_atom_t type,
+                    uint8_t format, uint32_t data_len, const void* data)
+    {
+        return change_property(win, property.atom, type,
+                               format, data_len, data);
     }
 
     //! Delete a property on a window.
@@ -176,20 +187,29 @@ public:
         return xcb_delete_property(connection, win, property);
     }
 
-    //! Replace the value of a window property
-    static xcb_void_cookie_t
-    change_property(xcb_window_t win, const XcbAtom& property, xcb_atom_t type,
-                     uint8_t format, uint32_t data_len, const void* data)
-    {
-        return change_property(win, property.atom, type,
-                               format, data_len, data);
-    }
-
     //! Delete a property on a window.
     static xcb_void_cookie_t
     delete_property(xcb_window_t win, const XcbAtom& property)
     {
         return delete_property(win, property.atom);
+    }
+
+    //! Replace the value of a window property with a UTF8_STRING.
+    static xcb_void_cookie_t
+    change_property_utf8(xcb_window_t win, xcb_atom_t property,
+                         const std::string& string)
+    {
+        return change_property(win, property, UTF8_STRING.atom,
+                               8, string.size(), string.data());
+    }
+
+    //! Replace the value of a window property with a UTF8_STRING.
+    static xcb_void_cookie_t
+    change_property_utf8(xcb_window_t win, const XcbAtom& property,
+                         const std::string& string)
+    {
+        return change_property(win, property.atom, UTF8_STRING.atom,
+                               8, string.size(), string.data());
     }
 
 public:

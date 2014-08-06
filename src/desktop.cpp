@@ -23,6 +23,7 @@
 
 #include "desktop.h"
 #include "screen.h"
+#include "xcb.h"
 
 //! the list of Desks (both active and inactive)
 DeskList::desklist_type DeskList::m_list;
@@ -41,6 +42,8 @@ void DeskList::setup()
 
         setup_screen(s);
     }
+
+    update_ewmh();
 }
 
 //! Maybe setup a new Desk for a Screen in the current Desk layout.
@@ -101,6 +104,33 @@ bool DeskList::setup_screen(const Screen& s)
          << " -> created new Desk " << m_list.size() - 1;
 
     return true;
+}
+
+//! Update basic EWMH properties to indicate virtual desktops.
+void DeskList::update_ewmh()
+{
+    uint32_t ndesktops = 0;
+    std::ostringstream namelist;
+
+    for (Desk& d : m_list)
+    {
+        for (Desktop& t : d.m_list)
+        {
+            ndesktops++;
+            namelist << t.m_name << '\0';
+        }
+    }
+
+    g_xcb.change_property(g_xcb.root, g_xcb._NET_NUMBER_OF_DESKTOPS.atom,
+                          XCB_ATOM_CARDINAL, 32, 1, &ndesktops);
+
+    g_xcb.change_property_utf8(g_xcb.root, g_xcb._NET_DESKTOP_NAMES,
+                               namelist.str());
+
+    uint32_t layout[4] = { 0, ndesktops, 1, 0 };
+
+    g_xcb.change_property(g_xcb.root, g_xcb._NET_DESKTOP_LAYOUT.atom,
+                          XCB_ATOM_CARDINAL, 32, 4, layout);
 }
 
 /******************************************************************************/
